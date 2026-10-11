@@ -52,3 +52,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 
 ## Pembaruan 0.6.5 (branch kerja/rapikan-prompt)
 - Bagian prompt di README dirapikan: tabel kapan memakai, 3 prompt utama, 4 tambahan dilipat.
+
+## Pembaruan 0.6.6 (branch kerja/perkaya-readme)
+- README memuat bagian "Apa yang Anda dapat": isi dan manfaat tiap komponen serta cakupan standar.
