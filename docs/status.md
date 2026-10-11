@@ -6,6 +6,7 @@ Diperbarui: 2026-10-11 oleh agent
 Audit final selesai dan ter-merge (v0.7.0 bertag; laporan `docs/audit-final.md`). Kerangka dibekukan: perbaikan hanya dari temuan pemakaian nyata.
 Terakhir: panduan pemasangan di README ditulis ulang linear (brief 0019, 0.7.1) karena pengguna bingung dengan urutan dan istilah `BRIEF_GATE`.
 Pemasangan di proyek existing pengguna berhasil. Temuannya dikerjakan: run-checks tampak macet (0.7.2) dan agent salah lapor pada mode `ask` (0.7.3).
+Temuan pemakaian nyata berikutnya: agent melewati tinjauan independen (AG-19) dan standar tidak tertelusur; dijawab di 0.8.0 (brief 0022) dengan bukti penutupan yang diperiksa CI dan bagian "Standar yang berlaku" di brief.
 Berikutnya: pemakaian nyata 2-3 minggu; pengguna mengirim permintaan fitur dari `docs/anthropic-feedback.md` lewat `/feedback`.
 
 ## Keadaan kerangka
@@ -23,6 +24,7 @@ Berikutnya: pemakaian nyata 2-3 minggu; pengguna mengirim permintaan fitur dari 
 - Pagar anti-melebar: tidak ada mekanisme baru tanpa pelanggaran nyata teramati.
 
 ## Backlog (belum dikerjakan; jangan dibangun tanpa temuan nyata)
+- Hook PostToolUse pencatat panggilan `review-changes` (penanda di .git) dan gerbang `Status: done`; pengingat Stop bila brief ditutup tanpa tinjauan. Bangun hanya bila bukti penutupan terbukti palsu atau terlewat.
 - Penegakan bahasa nama berkas (daftar kata terlarang kecil, bisa dikecualikan di `CLAUDE.md`).
 - Uji fixture Grafana dan HTML statis.
 - Pemakaian nyata di satu proyek asli selama 2-3 minggu; catat pelanggaran dan false positive.
