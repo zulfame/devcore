@@ -8,6 +8,11 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka sudah diuji pemasangan dan uji buta kecil, tetapi belum terbukti dalam pemakaian jangka panjang di proyek nyata.
 
+## [0.7.3] - 2026-10-12
+Ditemukan pengguna di proyek existing: pada `BRIEF_GATE=ask` agent tidak melihat prompt izin dan melapor "tanpa prompt" setelah pengguna menyetujui.
+- Arahan agent untuk mode `ask` di `rules.md` dan skill `write-brief`; panduan README menjelaskan bahwa agent tidak melihat prompt dan bahwa `ask` hanya untuk masa adopsi.
+- Batas dicatat di peta penegakan; teks permintaan fitur untuk Anthropic di `docs/anthropic-feedback.md`. Tanpa mekanisme hook baru.
+
 ## [0.7.2] - 2026-10-11
 Ditemukan saat pengguna memasang di proyek existing: `run-checks.sh` tampak macet 18 menit di "Tes hook penjaga".
 - Tes hook, skrip, dan sync kini kedap terhadap konfigurasi git global/sistem pengguna (penandatanganan commit interaktif, hook global, editor, prompt) yang dapat membuat `git commit` di repo sementara menunggu tanpa batas atau gagal.

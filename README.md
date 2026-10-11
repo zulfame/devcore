@@ -101,6 +101,8 @@ git status                          # berkas devcore harus muncul sebagai berkas
 
 Di proyek lama, minggu pertama sering terasa terlalu ketat karena Anda belum terbiasa membuat brief. Untuk itu, **buka `.claude/devcore.conf` dengan editor Anda sendiri**, ubah baris `BRIEF_GATE=block` menjadi `BRIEF_GATE=ask`, lalu simpan. Setelah terbiasa (sekitar seminggu), kembalikan ke `BRIEF_GATE=block`. Anda yang menyunting berkas ini; agent tidak boleh mengubahnya tanpa persetujuan Anda. Di proyek baru, biarkan `block`.
 
+Dua hal tentang `ask`: (1) prompt izin hanya terlihat oleh Anda, **agent tidak melihatnya**; ia hanya tahu tool berhasil, dan aturan menyuruhnya menganggap itu persetujuan Anda, bukan melapor "tanpa prompt". (2) `ask` hanya bantuan masa adopsi: persetujuan lewat prompt tidak tercatat di berkas. Jalur yang lebih sehat adalah brief `approved` di chat lalu `block`.
+
 **Langkah 7. Commit** (di folder proyek)
 ```bash
 git add -A && git commit -m "pasang devcore"

@@ -5,7 +5,8 @@ Diperbarui: 2026-10-11 oleh agent
 ## Fokus saat ini
 Audit final selesai dan ter-merge (v0.7.0 bertag; laporan `docs/audit-final.md`). Kerangka dibekukan: perbaikan hanya dari temuan pemakaian nyata.
 Terakhir: panduan pemasangan di README ditulis ulang linear (brief 0019, 0.7.1) karena pengguna bingung dengan urutan dan istilah `BRIEF_GATE`.
-Berikutnya: pengguna menguji pemasangan di proyek nyata (folder Laravel uji) dengan prompt 1 dan 2 di README.
+Pemasangan di proyek existing pengguna berhasil. Temuannya dikerjakan: run-checks tampak macet (0.7.2) dan agent salah lapor pada mode `ask` (0.7.3).
+Berikutnya: pemakaian nyata 2-3 minggu; pengguna mengirim permintaan fitur dari `docs/anthropic-feedback.md` lewat `/feedback`.
 
 ## Keadaan kerangka
 - Versi terpasang: lihat `.devcore/VERSION`; riwayat perubahan di `CHANGELOG.md`; latar belakang di `docs/history.md`.
@@ -37,5 +38,5 @@ Berikutnya: pengguna menguji pemasangan di proyek nyata (folder Laravel uji) den
 - Jangan ubah isi rubrik terkunci di `docs/blind-test/` (cek `hashes.sha256`).
 - `.gitignore` proyek yang mengabaikan `/.claude` atau `/CLAUDE.md` membuat berkas devcore tidak ter-commit (sync memberi INFO).
 - Perintah hook di `settings.json` harus mengutip `"$CLAUDE_PROJECT_DIR"` agar jalur berspasi tidak membuat hook mati diam-diam.
-
-- 0.7.2: tes dibuat kedap terhadap konfigurasi git global pengguna (penandatanganan commit dapat membuat tes menggantung); run-checks menampilkan progres langsung.
+- Tes harus kedap terhadap konfigurasi git pengguna (penandatanganan commit interaktif dapat membuat tes menggantung).
+- Pada `BRIEF_GATE=ask` agent tidak melihat prompt izin; arahannya ada di `rules.md` dan skill `write-brief`.

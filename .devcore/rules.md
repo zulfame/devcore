@@ -62,6 +62,7 @@ Folder `.devcore/` dan `.claude/` berisi penegakan otomatis (hook dan izin). Jik
 - Jelaskan ke pengguna apa yang diblokir dan mengapa, lalu minta keputusan.
 - Mengubah `.claude/settings.json`, `.claude/devcore.conf`, atau apa pun di `.devcore/` butuh persetujuan pengguna. Jangan menurunkan mode `BRIEF_GATE` agar pekerjaan lolos.
 - Pemeriksaan CI (`.github/workflows/devcore-checks.yml`, `.devcore/scripts/`) berlaku untuk semua commit; jangan melemahkannya (AG-09).
+- **Mode `ask`** (`BRIEF_GATE=ask`, bantuan masa adopsi): konfirmasi diminta langsung ke pengguna dan prompt-nya **tidak terlihat oleh agent**. Bila tool berhasil setelah gerbang, anggap pengguna menyetujui (kecuali sesi berjalan di mode izin otomatis); jangan melaporkan "tanpa prompt" atau "tanpa persetujuan", dan jangan mengusulkan mengubah `BRIEF_GATE`. Bila ditolak, berhenti dan tanyakan arahan.
 
 ## Saat dikoreksi karena melanggar aturan
 Jangan hanya minta maaf. (1) Perbaiki pelanggarannya. (2) Katakan aturan mana yang dilanggar. (3) Usulkan penegakan mesin agar tidak terulang (hook, izin, tes) dan catat di [enforcement-map.md](docs/enforcement-map.md).
