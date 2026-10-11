@@ -3,7 +3,7 @@
 Cakupan: tes mekanis, silang dokumen↔kode (DC-06), pemasangan segar dan pembaruan dari GitHub, serta tinjauan independen oleh subagent berkonteks bersih terhadap v0.6.7. Setiap temuan peninjau saya verifikasi sendiri sebelum diperbaiki; bukti "sebelum" diambil dari hook versi lama (HEAD) atau pemeriksaan langsung. Perbaikan dirilis sebagai 0.7.0.
 
 ## Hasil pemeriksaan mekanis
-Semua lulus sebelum perbaikan: 305 tes hook, 34 tes skrip, 83 tes sync, `run-checks.sh`, sintaks bash 3.2 dan Python. Pemasangan segar dan pembaruan 0.6.0 → 0.6.7 dari GitHub mulus (tanpa hook ganda). Setelah perbaikan: 341 tes hook, 38 tes skrip, 84 tes sync.
+Semua lulus sebelum perbaikan: 305 tes hook, 34 tes skrip, 83 tes sync, `run-checks.sh`, sintaks bash 3.2 dan Python. Pemasangan segar dan pembaruan 0.6.0 → 0.6.7 dari GitHub mulus (tanpa hook ganda). Setelah perbaikan: 344 tes hook, 38 tes skrip, 84 tes sync.
 
 ## Diperbaiki (terbukti, dengan tes baru)
 | # | Temuan | Bukti sebelum | Perbaikan |
@@ -18,7 +18,7 @@ Semua lulus sebelum perbaikan: 305 tes hook, 34 tes skrip, 83 tes sync, `run-che
 | 8 | `os.system("rm -rf …")`, `execSync`, brace expansion `{rm,-rf,x}` lolos | exit 0 | pola shell-out + `rm -r` dikenali; nama perintah berawalan `{` berkoma meminta konfirmasi |
 | 9 | `git show HEAD:.env`, `export` tanpa argumen lolos | exit 0 | regex jalur menerima `:` sebagai pemisah; `export` kosong diblokir; `permissions.deny` Read diperluas (`.env.staging`, `.env.development`, `id_rsa`, `id_ed25519`, `~/.ssh`, `~/.aws`) |
 | 10 | `curl -o`, `wget -O`, `patch`, `git apply` menulis kode tanpa melewati gerbang brief | exit 0 | dimasukkan ke target penulisan (patch/apply sebagai penulisan kode umum) |
-| 11 | `sed -i -e "…" README.md` diblokir salah | skrip sed dianggap berkas | `positional` menghabiskan nilai `-e`/`-f` |
+| 11 | `sed -i -e "…" README.md` dan bentuk macOS `sed -i '' "…" README.md` diblokir salah | skrip sed (dan sufiks kosong `''`) dianggap berkas; bentuk kedua ditemukan saat saya sendiri mengedit dokumen | `positional` menghabiskan nilai `-e`/`-f`; sufiks kosong setelah `-i` dibuang; 3 kasus tes |
 | 12 | `sync-devcore.sh` tidak memeriksa kegagalan `cp` sebelum menghapus yang lama | pembacaan kode | salin ke samping, ganti hanya bila berhasil; gagal → `die` dengan pemasangan lama utuh |
 | 13 | `check-naming` menggagalkan CI proyek existing sejak hari pertama (`TODO.md`, `docs/API_v2.md`) | terbukti pada proyek uji | di proyek terpasang hanya yang dibuat kerangka diperiksa (AG-16); repo devcore tetap ketat; tes |
 | 14 | Selisih dokumen: daftar peran baku DC-05, urutan "Melepas devcore" (daftar kepemilikan hilang bersama folder, workflow CI tersisa), `--ref` tanpa penjelasan, hook Stop tak ada di pohon README, komentar `managed-claude.txt` usang, DC-06/07 tak ada di peta, jumlah aturan (137), status.md usang | pembacaan dokumen vs kode | semua diselaraskan |

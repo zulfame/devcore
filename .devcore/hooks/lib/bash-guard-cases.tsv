@@ -137,6 +137,9 @@ block@nobrief	git apply fix.patch
 block@nobrief	patch -p1 < fix.diff
 allow@nobrief	sed -i -e 's/a/b/' README.md
 block@nobrief	sed -i -e 's/a/b/' src/app.py
+allow@nobrief	sed -i '' 's/a/b/' README.md
+allow@nobrief	sed -i '' 's/a/b/' docs/x.md
+block@nobrief	sed -i '' 's/a/b/' src/app.py
 block	git switch -f main
 block	git switch --discard-changes main
 block	git worktree remove --force x

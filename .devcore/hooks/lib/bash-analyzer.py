@@ -828,8 +828,11 @@ def write_targets(name, args):
             if name == 'mv':
                 targets += [(p, 'remove') for p in pos[:-1]]
     elif name == 'sed' and any(re.match(r'^-[A-Za-z]*i', a) or a == '--in-place' or a.startswith('--in-place=') for a in args):
-        files = pos[1:] if not any(a in ('-e', '-f') for a in args) \
-            else positional(args, with_value=('-e', '-f', '--expression', '--file'))
+        # sed BSD/macOS: `-i ''` (sufiks kosong) bukan berkas
+        sargs = [a for k, a in enumerate(args) if not (a == '' and k > 0 and args[k - 1] == '-i')]
+        spos = positional(sargs)
+        files = spos[1:] if not any(a in ('-e', '-f') for a in sargs) \
+            else positional(sargs, with_value=('-e', '-f', '--expression', '--file'))
         targets = [(p, 'edit') for p in files]
     elif name == 'perl' and any(re.match(r'^-[A-Za-z]*i', a) for a in args):
         eidx = [i for i, a in enumerate(args) if re.match(r'^-[A-Za-z]*e$', a)]
