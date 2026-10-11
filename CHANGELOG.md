@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.5] - 2026-10-11
+- README: bagian prompt dirapikan (tabel kapan memakai; prompt 1–3 "mulai di sini"; prompt 4–7 dilipat). Isi prompt tidak berubah.
+
 ## [0.6.4] - 2026-10-11
 - README memuat prompt siap pakai untuk agent (verifikasi pasca-pasang, uji kepatuhan, tugas harian, melanjutkan sesi, audit silang dokumen–kode, review, koreksi pelanggaran). README dan `adopting.md` memuat temuan uji nyata: cek sebelum memasang (repo git, `.gitignore` yang mengabaikan `/.claude` atau `/CLAUDE.md`), cara memastikan terpasang benar, apa yang akan dialami pengguna, batas yang diakui, dan tabel masalah umum; hook Stop dijelaskan.
 

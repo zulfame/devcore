@@ -49,3 +49,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 
 ## Pembaruan 0.6.4 (branch kerja/panduan-temuan)
 - README dan adopting.md diperbarui dengan temuan uji (repo git, .gitignore, verifikasi pemasangan, masalah umum).
+
+## Pembaruan 0.6.5 (branch kerja/rapikan-prompt)
+- Bagian prompt di README dirapikan: tabel kapan memakai, 3 prompt utama, 4 tambahan dilipat.

@@ -76,7 +76,16 @@ Setelah `--apply`, di folder proyek:
 5. Isi `CLAUDE.md` (konteks, perintah test) lalu jalankan skill `profile-project` agar perintah proyek tercatat.
 
 ### Prompt siap pakai untuk agent
-Salin ke Claude Code di proyek yang sudah terpasang. Ganti bagian `<...>`.
+Salin ke Claude Code di proyek yang sudah terpasang dan ganti bagian `<...>`. **Tidak perlu menjalankan semuanya**; ini kumpulan, bukan urutan:
+
+| Prompt | Kapan | Seberapa sering |
+|---|---|---|
+| 1. Verifikasi pasca-pasang | sesudah memasang | sekali per proyek |
+| 2. Uji kepatuhan | sesudah prompt 1, untuk melihat penjaga bekerja | sekali (boleh dilewati di proyek berikutnya) |
+| 3. Tugas harian | setiap pekerjaan baru | berulang, paling sering dipakai |
+| 4–7 (tambahan, di bawah) | melanjutkan sesi, audit dokumen–kode, review, agent melanggar | hanya bila situasinya muncul |
+
+**Mulai di sini: prompt 1 → 2 → lalu pakai 3 untuk satu tugas kecil yang nyata.**
 
 **1. Verifikasi pasca-pasang (sekali, sesudah memasang)**
 ```text
@@ -100,6 +109,9 @@ Tugas: <apa yang diinginkan, untuk siapa, dan batasnya>.
 Ikuti aturan proyek: buat brief dulu (skill write-brief) dengan kriteria yang dapat diuji, termasuk bagian "Dokumen yang ikut berubah", dan tunggu saya setujui sebelum mengubah kode. Sebelum menyatakan selesai jalankan verify-done dan laporkan bukti per kriteria, apa yang tidak dijalankan, serta perbarui docs/status.md.
 ```
 
+<details>
+<summary>Prompt tambahan 4–7 (pakai hanya bila perlu)</summary>
+
 **4. Melanjutkan pekerjaan (agent baru atau sesi baru)**
 ```text
 Lanjutkan pekerjaan sebelumnya. Baca docs/status.md dan brief berstatus approved di docs/briefs/. Ringkas: fokus saat ini, yang sudah selesai, langkah berikutnya, dan yang terblokir. Jangan membaca seluruh proyek; baca hanya berkas yang relevan dengan langkah berikutnya. Konfirmasi ringkasanmu ke saya sebelum mulai.
@@ -119,6 +131,8 @@ Tinjau perubahan di branch ini terhadap brief <jalur brief>. Panggil subagent re
 ```text
 Kamu melanggar aturan <ID, mis. AG-15>: <apa yang terjadi>. Perbaiki pelanggarannya, sebut aturan yang dilanggar, lalu usulkan penegakan oleh mesin (hook, izin, atau tes) agar tidak terulang. Jangan hanya minta maaf, dan jangan mengubah .devcore/ atau .claude/settings.json tanpa persetujuan saya.
 ```
+
+</details>
 
 ### Yang akan Anda alami
 - **Diblokir** (rujukan aturan tampil): `rm -r`, git destruktif, baca/tulis secret, `sudo`, `curl | sh`, ubah kode tanpa brief `approved`. Agent akan menjelaskan dan meminta keputusan Anda.
