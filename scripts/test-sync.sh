@@ -43,6 +43,8 @@ t "baru: .devcore terpasang dengan versi"   grep -qx "$ver" "$P/.devcore/VERSION
 t "baru: hook dapat dieksekusi"             test -x "$P/.devcore/hooks/pretool-brief-gate.sh"
 t "baru: skrip sinkronisasi terpasang"      test -x "$P/.devcore/scripts/sync-devcore.sh"
 t "baru: skill dan subagent terpasang"      test -f "$P/.claude/skills/write-brief/SKILL.md" -a -f "$P/.claude/agents/review-changes.md"
+t "baru: izin ask mencakup Dart, WordPress, Docker, artisan" jqt '.permissions.ask|(index("Bash(flutter pub add:*)")!=null) and (index("Bash(wp plugin install:*)")!=null) and (index("Bash(docker compose down -v:*)")!=null) and (index("Bash(php artisan migrate:fresh:*)")!=null)' "$P/.claude/settings.json"
+t "baru: settings memuat hook Stop" jqt '[.hooks.Stop[].hooks[].command]|any(test("\\.devcore/hooks/stop-status-reminder"))' "$P/.claude/settings.json"
 t "baru: settings memuat hook SessionStart" jqt '[.hooks.SessionStart[].hooks[].command]|any(test("\\.devcore/hooks/session-status-loader"))' "$P/.claude/settings.json"
 t "baru: CLAUDE.md starter memuat impor"    grep -qxF "@.devcore/rules.md" "$P/CLAUDE.md"
 t "baru: CLAUDE.md starter memuat tabel pengecualian" grep -q "Pengecualian devcore" "$P/CLAUDE.md"

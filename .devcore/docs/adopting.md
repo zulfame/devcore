@@ -31,10 +31,32 @@ Hanya itu. Folder `scripts/`, `docs/` (selain dua seed di atas), dan kode proyek
 6. Tambahkan test/lint/build proyek Anda ke workflow CI Anda sendiri; `devcore-checks.yml` hanya memeriksa kerangka.
 7. Commit sebagai satu commit terpisah.
 
+## Stack apa pun
+Kerangka tidak mengikat bahasa: hook membaca perintah shell dan berkas, bukan kode. Yang spesifik stack hanya perintah test/lint, yang dicatat skill `profile-project` ke `docs/project-profile.md`. Contoh (verifikasi di proyek Anda, jangan menyalin buta):
+
+| Stack | Test | Lint / analisis | Tambah dependency (sudah meminta konfirmasi) |
+|---|---|---|---|
+| Laravel | `php artisan test` / `vendor/bin/phpunit` | `vendor/bin/pint --test`, `phpstan` | `composer require` |
+| Flutter | `flutter test` | `flutter analyze` | `flutter pub add`, `dart pub add` |
+| Python | `pytest` / `python -m unittest` | `ruff check`, `mypy` | `pip install` |
+| Node / Next / React | `npm test` | `npm run lint` | `npm install <pkg>`, `yarn add`, `pnpm add` |
+| WordPress | `phpunit` (plugin/tema) | `phpcs` | `wp plugin install` |
+| Docker | tes dalam image/`docker compose config` | `hadolint` | `docker compose down -v`, `docker volume rm`, `docker system prune` meminta konfirmasi |
+| HTML statis | pemeriksa tautan/validator | `htmlhint` | — |
+| Grafana (dashboard JSON) | validasi skema JSON | `jq .` | — |
+
+Perintah destruktif database framework (`migrate:fresh`, `db:wipe`, `wp db reset`) meminta konfirmasi lewat `permissions.ask`. Daftar ini bukan jaminan; perintah lain yang tidak terdaftar tidak dijaga.
+
 ## Bila ada bentrok
 - **Skill/subagent senama milik proyek:** dilewati dan dilaporkan; ubah salah satu namanya bila ingin memakai versi devcore.
 - **Hook sejenis di `settings.json`:** dipertahankan dan berjalan berdampingan.
 - **Aturan devcore tidak cocok dengan cara kerja proyek:** lihat golongan aturan di standar Bagian 0. Aturan proses boleh disimpangi dengan catatan di bagian "Pengecualian devcore" pada `CLAUDE.md`; aturan keamanan tidak.
+
+## Hidup berdampingan dengan alat dan skill lain
+- **`AGENTS.md`**: tidak diubah. Bila `CLAUDE.md` belum ada, sync mengimpornya (`@AGENTS.md`); bila sudah ada, sync hanya memberi INFO. Tambahkan `@AGENTS.md` sendiri bila ingin keduanya dimuat.
+- **`.agents/` dan skill dari skills.sh atau sumber lain**: tidak disentuh dan tidak dibaca sync. Skill pihak ketiga tidak boleh melonggarkan aturan keamanan devcore (`DC-07`); bila isinya bertentangan (mis. menyuruh auto-commit atau membaca berkas rahasia), aturan devcore menang dan agent melaporkannya. Tinjau skill pihak ketiga seperti kode: baca `SKILL.md`-nya sebelum dipakai.
+- **Skill senama dengan devcore**: milik proyek tetap utuh (laporan BENTROK); ubah salah satu nama bila ingin dua-duanya.
+- **`CLAUDE.md` yang sudah ada**: hanya ditambah satu baris impor; isinya tidak diubah. Aturan proses devcore boleh disimpangi lewat tabel pengecualian di `CLAUDE.md`.
 
 ## Memperbarui
 ```bash

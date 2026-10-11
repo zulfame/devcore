@@ -19,7 +19,17 @@
       "Bash(yarn add:*)",
       "Bash(pnpm add:*)",
       "Bash(pip install:*)",
-      "Bash(composer require:*)"
+      "Bash(composer require:*)",
+      "Bash(flutter pub add:*)",
+      "Bash(dart pub add:*)",
+      "Bash(wp plugin install:*)",
+      "Bash(wp db reset:*)",
+      "Bash(php artisan migrate:fresh:*)",
+      "Bash(php artisan migrate:reset:*)",
+      "Bash(php artisan db:wipe:*)",
+      "Bash(docker compose down -v:*)",
+      "Bash(docker volume rm:*)",
+      "Bash(docker system prune:*)"
     ]
   },
   "hooks": {
@@ -27,6 +37,13 @@
       {
         "hooks": [
           { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/session-status-loader.sh" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/stop-status-reminder.sh" }
         ]
       }
     ],

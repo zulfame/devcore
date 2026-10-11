@@ -24,6 +24,9 @@ Jenis: ringkas
 ## Risiko dan asumsi (lengkap)
 <Apa yang diasumsikan, apa yang bisa salah, dampak pada pemanggil lain.>
 
+## Dokumen yang ikut berubah (lengkap)
+<Daftar dokumen terdampak (README, API, ARCHITECTURE, CHANGELOG, dst.) dan perubahannya; "tidak ada" harus disebut eksplisit. DC-06.>
+
 ## Pertanyaan terbuka
 <Harus kosong sebelum status approved.>
 

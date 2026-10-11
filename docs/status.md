@@ -34,3 +34,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 - Skrip tes yang membuat folder sementara harus mencatatnya ke berkas, bukan array (subshell `$(...)`).
 - Skrip yang menimpa foldernya sendiri harus dibungkus fungsi `main` (bash membaca skrip bertahap).
 - Daftar sumber (`managed-claude.txt`) ≠ kepemilikan di proyek (`owned-claude.txt`): jangan menyalin yang pertama sebagai tanda milik.
+
+## Pembaruan 0.6.0 (branch kerja/lanjutan-0.6, belum di-merge ke main)
+- Selesai: alur branch, README dua jalur, DC-06/DC-07, hook Stop status, uji 3 stack fixture. Langkah berikut: tunggu CI hijau di branch, lalu merge ke main; tag v0.6.0 menunggu izin pengguna.

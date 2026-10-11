@@ -18,7 +18,7 @@ Jalur brief (`docs/briefs/NNNN-....md`) dan ringkasan netral apa yang berubah. T
 4. Jalankan pemeriksaan proyek yang aman dan hanya-baca (perintah di `docs/project-profile.md`: test, lint, type check). Jangan menjalankan perintah yang mengubah berkas, data, atau memakai jaringan. Laporkan keluaran yang sebenarnya, bukan perkiraan.
 5. Periksa aturan, sebut ID dan lokasi:
    - `AG-05` berkas atau perubahan di luar brief · `AG-06` tindakan destruktif · `AG-07` secret · `AG-09` pelemahan pemeriksaan (skip, assert dihapus, lint dimatikan) · `AG-12` dependency baru.
-   - Yang relevan dengan perubahan: `VL-*` validasi, `SC-*` keamanan, `DB-*` data, `API-*` kontrak, `TS-07` regression test, `DC-01` dokumen sinkron.
+   - Yang relevan dengan perubahan: `VL-*` validasi, `SC-*` keamanan, `DB-*` data, `API-*` kontrak, `TS-07` regression test, `DC-01`/`DC-06` dokumen sinkron: cocokkan klaim di dokumen yang terdampak dengan kode dan test (dua arah) dan sebut selisihnya.
 6. Catat apa yang **tidak** Anda periksa dan mengapa.
 
 ## Format keluaran (tetap)

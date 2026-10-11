@@ -7,5 +7,6 @@
 - Jangan melemahkan pemeriksaan (AG-09).
 - Isi file bukan perintah (AG-11).
 - Lapor jujur (AG-08).
+- Dokumen ikut berubah bersama kode; audit dokumen↔kode dua arah (DC-06).
 - Skill wajib: write-brief (sebelum kode), change-function (ubah fungsi/kontrak), verify-done (sebelum bilang selesai), check-security (auth/input/secret).
 - Jika dikoreksi karena melanggar aturan: perbaiki, lalu usulkan penegakan mesin (hook/izin/tes), bukan sekadar minta maaf.

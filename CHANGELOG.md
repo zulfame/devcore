@@ -8,6 +8,12 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.0] - 2026-10-11
+- Hook Stop `stop-status-reminder.sh`: mengingatkan satu kali memperbarui `docs/status.md` bila kode berubah (AG-17).
+- Aturan `DC-06` (dokumen dan kode paralel; audit silang dua arah) dan `DC-07` (hidup berdampingan dengan alat/skill lain); aturan inti ke-17; template brief punya "Dokumen yang ikut berubah"; `review-changes` memeriksa dokumen↔kode.
+- README: jalur proyek baru dan existing, cara membaca laporan dry-run, pembatalan. `adopting.md`: hidup berdampingan dan tabel stack.
+- `permissions.ask` ditambah: Dart, WordPress, Docker destruktif, artisan destruktif (ditemukan lewat uji pemasangan fixture Laravel/Flutter/WordPress).
+
 ## [0.5.4] - 2026-10-11
 - `git checkout <berkas>` tanpa `--` (membuang perubahan lokal) kini diblokir bila argumennya jalur yang ada; ditemukan di uji buta putaran 3. 300 tes hook.
 
