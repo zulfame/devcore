@@ -133,5 +133,87 @@ lines=$(printf '%s\n' "$out" | wc -l | tr -d ' ')
 if [ "$lines" -le 60 ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: sesi: keluaran harus dibatasi (dapat $lines baris)"; fi
 rm -r "$P"
 
+# ---------- nilai palsu untuk uji (dirakit agar berkas ini sendiri tidak memuat secret literal) ----------
+KEY="AK""IAABCDEFGHIJKLMNOP"; NPM="npm_$(printf 'a%.0s' $(seq 1 36))"; PW="Rahasia""12345"
+
+# ---------- pretool-bash-guard: tabel kasus ujung ke ujung (penjaga asli + penganalisis) ----------
+CASES="$dir/lib/bash-guard-cases.tsv"
+NB=$(newproj); BR=$(newproj); filled_brief approved > "$BR/docs/briefs/0001-x.md"
+bash_decision() { # perintah root [path-penjaga]
+  local json out code guard=${3:-$dir/pretool-bash-guard.sh}
+  json=$(jq -n --arg c "$1" --arg cwd "$2" '{tool_name:"Bash",cwd:$cwd,tool_input:{command:$c}}')
+  out=$(printf '%s' "$json" | CLAUDE_PROJECT_DIR="$2" "$guard" 2>/dev/null); code=$?
+  if [ "$code" -eq 2 ]; then echo block
+  elif printf '%s' "$out" | jq -e '.hookSpecificOutput.permissionDecision=="ask"' >/dev/null 2>&1; then echo ask
+  else echo allow; fi
+}
+ncases=0
+while IFS=$'\t' read -r exp cmd; do
+  case "$exp" in ""|"#"*) continue ;; esac
+  root=$NB; case "$exp" in *@brief) root=$BR ;; esac
+  exp=${exp%%@*}
+  cmd=${cmd//@AKIA@/$KEY}; cmd=${cmd//@NPM@/$NPM}; cmd=${cmd//@PW@/$PW}; cmd=${cmd//\\n/$'\n'}
+  got=$(bash_decision "$cmd" "$root")
+  ncases=$((ncases+1))
+  if [ "$got" = "$exp" ]; then pass=$((pass+1)); else
+    fail=$((fail+1)); echo "GAGAL: bash-guard harapan=$exp dapat=$got | ${cmd//$'\n'/\\n}"; fi
+done < "$CASES"
+if [ "$ncases" -ge 200 ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: tabel kasus terlalu sedikit ($ncases)"; fi
+
+# ---------- fallback: perintah tidak dapat diparse -> penjaga regex lama (bukan allow) ----------
+chk() { # nama harapan perintah root [guard]
+  local got; got=$(bash_decision "$3" "$4" "${5:-}")
+  if [ "$got" = "$2" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: $1 (harapan $2, dapat $got)"; fi
+}
+chk "fallback: kutip tak ditutup + rm -rf -> blokir"  block 'rm -rf "build' "$NB"
+chk "fallback: kutip tak ditutup tanpa bahaya -> lolos" allow 'echo "tidak ditutup' "$NB"
+
+# ---------- fallback: python3 tidak ada -> penjaga regex lama ----------
+NOPY=$(mktemp -d)
+for tool in bash jq grep tr dirname cat basename sed awk cut head; do
+  src=$(command -v "$tool" 2>/dev/null) && ln -s "$src" "$NOPY/$tool"
+done
+nopy_decision() { # perintah
+  local json out code
+  json=$(jq -n --arg c "$1" --arg cwd "$NB" '{tool_name:"Bash",cwd:$cwd,tool_input:{command:$c}}')
+  out=$(printf '%s' "$json" | PATH="$NOPY" CLAUDE_PROJECT_DIR="$NB" "$dir/pretool-bash-guard.sh" 2>/dev/null); code=$?
+  if [ "$code" -eq 2 ]; then echo block; else echo allow; fi
+}
+nchk() { local got; got=$(nopy_decision "$2"); if [ "$got" = "$3" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: $1 (harapan $3, dapat $got)"; fi; }
+nchk "tanpa python: rm -rf -> blokir"                'rm -rf build' block
+nchk "tanpa python: git reset --hard -> blokir"      'git reset --hard' block
+nchk "tanpa python: sudo -> blokir"                  'sudo ls' block
+nchk "tanpa python: cat .env -> blokir"              'cat .env' block
+nchk "tanpa python: perintah biasa -> lolos"         'ls -la' allow
+nchk "tanpa python: git push biasa -> lolos"         'git push origin main' allow
+nchk "tanpa python: mode terdegradasi menolak teks di pesan commit (dikenal)" 'git commit -m "perbaiki rm -rf"' block
+rm -r "$NOPY"
+
+# ---------- pretool-write-guard: pola bersama dan berkas uji ----------
+WG=pretool-write-guard.sh; PW_DIR=$(newproj)
+run "write: token npm -> blokir"                    $WG 2 "$(write_in '/p/a.txt' "x=$NPM")"
+run "write: kunci di berkas uji tetap blokir"       $WG 2 "$(write_in '/p/tests/test_a.py' "k='$KEY'")"
+run "write: password di src -> blokir"              $WG 2 "$(write_in '/p/src/c.py' "DB_PASSWORD = \"$PW\"")"
+is_ask "write: password palsu di tests/ -> ask"     $WG "$PW_DIR" "$(write_in '/p/tests/test_a.py' "DB_PASSWORD = \"$PW\"")" yes
+is_ask "write: password palsu di fixtures/ -> ask"  $WG "$PW_DIR" "$(write_in '/p/fixtures/x.json' "{\"api_key\": \"$PW\"}")" yes
+is_ask "write: password palsu di evals/ -> ask"     $WG "$PW_DIR" "$(write_in '/p/evals/s/grade.sh' "DB_PASSWORD = \"$PW\"")" yes
+is_ask "write: password di src/ -> bukan ask"       $WG "$PW_DIR" "$(write_in '/p/src/c.py' "DB_PASSWORD = \"$PW\"")" no
+is_ask "write: kode biasa di tests/ -> tanpa ask"   $WG "$PW_DIR" "$(write_in '/p/tests/test_a.py' 'assert 1 == 1')" no
+run "write: placeholder 'your-key' tetap lolos"     $WG 0 "$(write_in '/p/src/c.py' 'api_key = "your-api-key-here"')"
+run "write: gaya JSON \"api_key\": \"nilai\" di src -> blokir" $WG 2 "$(write_in '/p/src/c.json' "{\"api_key\": \"$PW\"}")"
+run "write: gaya YAML password: 'nilai' di src -> blokir"    $WG 2 "$(write_in '/p/src/c.yml' "password: '$PW'")"
+# NotebookEdit memakai notebook_path/new_source: harus melewati penjaga yang sama
+nb_in() { jq -n --arg p "$1" --arg c "$2" '{tool_name:"NotebookEdit",tool_input:{notebook_path:$p,new_source:$c,cell_id:"1"}}'; }
+run "notebook: kunci AWS di sel -> blokir"          $WG 2 "$(nb_in /p/n.ipynb "k='$KEY'")"
+run "notebook: sel biasa -> lolos"                  $WG 0 "$(nb_in /p/n.ipynb 'print(1)')"
+runp "gerbang: notebook tanpa brief -> blokir"      pretool-brief-gate.sh 2 "$NB" "$(nb_in "$NB/n.ipynb" 'print(1)')"
+runp "gerbang: notebook dengan brief -> lolos"      pretool-brief-gate.sh 0 "$BR" "$(nb_in "$BR/n.ipynb" 'print(1)')"
+t_matcher() { jq -e '.hooks.PreToolUse[] | select(.hooks[].command | test("pretool-write-guard")) | .matcher | test("NotebookEdit")' "$dir/../settings.json" >/dev/null 2>&1; }
+if t_matcher; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: settings.json harus memasang penjaga tulis pada NotebookEdit"; fi
+HK=$(mktemp -d); cp -R "$dir/." "$HK/"; rm -f "$HK/lib/secret-patterns.txt"
+out=$(write_in '/p/src/c.py' 'x = 1' | "$HK/pretool-write-guard.sh" 2>/dev/null)
+if printf '%s' "$out" | jq -e '.hookSpecificOutput.permissionDecision=="ask"' >/dev/null 2>&1; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: pola hilang harus 'ask'"; fi
+rm -r "$HK" "$PW_DIR" "$NB" "$BR"
+
 echo "Lulus: $pass  Gagal: $fail"
 [ "$fail" -eq 0 ]

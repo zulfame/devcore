@@ -87,6 +87,15 @@ if [ -d .claude/hooks ]; then
   done
 fi
 
+# 4b. Pustaka hook: .claude/hooks/lib/kebab-case.(py|txt|tsv)
+if [ -d .claude/hooks/lib ]; then
+  for f in .claude/hooks/lib/*; do
+    [ -f "$f" ] || continue
+    printf '%s' "$(basename "$f")" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*\.(py|txt|tsv|sh)$' \
+      || bad "$f" "berkas pustaka hook harus kebab-case huruf kecil (.py/.txt/.tsv/.sh)"
+  done
+fi
+
 # 5. Skrip pendukung
 if [ -d scripts ]; then
   for f in scripts/*; do

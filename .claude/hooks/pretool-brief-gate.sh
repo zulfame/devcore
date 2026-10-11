@@ -5,7 +5,7 @@
 set -u
 
 input=$(cat)
-path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
+path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty')
 [ -z "$path" ] && exit 0
 
 root=${CLAUDE_PROJECT_DIR:-$(pwd)}

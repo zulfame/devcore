@@ -26,7 +26,7 @@ ver=$(tr -d '[:space:]' < "$repo/VERSION")
 missing=""
 # Khusus pengembangan devcore: sengaja TIDAK dipasang ke proyek lain
 devonly=" scripts/test-sync.sh scripts/test-evals.sh scripts/run-evals.sh scripts/grade-eval.sh scripts/summarize-evals.sh scripts/eval-helpers.sh "
-for f in .claude/hooks/*.sh .claude/skills/*/SKILL.md .claude/agents/*.md scripts/*.sh docs/templates/*.md; do
+for f in .claude/hooks/*.sh .claude/hooks/lib/* .claude/skills/*/SKILL.md .claude/agents/*.md scripts/*.sh docs/templates/*.md; do
   [ -f "$repo/$f" ] || continue
   case "$devonly" in *" $f "*) continue ;; esac
   awk '$1=="managed"{print $2}' "$repo/.claude/devcore.manifest" | grep -qxF "$f" || missing="$missing $f"
@@ -60,6 +60,8 @@ t "install: tidak menyalin briefs"     test ! -e "$P/docs/briefs"
 t "install: tidak menyalin adr"        test ! -e "$P/docs/adr"
 t "install: tidak menyalin test-sync"  test ! -e "$P/scripts/test-sync.sh"
 t "install: subagent peninjau terpasang" test -f "$P/.claude/agents/review-changes.md"
+t "install: penganalisis bash terpasang" test -f "$P/.claude/hooks/lib/bash-analyzer.py"
+t "install: pola secret terpasang"       test -f "$P/.claude/hooks/lib/secret-patterns.txt"
 t "install: tidak menyalin folder evals"  test ! -e "$P/evals"
 t "install: tidak menyalin skrip evaluasi" test -z "$(ls "$P"/scripts | grep -E 'eval' )"
 t "install: tidak ada sisa berkas sementara" test -z "$(find "$P" -name '*.devcore-new' -not -path '*/.git/*')"
@@ -94,6 +96,25 @@ t "merge: hook Stop proyek dipertahankan" jqt '.hooks.Stop[0].hooks[0].command==
 commit_all "$P2" "adopsi"
 sync "$P2" --apply >/dev/null
 t "merge: idempoten, tree bersih"        test -z "$(git -C "$P2" status --porcelain)"
+
+# ---------- matcher berubah antar versi: tidak boleh terpasang dua kali ----------
+PM=$(mkrepo); mkdir -p "$PM/.claude"
+cat > "$PM/.claude/settings.json" <<'JSON'
+{"hooks":{"PreToolUse":[
+  {"matcher":"Write|Edit|MultiEdit","hooks":[
+    {"type":"command","command":"$CLAUDE_PROJECT_DIR/.claude/hooks/pretool-brief-gate.sh"},
+    {"type":"command","command":"$CLAUDE_PROJECT_DIR/.claude/hooks/pretool-write-guard.sh"},
+    {"type":"command","command":"./hook-proyek.sh"}]}]}}
+JSON
+commit_all "$PM" "settings lama"
+sync "$PM" --apply >/dev/null
+s="$PM/.claude/settings.json"
+t "matcher: penjaga tulis hanya satu kali"      jqt '[.hooks.PreToolUse[].hooks[].command|select(test("pretool-write-guard"))]|length==1' "$s"
+t "matcher: berada di grup bermatcher baru"     jqt '[.hooks.PreToolUse[]|select(.hooks[].command|test("pretool-write-guard"))|.matcher]|.[0]|test("NotebookEdit")' "$s"
+t "matcher: hook proyek dipertahankan"          jqt '[.hooks.PreToolUse[].hooks[].command]|index("./hook-proyek.sh")!=null' "$s"
+t "matcher: tidak ada grup kosong"              jqt '[.hooks.PreToolUse[]|select((.hooks|length)==0)]|length==0' "$s"
+commit_all "$PM" "adopsi"; sync "$PM" --apply >/dev/null
+t "matcher: idempoten setelah normalisasi"      test -z "$(git -C "$PM" status --porcelain)"
 
 # ---------- CLAUDE.md dan AGENTS.md ----------
 P3=$(mkrepo); printf '# Proyek saya\n\nAturan saya sendiri.\n' > "$P3/CLAUDE.md"; commit_all "$P3"

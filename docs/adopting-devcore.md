@@ -9,7 +9,7 @@ Panduan ini untuk memasang devcore pada proyek lama tanpa mengganggunya, lalu me
 4. **Kustomisasi tidak ditimpa.** Berkas milik kerangka dipisahkan dari berkas milik proyek (tabel di bawah).
 
 ## Prasyarat
-`git` dan `jq` terpasang; proyek adalah repositori git dengan working tree bersih; Claude Code. CI GitHub bersifat opsional.
+`git` dan `jq` terpasang; proyek adalah repositori git dengan working tree bersih; Claude Code. `python3` (3.6+) disarankan: penjaga bash memakainya untuk membaca struktur perintah. Tanpa `python3`, hook jatuh ke penjaga regex lama yang lebih kasar dan memberi false positive pada teks (mis. kata `rm -rf` di pesan commit). CI GitHub bersifat opsional.
 
 ## Langkah adopsi
 1. **Siapkan.** Buat cabang, mis. `chore/adopt-devcore`. Pastikan `git status` bersih.

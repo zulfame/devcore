@@ -117,7 +117,7 @@ Sebuah tugas baru boleh dinyatakan selesai jika **semua** berikut benar, atau pe
 - `SC-04` Mitigasi XSS, CSRF, SSRF, path traversal, insecure deserialization, dan open redirect sesuai arsitektur aplikasi.
 - `SC-05` Simpan password hanya sebagai hash adaptif (Argon2, bcrypt, scrypt, atau setara). **DILARANG** plaintext atau enkripsi reversibel.
 - `SC-06` Lindungi session, token, cookie, dan API key dengan atribut dan masa berlaku yang aman di kode aplikasi.
-- `SC-07` Secret **DILARANG** berada di source code, log, test fixture, atau dokumentasi. Baca dari konfigurasi/lingkungan; sediakan `.env.example` tanpa nilai asli.
+- `SC-07` Secret **DILARANG** berada di source code, log, test fixture, atau dokumentasi. Baca dari konfigurasi/lingkungan; sediakan `.env.example` tanpa nilai asli. Nilai palsu yang memang diperlukan sebagai data uji ditulis di berkas uji/fixture dan akan meminta konfirmasi pengguna; kunci/token berpola kredensial nyata diblokir di mana pun. Aturan ini berlaku sama untuk penulisan lewat tool (Write/Edit/NotebookEdit) dan lewat shell (redirect, `tee`, `cp`, `sed -i`).
 - `SC-08` Terapkan rate limiting dan perlindungan brute force pada level aplikasi untuk endpoint sensitif (login, reset password, OTP, pencarian berat).
 - `SC-09` Atur CORS, security header, dan kebijakan cookie di kode/konfigurasi aplikasi secara ketat, bukan wildcard longgar.
 - `SC-10` Klasifikasikan data; terapkan masking, enkripsi field, dan akses sesuai klasifikasi pada level aplikasi.

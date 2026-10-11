@@ -13,6 +13,9 @@
 
 managed .claude/agents/review-changes.md
 managed .claude/devcore-rules.md
+managed .claude/hooks/lib/bash-analyzer.py
+managed .claude/hooks/lib/bash-guard-cases.tsv
+managed .claude/hooks/lib/secret-patterns.txt
 managed .claude/hooks/pretool-bash-guard.sh
 managed .claude/hooks/pretool-brief-gate.sh
 managed .claude/hooks/pretool-write-guard.sh

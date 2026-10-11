@@ -44,7 +44,11 @@ devcore/
     ├── agents/
     │   └── review-changes.md          Subagent peninjau independen (konteks bersih, baca-saja; AG-19)
     ├── hooks/
-    │   ├── pretool-bash-guard.sh      Blokir perintah destruktif / akses secret
+    │   ├── lib/
+    │   │   ├── bash-analyzer.py       Penganalisis perintah shell (tokenisasi, keputusan dari argv)
+    │   │   ├── secret-patterns.txt    Pola secret bersama (penjaga tulis)
+    │   │   └── bash-guard-cases.tsv   Data uji penjaga bash (block/ask/allow, ±250 kasus)
+    │   ├── pretool-bash-guard.sh      Blokir/konfirmasi perintah destruktif, secret, OS-admin, unduh-lalu-eksekusi (fallback regex bila tanpa python3)
     │   ├── pretool-write-guard.sh     Blokir secret di file, lockfile manual, ubah aturan mesin; konfirmasi saat brief di-approve
     │   ├── pretool-brief-gate.sh      Tolak ubah kode tanpa brief approved (AG-15)
     │   ├── prompt-rules-reminder.sh   Pengingat aturan inti tiap pesan pengguna
@@ -77,7 +81,7 @@ Atau dari dalam proyek yang sudah terpasang, untuk memperbarui:
 ```bash
 scripts/sync-devcore.sh --source https://github.com/zulfame/devcore.git
 ```
-Syarat: `git` dan `jq`, proyek berupa repo git dengan working tree bersih. Perubahan **tidak** di-commit otomatis. Langkah lengkap, tabel milik kerangka vs milik proyek, dan penanganan konflik: [docs/adopting-devcore.md](docs/adopting-devcore.md).
+Syarat: `git` dan `jq`, proyek berupa repo git dengan working tree bersih. `python3` (3.6+) sangat disarankan untuk penjaga bash; tanpanya hook jatuh ke penjaga regex lama yang lebih kasar (lihat `docs/enforcement-map.md`). Perubahan **tidak** di-commit otomatis. Langkah lengkap, tabel milik kerangka vs milik proyek, dan penanganan konflik: [docs/adopting-devcore.md](docs/adopting-devcore.md).
 
 ## Konvensi penamaan
 | Jenis | Aturan | Contoh |

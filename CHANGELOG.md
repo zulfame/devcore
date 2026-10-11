@@ -9,6 +9,31 @@ Arti versi untuk kerangka ini:
 
 Selama versi masih `0.x`, kerangka belum teruji di proyek nyata dan perubahan MINOR dapat memuat penyesuaian.
 
+## [0.3.0] - 2026-10-11
+
+Penjaga bash ditulis ulang. **Perubahan perilaku hook** (lebih ketat di beberapa hal, lebih longgar pada teks yang bukan perintah); bacalah sebelum memperbarui proyek yang sudah terpasang.
+
+### Diubah
+- `pretool-bash-guard.sh` kini memanggil `lib/bash-analyzer.py`: tokenisasi shell (kutip, escape, operator, `$(...)`, backtick, `<(...)`, heredoc, here-string) dan keputusan dari **argv**, bukan regex atas teks mentah. Membuka pembungkus `bash -c`, `eval`, `env`, `nohup`, `time`, `timeout`, `command`, `xargs`, `find -exec`, dan heredoc/here-string/pipa `echo` yang dialirkan ke shell.
+- Penulisan berkas lewat shell (`>`, `>>`, `tee`, `cp`/`mv`/`install`, `sed -i`, `perl -i`, `dd of=`, `truncate`, `touch`) memakai kebijakan yang sama dengan tool Write/Edit: gerbang brief (AG-15), berkas secret dan lockfile, berkas aturan mesin (ask), pemindaian konten untuk secret, dan persetujuan brief (ask).
+- `pretool-write-guard.sh` membaca pola dari `lib/secret-patterns.txt`; nilai mirip rahasia di `tests/`, `fixtures/`, `evals/`, `*.test.*` memicu **ask** (bukan blokir); pola kuat tetap blokir di mana pun. Pola `assign` kini mencakup gaya JSON/YAML (`"api_key": "nilai"`). Penjaga tulis dan gerbang brief juga menjaga `NotebookEdit`.
+- `sync-devcore.sh` memindahkan hook milik kerangka dari grup bermatcher lama saat matcher berubah, sehingga tidak terpasang dua kali.
+
+### Ditambahkan
+- Terblokir: `sudo`/`su`/`doas` dan perintah administrasi OS (OS-01); dump environment (`env`, `printenv`, `export -p`); `git stash drop|clear`, `git restore`/`checkout --` yang membuang perubahan, `git rm -r`, hapus ref remote (`:ref`, `--delete`), force push varian `+ref`; `filter-branch`, `filter-repo`, `reflog expire`, `gc --prune`; `find -delete`; `mv`/`rm` pada `.git`; SQL/migrasi destruktif (`DROP`, `TRUNCATE`, `FLUSHALL`, `DELETE` tanpa WHERE, `prisma migrate reset`, dst.); unduh-lalu-eksekusi (`curl | sh`, `bash <(curl …)`, `sh -c "$(curl …)"`, `base64 -d | sh`); one-liner/heredoc interpreter yang menghapus berkas atau membaca secret.
+- Meminta konfirmasi (ask): one-liner interpreter yang menjalankan perintah lain, `eval` dengan variabel, nama perintah dinamis (`$X -rf y`), `mv` ke luar proyek, pemasangan dependency baru dan paket sistem.
+- `lib/bash-guard-cases.tsv`: ±250 kasus uji (block/ask/allow) dijalankan ujung ke ujung; `test-hooks.sh` naik dari 55 ke 300+ kasus, termasuk jalur fallback dan uji mutasi.
+
+### Diperbaiki
+- False positive: kata `rm -rf`/`reset --hard` di pesan `git commit -m`, isi heredoc teks, dan pola `grep` tidak lagi memblokir.
+- Celah: `bash -c 'rm -rf …'`, `sh -c`, `python3 -c "…rmtree…"`, `find -delete`, `git push origin +main`, `git push origin :main`, `echo <kunci> > file`, `mv .git …`, `echo $(cat .env)`, dan penulisan kode lewat shell yang melewati gerbang brief.
+
+### Prasyarat baru
+- `python3` 3.6+ disarankan. Tanpa itu (atau bila perintah tidak dapat diparse) hook memakai penjaga regex lama sebagai fallback: lebih kasar, memberi false positive pada teks, tetapi tidak membiarkan lolos.
+
+### Diketahui belum selesai
+- Batas yang tidak terjangkau penjaga (skrip dari berkas, variabel tak terselesaikan, fungsi/alias, Windows) tercatat di `docs/enforcement-map.md`; ini pagar pengaman, bukan sandbox.
+
 ## [0.2.0] - 2026-10-11
 
 ### Ditambahkan

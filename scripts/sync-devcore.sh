@@ -166,8 +166,18 @@ fi
 # ---------- .claude/settings.json (digabung) ----------
 cat > "$tmp/merge.jq" <<'JQ'
 def dedupe: reduce .[] as $x ([]; if index([$x]) == null then . + [$x] else . end);
-def mergegroups($sg):
+# perintah milik kerangka dipindahkan dari grup bermatcher lama (matcher berubah antar versi) agar tidak terpasang dua kali
+def prune_other_matchers($sg):
   reduce $sg[] as $g (.;
+    ($g.matcher // "") as $m
+    | ([$g.hooks[]?.command]) as $cmds
+    | map(if ((.matcher // "") != $m)
+          then .hooks |= map(select((.command as $c | $cmds | index([$c])) == null))
+          else . end))
+  | map(select(((.hooks // []) | length) > 0));
+def mergegroups($sg):
+  prune_other_matchers($sg)
+  | reduce $sg[] as $g (.;
     (map(.matcher // "") | index([$g.matcher // ""])) as $i
     | if $i == null then . + [$g]
       else (.[$i].hooks | map(.command)) as $have

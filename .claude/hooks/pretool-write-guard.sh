@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
 # PreToolUse(Write|Edit|MultiEdit): cegah secret masuk file, edit file secret/lockfile,
 # dan perubahan diam-diam pada aturan mesin itu sendiri.
-# Aturan terkait: SC-07, AG-07, DP-01, AG-09. Exit 2 = blokir.
+# Juga dipanggil oleh lib/bash-analyzer.py untuk penulisan berkas lewat shell (satu sumber kebijakan).
+# Aturan terkait: SC-07, AG-07, DP-01, AG-09, AG-15. Exit 2 = blokir.
 set -u
 
 input=$(cat)
-path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
+path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty')
 [ -z "$path" ] && exit 0
+
+here=$(cd "$(dirname "$0")" && pwd -P)
+patterns="$here/lib/secret-patterns.txt"
 
 block() {
   echo "DIBLOKIR [$1]: $2. Jelaskan ke pengguna dan minta konfirmasi eksplisit di chat." >&2
   exit 2
+}
+ask() { # alasan
+  jq -n --arg r "$1" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:$r}}'
+  exit 0
 }
 
 base=$(basename "$path")
@@ -31,38 +39,41 @@ esac
 # 3. Aturan mesin tidak boleh diubah agent tanpa persetujuan pengguna (minta konfirmasi, bukan blokir total)
 case "$path" in
   */.claude/settings.json|*/.claude/devcore.conf|*/.claude/hooks/*)
-    jq -n --arg p "$path" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:("Perubahan pada aturan mesin (" + $p + ") butuh persetujuan pengguna. Melonggarkan aturan agar pekerjaan lolos adalah pelanggaran AG-09.")}}'
-    exit 0 ;;
+    ask "Perubahan pada aturan mesin ($path) butuh persetujuan pengguna. Melonggarkan aturan agar pekerjaan lolos adalah pelanggaran AG-09." ;;
 esac
 
 # 4. Pindai konten yang akan ditulis
-content=$(printf '%s' "$input" | jq -r '[.tool_input.content, .tool_input.new_string, (.tool_input.edits[]?.new_string)] | map(select(. != null)) | join("\n")')
+content=$(printf '%s' "$input" | jq -r '[.tool_input.content, .tool_input.new_string, .tool_input.new_source, (.tool_input.edits[]?.new_string)] | map(select(. != null)) | join("\n")')
 [ -z "$content" ] && exit 0
 
 # 4a. Persetujuan brief (AG-15) adalah keputusan pengguna: menulis "Status: approved" meminta konfirmasi
 case "$path" in
   */docs/briefs/*.md)
     if printf '%s\n' "$content" | grep -iqE '^Status:[[:space:]]*approved[[:space:]]*$'; then
-      jq -n '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:"Brief diubah menjadi approved. Setujui hanya jika Anda memang menyetujui isi brief ini (AG-15)."}}'
-      exit 0
+      ask "Brief diubah menjadi approved. Setujui hanya jika Anda memang menyetujui isi brief ini (AG-15)."
     fi ;;
 esac
 
-# 4b. Pola secret
+# 4b. Pola secret (dari berkas data bersama)
+if [ ! -f "$patterns" ]; then
+  ask "Berkas pola secret tidak ditemukan ($patterns); konten tidak dapat dipindai. Pasang ulang kerangka dengan sync-devcore.sh."
+fi
 
-hit=$(printf '%s\n' "$content" | grep -Eo \
-  -e 'AKIA[0-9A-Z]{16}' \
-  -e '-----BEGIN ([A-Z]+ )?PRIVATE KEY-----' \
-  -e 'gh[pousr]_[A-Za-z0-9]{36,}' \
-  -e 'xox[baprs]-[A-Za-z0-9-]{10,}' \
-  -e 'sk-[A-Za-z0-9_-]{24,}' \
-  -e 'AIza[0-9A-Za-z_-]{35}' | head -1)
+hit=$(printf '%s\n' "$content" | grep -Eo -f <(awk -F'\t' '$1=="strong"{print $2}' "$patterns") | head -1)
 [ -n "$hit" ] && block SC-07 "terdeteksi pola kredensial/secret pada konten (${hit:0:8}...)"
 
-# Penugasan literal: password/secret/token/api_key = "nilai"
-lit=$(printf '%s\n' "$content" \
-  | grep -Ei '(password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'$<{ ]{8,}["'"'"']' \
-  | grep -Eiv 'example|changeme|placeholder|your[_-]|xxx|dummy|sample|fake|test' | head -1)
-[ -n "$lit" ] && block SC-07 "terdeteksi penugasan secret literal; baca dari konfigurasi/lingkungan"
+assign=$(awk -F'\t' '$1=="assign"{print $2; exit}' "$patterns")
+placeholder=$(awk -F'\t' '$1=="placeholder"{print $2; exit}' "$patterns")
+if [ -n "$assign" ]; then
+  lit=$(printf '%s\n' "$content" | grep -Ei -e "$assign" | grep -Eiv -e "${placeholder:-ZZZ_TIDAK_ADA}" | head -1)
+  if [ -n "$lit" ]; then
+    # Berkas uji/fixture sering memuat nilai palsu: minta konfirmasi alih-alih memblokir
+    test_re='(^|/)(tests?|__tests__|specs?|fixtures?|testdata|evals?|e2e)/|[._]test\.[A-Za-z]+$|[._]spec\.[A-Za-z]+$|(^|/)test_[^/]+$'
+    if [[ "$path" =~ $test_re ]]; then
+      ask "Nilai pada berkas uji/fixture terlihat seperti secret (SC-07). Setujui hanya jika nilainya palsu; secret asli tidak boleh ada di repositori."
+    fi
+    block SC-07 "terdeteksi penugasan secret literal; baca dari konfigurasi/lingkungan"
+  fi
+fi
 
 exit 0
