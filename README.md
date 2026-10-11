@@ -167,6 +167,8 @@ Cara menilai hasilnya (**Anda yang menilai**, karena hanya Anda yang melihat pro
 
 Penjaga bekerja bila hasilnya sesuai tabel. "Lolos" yang diucapkan agent setelah Anda sendiri menyetujui prompt bukan kegagalan penjaga.
 
+**Syarat uji ini:** sesi Claude Code harus di mode izin normal. Pada mode otomatis atau yang melewati izin, prompt konfirmasi disetujui tanpa Anda, sehingga butir b (mode `ask`) dan d tampak "lolos" tanpa prompt apa pun. Itu artinya `ask` dan `permissions.ask` tidak melindungi apa-apa di sesi tersebut (hook yang memblokir keras, seperti `rm -rf`, tetap bekerja). Bila agent melapor "prompt tidak terlihat olehku, mungkin disetujui otomatis", periksa dulu apakah Anda memang melihat prompt itu.
+
 **3. Tugas harian (fitur, perbaikan, perubahan)**
 ```text
 Tugas: <apa yang diinginkan, untuk siapa, dan batasnya>.
