@@ -2,6 +2,8 @@
 # Tes untuk hook penjaga. Jalankan: .devcore/hooks/test-hooks.sh
 # Setiap kasus: nama | hook | JSON input | exit code yang diharapkan
 set -u
+# Kedap terhadap konfigurasi git pengguna: tanpa penandatanganan commit, hook global, editor, atau prompt
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 GIT_EDITOR=true
 dir="$(cd "$(dirname "$0")" && pwd)"
 pass=0; fail=0
 

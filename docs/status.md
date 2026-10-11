@@ -37,3 +37,5 @@ Berikutnya: pengguna menguji pemasangan di proyek nyata (folder Laravel uji) den
 - Jangan ubah isi rubrik terkunci di `docs/blind-test/` (cek `hashes.sha256`).
 - `.gitignore` proyek yang mengabaikan `/.claude` atau `/CLAUDE.md` membuat berkas devcore tidak ter-commit (sync memberi INFO).
 - Perintah hook di `settings.json` harus mengutip `"$CLAUDE_PROJECT_DIR"` agar jalur berspasi tidak membuat hook mati diam-diam.
+
+- 0.7.2: tes dibuat kedap terhadap konfigurasi git global pengguna (penandatanganan commit dapat membuat tes menggantung); run-checks menampilkan progres langsung.
