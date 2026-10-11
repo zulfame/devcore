@@ -29,6 +29,7 @@ step "Penamaan (DC-05)"          .devcore/scripts/check-naming.sh
 step "Ukuran analyzer"           .devcore/scripts/check-analyzer-size.sh
 step "Tautan dokumen"           .devcore/scripts/check-links.sh
 step "Pelemahan pemeriksaan (AG-09)" .devcore/scripts/check-weakened-tests.sh "$base"
+step "Bukti penutupan brief (AG-19)" .devcore/scripts/check-brief-closure.sh "$base"
 
 echo
 if [ "$fail" -eq 0 ]; then echo "SEMUA PEMERIKSAAN LULUS"; else echo "ADA PEMERIKSAAN YANG GAGAL"; fi

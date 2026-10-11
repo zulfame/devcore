@@ -8,6 +8,12 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka sudah diuji pemasangan dan uji buta kecil, tetapi belum terbukti dalam pemakaian jangka panjang di proyek nyata.
 
+## [0.8.0] - 2026-10-12
+Temuan pemakaian nyata: agent melewati tinjauan independen (AG-19) dan tidak ada catatan bagian standar yang diperiksa; satu-satunya penegak adalah ingatan agent.
+- **Baru:** `check-brief-closure.sh` (dalam `run-checks.sh`/CI): brief yang baru ditutup (`Status: done`) pada sebuah PR harus memuat bagian *Tinjauan independen* (baris `Verdict:`) dan *Bagian standar yang diperiksa* (minimal satu ID aturan bila ada perubahan kode). Brief lama tidak diperiksa. Brief juga mendapat bagian *Standar yang berlaku* (ID aturan dipilih agent saat menyusun brief, ditinjau pengguna saat menyetujui); pemeriksa mewajibkan tiap ID itu muncul dengan hasilnya di *Bagian standar yang diperiksa* (keterlacakan; pengguna tidak perlu membaca standar). Template brief, skill `verify-done`/`write-brief`, dan `rules.md` diperbarui; aturan ditegaskan berlaku per tugas dan tidak gugur oleh catatan "sudah dipanggil" setelah konteks dipadatkan.
+- **Batas yang diakui:** yang diperiksa bukti tertulis, bukan kenyataan pemanggilan peninjau; hook pencatat dan pengingat Stop dicatat sebagai backlog bila pemakaian membuktikan perlu.
+- Proyek terpasang: setelah sync, brief yang ditutup di PR berikutnya diperiksa; template baru ada di `.devcore/docs/templates/task-brief.md`.
+
 ## [0.7.3] - 2026-10-12
 Ditemukan pengguna di proyek existing: pada `BRIEF_GATE=ask` agent tidak melihat prompt izin dan melapor "tanpa prompt" setelah pengguna menyetujui.
 - Prompt 2 (uji kepatuhan) di README ditulis ulang: agent hanya melaporkan apa yang terlihat dari tool, pengguna yang menilai lewat tabel (ditemukan saat uji di mode `ask`: agent menyimpulkan "gagal" padahal pengguna sendiri yang menyetujui prompt).

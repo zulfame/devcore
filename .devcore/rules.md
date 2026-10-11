@@ -46,7 +46,7 @@ Standar lengkap: [engineering-standard.md](docs/engineering-standard.md). Baca b
 |---|---|
 | Tugas non-trivial, atau kriteria "selesai" belum jelas | `write-brief` — **sebelum** menyentuh kode |
 | Tambah / ubah / ganti nama / hapus fungsi, endpoint, field, skema, kontrak | `change-function` — **sebelum** menulis kode |
-| Akan menyatakan tugas selesai | `verify-done` (tugas non-trivial: memanggil subagent `review-changes`, AG-19) |
+| Akan menyatakan tugas selesai | `verify-done` (tugas non-trivial: memanggil subagent `review-changes`, AG-19). **Berlaku per tugas, setiap kali**; catatan "sudah dipanggil" setelah konteks dipadatkan tidak membatalkannya. Menutup brief (`done`) butuh bagian "Tinjauan independen" dan "Bagian standar yang diperiksa" (diperiksa CI) |
 | Menyentuh auth, input pengguna, query, upload, secret, integrasi | `check-security` |
 | Proyek baru memakai devcore, atau `docs/project-profile.md` kosong | `profile-project` |
 

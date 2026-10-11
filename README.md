@@ -16,7 +16,7 @@ Masalah yang dijawab: aturan yang hanya ditulis di markdown sering dilanggar age
 | **Subagent `review-changes`** | Peninjau independen dengan konteks bersih | Pekerjaan tidak dinilai oleh pembuatnya sendiri; ikut memeriksa kecocokan dokumen–kode (`DC-06`) |
 | **6 hook penjaga** (`.devcore/hooks/`) | Penjaga bash (rm -r, git destruktif, secret, `sudo`, `curl \| sh`), penjaga tulis (secret literal, berkas kerangka), gerbang brief (kode hanya berubah bila ada brief `approved`), pengingat aturan, pemuat serah terima sesi, pengingat status di akhir tugas | Aturan terpenting ditegakkan mesin, bukan hanya diminta; agent berikutnya melanjutkan dari `docs/status.md` tanpa membaca seluruh proyek |
 | **4 template** (`.devcore/docs/templates/`) | Brief tugas, status sesi, profil proyek, `CLAUDE.md` awal | Dokumen kerja seragam; proyek lama dapat mencatat kondisi awal tanpa refactor |
-| **Pemeriksa dan CI** (`run-checks.sh`, `devcore-checks.yml`) | Penamaan, tautan dokumen, deteksi pelemahan test, batas ukuran penjaga bash, tes hook | Pelanggaran yang lolos dari sesi tetap tertangkap di commit/CI |
+| **Pemeriksa dan CI** (`run-checks.sh`, `devcore-checks.yml`) | Penamaan, tautan dokumen, deteksi pelemahan test, bukti penutupan brief (tinjauan independen dan bagian standar yang diperiksa), batas ukuran penjaga bash, tes hook | Pelanggaran yang lolos dari sesi tetap tertangkap di commit/CI |
 | **`sync-devcore.sh`** | Pasang dan perbarui dengan dry-run, laporan bentrok, penggabungan `settings.json` | Aman untuk proyek existing: milik proyek tidak ditimpa |
 | **Peta penegakan** ([enforcement-map.md](.devcore/docs/enforcement-map.md)) | Daftar tiap aturan: dijaga mesin, terpandu prosedur, atau sekadar saran, beserta batasnya | Kejujuran tentang apa yang benar-benar terjamin |
 
@@ -172,7 +172,7 @@ Penjaga bekerja bila hasilnya sesuai tabel. "Lolos" yang diucapkan agent setelah
 **3. Tugas harian (fitur, perbaikan, perubahan)**
 ```text
 Tugas: <apa yang diinginkan, untuk siapa, dan batasnya>.
-Ikuti aturan proyek: buat brief dulu (skill write-brief) dengan kriteria yang dapat diuji, termasuk bagian "Dokumen yang ikut berubah", dan tunggu saya setujui sebelum mengubah kode. Sebelum menyatakan selesai jalankan verify-done dan laporkan bukti per kriteria, apa yang tidak dijalankan, serta perbarui docs/status.md.
+Ikuti aturan proyek: buat brief dulu (skill write-brief) dengan kriteria yang dapat diuji, termasuk bagian "Standar yang berlaku" (ID aturan dari engineering-standard.md yang kamu pilih untuk tugas ini) dan "Dokumen yang ikut berubah", dan tunggu saya setujui sebelum mengubah kode. Sebelum menyatakan selesai jalankan verify-done dan laporkan bukti per kriteria, apa yang tidak dijalankan, serta perbarui docs/status.md.
 ```
 
 <details>

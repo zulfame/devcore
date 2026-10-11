@@ -15,6 +15,9 @@ Jenis: ringkas
 ## Di luar ruang lingkup (wajib)
 - <Hal yang sengaja TIDAK dikerjakan di tugas ini.>
 
+## Standar yang berlaku (wajib bila ada perubahan kode)
+<ID aturan dari engineering-standard.md yang relevan dengan tugas ini, dipilih agent saat menyusun brief dan ditinjau pengguna saat menyetujui, mis. `SC-07`, `VL-02`, `API-03`, `TS-07`. Tiap ID di sini harus muncul lagi dengan hasilnya di bagian "Bagian standar yang diperiksa" sebelum brief ditutup.>
+
 ## Konteks dan batasan (lengkap)
 <Kode/dokumen terkait, konvensi yang harus diikuti, kontrak yang tidak boleh berubah, batas performa/keamanan.>
 
@@ -32,3 +35,9 @@ Jenis: ringkas
 
 ## Catatan penyelesaian
 <Diisi saat selesai: bukti verifikasi per kriteria, penyimpangan dari brief, tindak lanjut.>
+
+## Tinjauan independen
+<Wajib sebelum Status: done. Tulis satu baris `Verdict: LAYAK | PERLU PERBAIKAN | TIDAK DAPAT DINILAI` dari subagent review-changes (AG-19), lalu temuan dan tindak lanjutnya. Hanya bila tugas tanpa perubahan kode: `Verdict: TIDAK DIPERLUKAN: <alasan>`.>
+
+## Bagian standar yang diperiksa
+<Wajib sebelum Status: done. Daftar ID/bagian standar yang relevan dengan perubahan beserta hasil, mis. `SC-07 sesuai`, `TS-07 test regresi ditambah`, `VL-02 selaras UI-backend`.>

@@ -111,6 +111,60 @@ check "weakened: test dihapus -> peringatan" 0 "PERINGATAN" bash -c "cd '$R' && 
 check "weakened: base tidak valid dilewati" 0 "DILEWATI" bash -c "cd '$R' && '$here/check-weakened-tests.sh' 0000000000000000000000000000000000000000"
 check "weakened: base kosong dilewati" 0 "DILEWATI" bash -c "cd '$R' && '$here/check-weakened-tests.sh' ''"
 
+# ---------- check-brief-closure ----------
+# Repo sementara dengan salinan skrip; base = commit awal, lalu brief ditutup di commit berikutnya
+BC=$(mkd); mkdir -p "$BC/docs/briefs" "$BC/.devcore/scripts" "$BC/src"
+cp "$here/check-brief-closure.sh" "$BC/.devcore/scripts/"
+g() { git -C "$BC" -c user.email=t@t -c user.name=t "$@"; }
+git -C "$BC" init -q -b main
+brief() { # status isi-tambahan
+  printf '# Brief: t\n\nStatus: %s\n\n## Tujuan\nX.\n\n## Kriteria penerimaan\n- Y\n\n## Di luar ruang lingkup\n- Z\n%s' "$1" "$2" > "$BC/docs/briefs/0001-t.md"; }
+brief approved ""; echo "a = 1" > "$BC/src/a.py"
+g add -A; g commit -q -m base; BASE=$(g rev-parse HEAD)
+cl() { "$BC/.devcore/scripts/check-brief-closure.sh" "$BASE"; }
+check "closure: tanpa base-ref dilewati" 0 "DILEWATI" "$BC/.devcore/scripts/check-brief-closure.sh" ""
+echo "a = 2" > "$BC/src/a.py"; brief done ""
+g add -A; g commit -q -m tutup-tanpa-bukti
+check "closure: ditutup tanpa bukti -> gagal" 1 "PENUTUPAN BRIEF" cl
+brief done $'\n## Tinjauan independen\nVerdict: LAYAK\n\n## Bagian standar yang diperiksa\nSC-07 sesuai; TS-07 test regresi ditambah.\n'
+g add -A; g commit -q -m tutup-dengan-bukti
+check "closure: bukti lengkap -> lulus" 0 "OK" cl
+brief done $'\n## Tinjauan independen\nVerdict: TIDAK DIPERLUKAN: hanya dokumen kecil\n\n## Bagian standar yang diperiksa\nDC-06 sesuai.\n'
+g add -A; g commit -q -m tdk-perlu-tapi-ada-kode
+check "closure: TIDAK DIPERLUKAN ditolak bila diff mengubah kode" 1 "TIDAK DIPERLUKAN" cl
+brief done $'\n## Tinjauan independen\nVerdict: LAYAK\n\n## Bagian standar yang diperiksa\nSemua baik.\n'
+g add -A; g commit -q -m standar-tanpa-id
+check "closure: bagian standar tanpa ID aturan ditolak bila ada kode" 1 "ID aturan" cl
+# brief done sejak sebelum diff: tidak diperiksa
+brief done ""; echo "b = 1" > "$BC/src/b.py"; g add -A; g commit -q -m legacy-done; BASE=$(g rev-parse HEAD)
+echo "b = 2" > "$BC/src/b.py"; g add -A; g commit -q -m perubahan-lain
+check "closure: brief lama yang sudah done tidak diperiksa" 0 "OK" cl
+# diff hanya dokumen: TIDAK DIPERLUKAN sah
+DC=$(mkd); mkdir -p "$DC/docs/briefs" "$DC/.devcore/scripts"; cp "$here/check-brief-closure.sh" "$DC/.devcore/scripts/"
+git -C "$DC" init -q -b main
+printf '# B\n\nStatus: approved\n\n## Tujuan\nX.\n\n## Kriteria penerimaan\n- Y\n\n## Di luar ruang lingkup\n- Z\n' > "$DC/docs/briefs/0001-t.md"
+git -C "$DC" add -A; git -C "$DC" -c user.email=t@t -c user.name=t commit -q -m base; DBASE=$(git -C "$DC" rev-parse HEAD)
+printf '# B\n\nStatus: done\n\n## Tujuan\nX.\n\n## Kriteria penerimaan\n- Y\n\n## Di luar ruang lingkup\n- Z\n\n## Tinjauan independen\nVerdict: TIDAK DIPERLUKAN: perubahan hanya dokumen\n\n## Bagian standar yang diperiksa\nDC-06 tidak berlaku, hanya dokumen.\n' > "$DC/docs/briefs/0001-t.md"
+git -C "$DC" add -A; git -C "$DC" -c user.email=t@t -c user.name=t commit -q -m tutup-dokumen
+check "closure: diff hanya dokumen, TIDAK DIPERLUKAN beralasan -> lulus" 0 "OK" "$DC/.devcore/scripts/check-brief-closure.sh" "$DBASE"
+
+# keterlacakan "Standar yang berlaku" -> "Bagian standar yang diperiksa"
+trace_case() { # nama exit pola isi-brief-penutupan
+  local T; T=$(mkd); mkdir -p "$T/docs/briefs" "$T/.devcore/scripts" "$T/src"
+  cp "$here/check-brief-closure.sh" "$T/.devcore/scripts/"; git -C "$T" init -q -b main
+  printf '# B\n\nStatus: approved\n\n## Tujuan\nX.\n\n## Kriteria penerimaan\n- Y\n\n## Di luar ruang lingkup\n- Z\n' > "$T/docs/briefs/0001-t.md"; echo "a=1" > "$T/src/a.py"
+  git -C "$T" add -A; git -C "$T" -c user.email=t@t -c user.name=t commit -q -m base; local TB; TB=$(git -C "$T" rev-parse HEAD)
+  echo "a=2" > "$T/src/a.py"
+  printf '# B\n\nStatus: done\n\n## Tujuan\nX.\n\n## Kriteria penerimaan\n- Y\n\n## Di luar ruang lingkup\n- Z\n%s' "$4" > "$T/docs/briefs/0001-t.md"
+  git -C "$T" add -A; git -C "$T" -c user.email=t@t -c user.name=t commit -q -m tutup
+  check "closure: $1" "$2" "$3" "$T/.devcore/scripts/check-brief-closure.sh" "$TB"
+}
+REVIEW=$'\n## Tinjauan independen\nVerdict: LAYAK\n'
+trace_case "semua ID yang dijanjikan ada hasilnya -> lulus" 0 "OK" "$(printf '\n## Standar yang berlaku\nSC-07, VL-02\n%s\n## Bagian standar yang diperiksa\nSC-07 sesuai; VL-02 selaras.\n' "$REVIEW")"
+trace_case "ID dijanjikan tetapi tidak diperiksa -> gagal" 1 "VL-02 dijanjikan" "$(printf '\n## Standar yang berlaku\nSC-07, VL-02\n%s\n## Bagian standar yang diperiksa\nSC-07 sesuai.\n' "$REVIEW")"
+trace_case "bagian 'Standar yang berlaku' kosong padahal ada kode -> gagal" 1 "Standar yang berlaku' kosong" "$(printf '\n## Standar yang berlaku\n<isi nanti>\n%s\n## Bagian standar yang diperiksa\nSC-07 sesuai.\n' "$REVIEW")"
+trace_case "brief lama tanpa bagian 'Standar yang berlaku' -> tidak dikenai syarat" 0 "OK" "$(printf '%s\n## Bagian standar yang diperiksa\nSC-07 sesuai.\n' "$REVIEW")"
+
 # ---------- check-analyzer-size ----------
 check "ukuran analyzer: di bawah batas lulus" 0 "OK" "$here/check-analyzer-size.sh"
 check "ukuran analyzer: melebihi batas gagal" 1 "melebihi batas" env ANALYZER_MAX_LINES=10 "$here/check-analyzer-size.sh"

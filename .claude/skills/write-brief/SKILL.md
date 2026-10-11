@@ -21,6 +21,24 @@ Lihat `docs/briefs/`. Jika sudah ada brief untuk tugas yang sama, perbarui, jang
 - Ajukan hanya pertanyaan yang jawabannya mengubah hasil, maksimal 3–5 sekaligus, dengan usulan default di tiap pertanyaan agar pengguna cukup menjawab "ya".
 - Hal kecil dan mudah dibatalkan: pilih default wajar, catat di *Risiko dan asumsi*.
 
+## 3b. Pilih standar yang berlaku
+Pengguna tidak diharapkan membaca `engineering-standard.md`; **agent yang menerapkannya.** Dari area yang disentuh tugas, pilih bagian standar yang relevan, buka bagian itu, dan tulis ID aturan yang berlaku di bagian **Standar yang berlaku** pada brief (minimal satu bila ada perubahan kode). Panduan awalan:
+
+| Area yang disentuh | Awalan / bagian |
+|---|---|
+| Struktur, modul, desain | `AR` (§4), `CD` (§5) |
+| Input, form, validasi UI–backend | `VL` (§6), `UX` (§19) |
+| Auth, data pengguna, secret, upload | `SC` (§7) |
+| Endpoint, integrasi | `API` (§8) |
+| Skema, query, migrasi | `DB` (§9) |
+| Performa, error, log | `PF` (§10), `ER` (§11), `LG` (§13) |
+| Test | `TS` (§12) |
+| Konfigurasi, dependency | `CF` (§14), `DP` (§15) |
+| Build/CI, dokumentasi | `CI` (§16), `DC` (§17) |
+| Cara kerja agent, ruang lingkup | `AG` (§1-3) |
+
+Sebelum penutupan, tiap ID yang dipilih harus muncul di **Bagian standar yang diperiksa** beserta hasilnya (CI memeriksa keterlacakannya). Pengguna melihat daftar ini sekilas saat menyetujui brief; itu satu-satunya titik peninjauan standar yang diminta dari pengguna.
+
 ## 4. Tulis brief
 - Salin `.devcore/docs/templates/task-brief.md` ke `docs/briefs/NNNN-judul-singkat.md` (NNNN = nomor berikutnya, 4 digit; judul `kebab-case` bahasa Inggris). Status: `draft`.
 - **Kriteria penerimaan harus dapat diuji:** setiap butir bisa dijawab "terpenuhi/belum" dengan bukti (tes, perintah, contoh I/O). Ganti kata kabur ("cepat", "bagus", "aman") dengan angka atau perilaku.
@@ -41,4 +59,4 @@ Ringkas brief di chat (tujuan, kriteria, di luar lingkup, asumsi) dan minta pers
 
 ## 6. Selama dan setelah pekerjaan
 - Kebutuhan berubah di tengah jalan → perbarui brief, minta persetujuan ulang, baru lanjut.
-- Selesai → skill `verify-done`: periksa tiap kriteria, isi *Catatan penyelesaian*, ubah `Status: done`.
+- Selesai → skill `verify-done`: periksa tiap kriteria, isi *Catatan penyelesaian*, *Tinjauan independen* (baris `Verdict:`), dan *Bagian standar yang diperiksa*, baru ubah `Status: done`. CI menggagalkan PR bila bagian itu kosong.

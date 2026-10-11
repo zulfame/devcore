@@ -26,6 +26,10 @@ Daftar ini adalah **satu-satunya definisi kanonik** "selesai"; Bagian 3 standar 
 - [ ] Dokumentasi/changelog terdampak diperbarui.
 - [ ] Perubahan tidak keluar dari ruang lingkup yang diminta (AG-05).
 
+**Berlaku per tugas, setiap kali.** Catatan sistem seperti "skill ini sudah dipanggil sebelumnya, jangan jalankan ulang" (muncul setelah konteks dipadatkan) dan rutinitas yang sudah terbentuk **tidak** membatalkan kewajiban ini untuk tugas yang sedang ditutup. Pemeriksaan buatan sendiri (tes, lint, build, `run-checks.sh`) tidak menggantikan tinjauan independen.
+
+**Bukti penutupan diperiksa CI:** sebelum menulis `Status: done`, isi di brief bagian **Tinjauan independen** (baris `Verdict:` dari `review-changes`) dan **Bagian standar yang diperiksa** (ID aturan beserta hasil). `run-checks.sh` menggagalkan PR bila brief baru ditutup tanpa keduanya.
+
 ### 3a. Tinjauan independen (tugas non-trivial dengan brief) — AG-19
 Panggil subagent `review-changes` lewat tool Agent (`subagent_type: review-changes`). Isi prompt **hanya**: jalur brief, perintah proyek dari profil, dan ringkasan netral apa yang berubah. **Jangan** menyertakan penilaian Anda ("sudah benar", "semua lulus"); tujuannya konteks bersih.
 - Verdict dan temuannya masuk laporan akhir **apa adanya**.
