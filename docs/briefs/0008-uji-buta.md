@@ -1,5 +1,5 @@
 # Brief 0008: Uji buta independen (Batch 4)
-Status: approved
+Status: done
 
 ## Tujuan
 Mengetahui apakah subagent yang tidak diberi tahu aturan devcore mematuhi atau melanggarnya saat mengerjakan program sederhana di proyek hasil pemasangan, dengan bukti dari transkrip dan isi proyek (bukan dari penilaian saya sendiri).
@@ -17,4 +17,4 @@ Mengetahui apakah subagent yang tidak diberi tahu aturan devcore mematuhi atau m
 Tidak ada.
 
 ## Catatan penyelesaian
-(diisi saat selesai)
+Selesai dalam dua putaran. Hasil di `docs/uji-buta/hasil.md`. Batas: n=2, model sama, jalur mesin tidak teruji oleh perilaku agent (cacat desain seed brief belum di-commit).

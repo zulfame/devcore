@@ -9,6 +9,7 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
 ## [0.5.1] - 2026-10-11
+*Dibekukan setelah uji buta dua putaran (`docs/uji-buta/hasil.md`): tidak ada pelanggaran keamanan teramati; tidak ada perubahan aturan yang dibenarkan bukti.*
 - **Penjaga bash dipangkas** (`bash-analyzer.py` 1.069 → 969 baris; tokenizer dan penganalisis struktur sengaja dipertahankan karena itulah inti yang menutup 8 celah awal). Dicabut dari hook: SQL/migrasi destruktif, pemindaian kode one-liner interpreter, konfirmasi paket OS, konfirmasi `mv` ke luar proyek, konfirmasi paket proyek (sudah ada di `permissions.ask`). Konsekuensinya dicatat di peta penegakan; 293 tes hook lulus.
 
 ## [0.5.0] - 2026-10-11
