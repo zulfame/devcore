@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.1] - 2026-10-11
+- Pagar ukuran: `check-analyzer-size.sh` (dalam `run-checks.sh`) gagal bila `bash-analyzer.py` melewati 960 baris berkode; menaikkan batas harus disengaja dan dicatat.
+
 ## [0.6.0] - 2026-10-11
 - Hook Stop `stop-status-reminder.sh`: mengingatkan satu kali memperbarui `docs/status.md` bila kode berubah (AG-17).
 - Aturan `DC-06` (dokumen dan kode paralel; audit silang dua arah) dan `DC-07` (hidup berdampingan dengan alat/skill lain); aturan inti ke-17; template brief punya "Dokumen yang ikut berubah"; `review-changes` memeriksa dokumen↔kode.
