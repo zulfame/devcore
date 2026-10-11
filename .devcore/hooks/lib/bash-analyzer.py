@@ -516,7 +516,7 @@ def unwrap(words, out):
 # ----------------------------------------------------------------------------
 # Aturan per perintah
 # ----------------------------------------------------------------------------
-def check_git(args, out):
+def check_git(args, out, ctx=None):
     i = 0
     n = len(args)
     while i < n:
@@ -545,6 +545,9 @@ def check_git(args, out):
             add(out, 'block', 'AG-06', 'git checkout -- <path> menimpa perubahan yang belum di-commit')
         elif '.' in a and not any(x in a for x in ('-b', '-B', '--orphan')):
             add(out, 'block', 'AG-06', 'git checkout . membuang seluruh perubahan lokal')
+        elif ctx and not any(x in a for x in ('-b', '-B', '--orphan')) and any(
+                resolve(x, ctx) and os.path.exists(resolve(x, ctx)) for x in positional(a)):
+            add(out, 'block', 'AG-06', 'git checkout <berkas> menimpa perubahan yang belum di-commit')
     elif sub == 'restore':
         staged_only = ('--staged' in a or '-S' in a) and not ('--worktree' in a or '-W' in a)
         if not staged_only:
@@ -743,7 +746,7 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
     if name == 'xargs':
         check_xargs(args, out, ctx, depth, seg_info)
     if name == 'git':
-        check_git(args, out)
+        check_git(args, out, ctx)
 
     # --- akses berkas secret lewat argumen ---
     if name not in EXISTENCE_CMDS and name not in TEXT_CMDS:

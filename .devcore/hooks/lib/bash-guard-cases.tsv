@@ -55,6 +55,9 @@ block	git checkout .
 block	git checkout -- .
 block	git checkout -- src/a.py
 block	git checkout -f main
+block	git checkout docs/briefs
+block	git checkout -q .claude
+block	git checkout HEAD docs
 block	git restore .
 block	git restore src/a.py
 block	git stash drop

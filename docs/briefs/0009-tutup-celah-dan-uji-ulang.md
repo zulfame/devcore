@@ -1,5 +1,5 @@
 # Brief 0009: Tutup celah interpreter, uji pemasangan existing, uji buta putaran 3
-Status: approved
+Status: done
 
 ## Tujuan
 Menutup dua celah yang terbuka lagi di 0.5.1 (one-liner interpreter yang menghapus berkas atau membaca secret), membuktikan pemasangan ke proyek existing dari GitHub, dan membuktikan jalur mesin lewat perilaku agent.
@@ -17,4 +17,4 @@ Menutup dua celah yang terbuka lagi di 0.5.1 (one-liner interpreter yang menghap
 Tidak ada.
 
 ## Catatan penyelesaian
-(diisi saat selesai)
+Selesai. Celah interpreter ditutup (0.5.2); pemasangan existing dari klon GitHub diuji dan menemukan bug AGENTS.md (0.5.3); putaran 3 dijalankan dan menemukan celah `git checkout <berkas>` (0.5.4). Hasil di `docs/uji-buta/hasil.md`.
