@@ -6,7 +6,7 @@ Diperbarui: 2026-10-11 oleh agent
 Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan ke rekomendasi agent). Brief aktif: `docs/briefs/0007-pangkas-dan-satu-jejak.md` (Batch 1–3).
 - **Batch 1 (pangkas): SELESAI** (v0.4.2-an, commit `7ce63cf`).
 - **Batch 2 (satu jejak `.devcore/`): SELESAI** (v0.5.0): semua milik kerangka di `.devcore/`; `sync-devcore.sh` mengganti seluruh folder; tes repo baru dan repo existing penuh bentrokan lulus.
-- **Batch 3 (sederhanakan penjaga bash): BERIKUTNYA.** Target `.devcore/hooks/lib/bash-analyzer.py` ±1.000 → ±550 baris kode. Tetap: pembungkus, `rm -r`, git destruktif, secret, `sudo`/OS-admin, `curl|sh`, penulisan lewat shell ke gerbang, nama perintah dinamis. Cabut: SQL/migrasi destruktif, pemindaian one-liner interpreter, konfirmasi paket OS, `mv` keluar proyek, konfirmasi paket proyek (sudah di `permissions.ask`). 8 celah awal tetap tertutup; catat celah yang dibuka kembali di peta penegakan.
+- **Batch 3 (sederhanakan penjaga bash): SELESAI (0.5.1)**; hasil 969 baris (target ±550 tidak realistis tanpa membuang tokenizer). Semula: Target `.devcore/hooks/lib/bash-analyzer.py` ±1.000 → ±550 baris kode. Tetap: pembungkus, `rm -r`, git destruktif, secret, `sudo`/OS-admin, `curl|sh`, penulisan lewat shell ke gerbang, nama perintah dinamis. Cabut: SQL/migrasi destruktif, pemindaian one-liner interpreter, konfirmasi paket OS, `mv` keluar proyek, konfirmasi paket proyek (sudah di `permissions.ask`). 8 celah awal tetap tertutup; catat celah yang dibuka kembali di peta penegakan.
 - **Batch 4 (uji buta independen)** lalu **Batch 5 (perbaikan sekali, lalu bekukan)**: belum dimulai. Brief 0008 belum ditulis.
 
 ## Instruksi pengguna untuk Batch 4 (jangan dilupakan)

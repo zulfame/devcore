@@ -1,6 +1,6 @@
 # Brief: Pangkas, satu jejak `.devcore/`, dan penjaga bash yang lebih kecil
 
-Status: approved
+Status: done
 Tanggal: 2026-10-11
 Jenis: lengkap
 
@@ -48,4 +48,4 @@ Mengembalikan devcore ke esensinya (standar, aturan kerja agent, dan cara agent 
 Tidak ada.
 
 ## Catatan penyelesaian
-(diisi saat selesai)
+Selesai. Batch 1–2 sesuai rencana; README ditunda ke Batch 2; `sync-devcore.sh` 174 baris (target ±120 tidak tercapai). Batch 3: analyzer 1.069 → 969 baris (target ±550 tidak tercapai; tokenizer wajib dipertahankan), fitur sekunder dicabut dan dicatat di peta penegakan.

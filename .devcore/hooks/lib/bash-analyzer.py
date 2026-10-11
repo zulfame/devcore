@@ -363,42 +363,6 @@ OS_ADMIN = ('systemctl', 'service', 'launchctl', 'ufw', 'iptables', 'ip6tables',
             'shutdown', 'reboot', 'halt', 'poweroff', 'fdisk', 'parted', 'diskutil', 'shred', 'mount', 'umount',
             'certbot', 'nginx', 'apachectl', 'httpd', 'crontab', 'useradd', 'userdel', 'usermod', 'passwd', 'chsh',
             'visudo', 'hostnamectl', 'timedatectl', 'sysctl', 'setenforce', 'mkswap', 'swapon', 'swapoff')
-OS_PKG = ('apt', 'apt-get', 'yum', 'dnf', 'apk', 'pacman', 'brew', 'port', 'snap', 'choco', 'winget', 'zypper')
-OS_PKG_SUBS = ('install', 'remove', 'uninstall', 'upgrade', 'purge', 'autoremove', 'add', 'del', 'erase')
-
-DB_CLIENTS = ('psql', 'mysql', 'mariadb', 'sqlite3', 'mongosh', 'mongo', 'redis-cli', 'sqlcmd', 'clickhouse-client',
-              'cockroach', 'duckdb', 'usql', 'cqlsh')
-SQL_DESTRUCT_RE = re.compile(
-    r'\b(drop|truncate)\s+(table|database|schema|index|view|collection|keyspace)\b'
-    r'|\bflush(all|db)\b'
-    r'|\bdelete\s+from\s+[\w.\"`\[\]]+\s*(;|$)', re.I)
-MIGRATE_DESTROY_RES = [re.compile(p, re.I) for p in (
-    r'\bprisma\s+migrate\s+reset\b', r'\brails\s+db:(drop|reset|schema:load)\b', r'\brake\s+db:(drop|reset|schema:load)\b',
-    r'\bartisan\s+(migrate:(fresh|reset|refresh)|db:wipe)\b', r'\bsequelize(-cli)?\s+db:(drop|migrate:undo:all)\b',
-    r'\bmanage\.py\s+flush\b', r'\bdjango-admin\s+flush\b', r'\balembic\s+downgrade\s+base\b',
-    r'\bknex\s+migrate:rollback\s+--all\b', r'\btypeorm\s+schema:drop\b', r'\bdropdb\b', r'\bmysqladmin\s+drop\b')]
-
-PKG_RULES = {
-    'npm': ('install', 'i', 'add'), 'yarn': ('add',), 'pnpm': ('add', 'install', 'i'), 'bun': ('add', 'install', 'i'),
-    'pip': ('install',), 'pip3': ('install',), 'poetry': ('add',), 'pipenv': ('install',), 'uv': ('add',),
-    'composer': ('require',), 'gem': ('install',), 'cargo': ('add', 'install'), 'go': ('get',),
-}
-
-INTERP_DESTRUCT = {
-    'python': r'\bshutil\.rmtree\b|\bos\.(remove|unlink|rmdir|removedirs)\b|\.unlink\(|\.rmdir\(|\brmtree\(',
-    'node': r'\bfs\.(rm|rmSync|rmdir|rmdirSync|unlink|unlinkSync)\b|\brimraf\b|\bfs\.promises\.(rm|rmdir|unlink)\b|\.rmSync\(|\.unlinkSync\(|\.rmdirSync\(',
-    'ruby': r'\bFileUtils\.(rm|rm_rf|rm_r|remove|remove_dir|remove_entry)\b|\bFile\.delete\b|\bDir\.rmdir\b',
-    'perl': r'\bunlink\b|\brmtree\b|\brmdir\b',
-    'php': r'\bunlink\s*\(|\brmdir\s*\(',
-    'other': r'\bunlink\b|\brmtree\b|\bremove_dir\b',
-}
-INTERP_EXEC_RE = re.compile(
-    r'\bsubprocess\b|\bos\.system\b|\bos\.popen\b|\bPopen\b|\bchild_process\b|\bexecSync\b|\bspawnSync\b'
-    r'|\bsystem\s*\(|\bexec\s*\(|\bshell_exec\b|\bproc_open\b|%x|`')
-INTERP_SECRET_RE = re.compile(
-    r'(^|[^A-Za-z0-9_])\.env(\.(?!example|sample|template|dist)[A-Za-z0-9_]+)?(?![A-Za-z0-9_])'
-    r'|id_(rsa|dsa|ecdsa|ed25519)(?!\.pub)|\.(pem|key|p12|pfx)\b|\.aws/credentials|\.netrc|\.git-credentials')
-
 
 # ----------------------------------------------------------------------------
 # Bantuan
@@ -659,34 +623,6 @@ def check_xargs(args, out, ctx, depth, seg_info):
         check_effective(sub, out, ctx, depth + 1, seg_info, unknown_args=True)
 
 
-def check_interpreter(name, args, out):
-    code = None
-    for i, a in enumerate(args):
-        if a in ('-c', '-e', '-E', '-r', '-p', '--eval', '--print') or re.match(r'^-[A-Za-z]*[ce]$', a):
-            code = ' '.join(args[i + 1:])
-            break
-    if code is not None:
-        scan_code(name, code, out)
-
-
-def scan_code(name, code, out):
-    """Pindai kode one-liner / heredoc yang dialirkan ke interpreter."""
-    if name.startswith('python') or name.startswith('pypy'):
-        key = 'python'
-    elif name in ('node', 'nodejs', 'deno', 'bun'):
-        key = 'node'
-    elif name in ('ruby', 'perl', 'php'):
-        key = name
-    else:
-        key = 'other'
-    if re.search(INTERP_DESTRUCT[key], code):
-        add(out, 'block', 'AG-06', 'one-liner %s menghapus berkas/direktori' % name)
-    if INTERP_SECRET_RE.search(code):
-        add(out, 'block', 'AG-07', 'one-liner %s mengakses berkas secret' % name)
-    if INTERP_EXEC_RE.search(code):
-        add(out, 'ask', 'AG-06', 'one-liner %s menjalankan perintah lain; hook tidak dapat memeriksanya' % name)
-
-
 def reads_stdin(name, args):
     if name in SHELLS:
         if any(a == '-c' or (re.match(r'^-[A-Za-z]*c$', a)) for a in args):
@@ -731,8 +667,6 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
     # --- administrasi OS ---
     if name in OS_ADMIN or name.startswith('mkfs'):
         add(out, 'block', 'OS-01', '%s adalah administrasi host; dikelola tim infrastruktur, bukan agent' % name)
-    if name in OS_PKG and any(x in OS_PKG_SUBS for x in positional(args)):
-        add(out, 'ask', 'OS-01', 'memasang/menghapus paket sistem (%s) mengubah host, di luar proyek' % name)
     if name == 'dd':
         for a in args:
             if a.startswith('of=/dev/'):
@@ -775,10 +709,6 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
             if DOWNLOAD_ANY_RE.search(a):
                 add(out, 'block', 'DP-06', 'memuat skrip hasil unduhan')
     elif INTERP_RE.match(name):
-        check_interpreter(name, args, out)
-        if reads_stdin(name, args):
-            for body, quoted in seg_info.get('heredocs', []):
-                scan_code(name, body, out)
         for a in args:
             if DOWNLOAD_ANY_RE.search(a) and a.startswith('<('):
                 add(out, 'block', 'DP-06', 'mengeksekusi hasil unduhan lewat process substitution')
@@ -786,42 +716,12 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
     # --- penghapusan ---
     if name in ('rm', 'mv', 'cp', 'ln', 'truncate', 'shred', 'unlink', 'rmdir', 'install'):
         check_rm_like(name, args, out)
-    if name == 'mv':
-        pos = positional(args)
-        if len(pos) >= 2 and ctx.root:
-            dst = resolve(pos[-1], ctx)
-            if dst and not (dst == ctx.root or dst.startswith(ctx.root + os.sep)):
-                for src in pos[:-1]:
-                    s_abs = resolve(src, ctx)
-                    if s_abs and (s_abs == ctx.root or s_abs.startswith(ctx.root + os.sep)):
-                        add(out, 'ask', 'AG-06', 'memindahkan berkas proyek ke luar proyek (%s)' % src)
-                        break
     if name == 'find':
         check_find(args, out, ctx, depth, seg_info)
     if name == 'xargs':
         check_xargs(args, out, ctx, depth, seg_info)
     if name == 'git':
         check_git(args, out)
-
-    # --- SQL dan migrasi destruktif ---
-    if name in DB_CLIENTS:
-        text = ' '.join(args) + '\n' + seg_info.get('pipeline_text', '') + '\n' + '\n'.join(b for b, _ in seg_info.get('heredocs', []))
-        if SQL_DESTRUCT_RE.search(text):
-            add(out, 'block', 'AG-06', 'perintah SQL/DB destruktif (DROP/TRUNCATE/FLUSH/DELETE tanpa WHERE) lewat %s' % name)
-    joined_cmd = ' '.join([name] + args)
-    for rx in MIGRATE_DESTROY_RES:
-        if rx.search(joined_cmd):
-            add(out, 'block', 'AG-06', 'perintah yang menghapus/mereset database')
-            break
-
-    # --- dependency baru ---
-    sub_args, pkg = args, name
-    if name.startswith('python') and len(args) >= 3 and args[0] == '-m' and args[1] in ('pip', 'pip3'):
-        sub_args, pkg = args[2:], 'pip'
-    if pkg in PKG_RULES:
-        pos = positional(sub_args, with_value=('-r', '--requirement', '-c', '--constraint', '--prefix', '--target'))
-        if len(pos) > 1 and pos[0] in PKG_RULES[pkg]:
-            add(out, 'ask', 'AG-12', 'menambah dependency baru (%s %s) butuh izin pengguna' % (pkg, pos[0]))
 
     # --- akses berkas secret lewat argumen ---
     if name not in EXISTENCE_CMDS and name not in TEXT_CMDS:
