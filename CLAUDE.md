@@ -24,11 +24,11 @@ Berkomunikasi dalam **Bahasa Indonesia**.
 | Akan menyatakan tugas selesai | `verify-done` |
 | Menyentuh auth, input pengguna, query, upload, secret, integrasi | `security-check` |
 
-## Git (izin berkelanjutan dari pengguna untuk repo ini)
-- Remote: `https://github.com/zulfame/devcore.git`, branch `main`.
-- Agent **boleh commit dan push otomatis ke `main`** setelah perubahan terverifikasi. Pesan commit menjelaskan *mengapa*.
-- Tetap **dilarang**: force push, reset --hard, menghapus branch, menulis ulang riwayat (diblokir hook).
-- Izin ini hanya untuk repo ini, tidak berlaku untuk repo lain.
+## Git (bawaan kerangka: hanya atas permintaan)
+- **Dilarang** commit, push, merge, atau publikasi tanpa permintaan eksplisit pengguna di chat (AG-13). Persetujuan satu kali tidak berlaku untuk berikutnya.
+- Izin berkelanjutan (mis. auto commit/push) **hanya sah** bila tertulis di `CLAUDE.local.md` milik proyek ini. File itu bersifat lokal per proyek: tidak di-commit, tidak disalin. Tanpa file itu, anggap tidak ada izin.
+- Dalam kondisi apa pun **dilarang**: force push, reset --hard, menghapus branch, menulis ulang riwayat (diblokir hook).
+- Pesan commit menjelaskan *mengapa*, bukan hanya apa.
 
 ## Aturan mesin — jangan dilawan
 Folder `.claude/` berisi penegakan otomatis (hook dan izin). Jika sebuah tindakan **diblokir**:

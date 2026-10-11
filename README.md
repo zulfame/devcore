@@ -6,6 +6,8 @@ Standar rekayasa perangkat lunak dan aturan kerja untuk agent (Claude) — denga
 ```
 devcore/
 ├── CLAUDE.md                      Aturan inti, dimuat otomatis tiap sesi (ringkas)
+├── CLAUDE.local.md                Izin khusus proyek ini (lokal, gitignored, TIDAK disalin)
+├── .gitignore
 ├── README.md
 ├── docs/
 │   ├── standards/
@@ -28,5 +30,6 @@ devcore/
 
 ## Cara pakai
 - Mulai sesi Claude Code di folder ini; `CLAUDE.md`, hook, dan skill aktif otomatis.
-- Menyalin ke proyek lain: salin `CLAUDE.md`, `.claude/`, dan `docs/`, lalu sesuaikan bagian "Git" di `CLAUDE.md`.
+- Menyalin ke proyek lain: salin `CLAUDE.md`, `.claude/`, `docs/`, dan `.gitignore`. **Jangan salin `CLAUDE.local.md`** (izin khusus proyek, mis. auto commit/push); di proyek baru, perilaku bawaannya commit/push hanya atas permintaan.
+- Izin atau preferensi khusus satu proyek ditulis di `CLAUDE.local.md` proyek itu, bukan di `CLAUDE.md`.
 - Setelah mengubah hook: `.claude/hooks/test-hooks.sh`.

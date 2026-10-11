@@ -17,7 +17,7 @@ Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi 
 | AG-07 / SC-07 secret | Keras | `guard-write.sh`, `guard-bash.sh`, `deny Read` | Pola kredensial umum + penugasan literal. Tidak menangkap semua format secret |
 | AG-09 melemahkan pemeriksaan | Keras sebagian | `guard-write.sh` (tamper `.claude/`) | Skip test / matikan lint di kode **belum** terdeteksi mesin → perlu CI (lihat di bawah) |
 | AG-12 dependency baru | Keras | `permissions.ask` (npm/yarn/pnpm/pip/composer) | Hanya package manager yang terdaftar |
-| AG-13 commit/push | Diizinkan | Izin berkelanjutan di `CLAUDE.md` | Force push tetap diblokir |
+| AG-13 commit/push | Terpandu + prompt izin | Bawaan: hanya atas permintaan; izin berkelanjutan hanya di `CLAUDE.local.md` (gitignored, tidak disalin) | Force push/reset tetap Keras (diblokir hook) |
 | DP-01 lockfile manual | Keras | `guard-write.sh` | |
 | DP-06 curl \| sh | Keras | `guard-bash.sh` | |
 | AG-01..05, AG-08, AG-10, AG-11, AG-14 | Terpandu | `CLAUDE.md`, `inject-rules.sh`, skill `change-function`, `verify-done` | Tidak bisa diotomatisasi sepenuhnya: perilaku dan penilaian |

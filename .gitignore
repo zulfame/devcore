@@ -1,0 +1,12 @@
+# Izin dan preferensi lokal per proyek/mesin — tidak ikut kerangka
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Secret
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+.DS_Store
