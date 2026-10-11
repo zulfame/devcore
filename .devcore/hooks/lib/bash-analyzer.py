@@ -347,6 +347,14 @@ EXISTENCE_CMDS = ('ls', 'stat', 'test', '[', '[[', 'file', 'realpath', 'dirname'
 TEXT_CMDS = ('echo', 'printf')
 PATTERN_CMDS = ('grep', 'egrep', 'fgrep', 'rg', 'ag', 'ack', 'zgrep')
 
+# Kode one-liner/heredoc interpreter: hanya penghapusan berkas dan akses secret (batas sengaja sempit)
+INTERP_DESTRUCT_RE = re.compile(
+    r'\bshutil\.rmtree\b|\bos\.(remove|unlink|rmdir|removedirs)\b|\.unlink\(|\.rmdir\(|\brmtree\b'
+    r'|\bfs\.(rm|rmSync|rmdir|rmdirSync|unlink|unlinkSync)\b|\brimraf\b|\.(rmSync|unlinkSync|rmdirSync)\(|\bFileUtils\.rm|\bFile\.delete\b|\bunlink\s*\(')
+INTERP_SECRET_RE = re.compile(
+    r'(^|[^A-Za-z0-9_])\.env(\.(?!example|sample|template|dist)[A-Za-z0-9_]+)?(?![A-Za-z0-9_])'
+    r'|id_(rsa|dsa|ecdsa|ed25519)(?!\.pub)|\.(pem|key|p12|pfx)\b|\.aws/credentials|\.netrc|\.git-credentials')
+
 SECRET_PATH_RES = [re.compile(p) for p in (
     r'(^|/)\.env$',
     r'(^|/)\.env\.(?!example$|sample$|template$|dist$)[^/]+$',
@@ -623,6 +631,13 @@ def check_xargs(args, out, ctx, depth, seg_info):
         check_effective(sub, out, ctx, depth + 1, seg_info, unknown_args=True)
 
 
+def scan_code(name, code, out):
+    if INTERP_DESTRUCT_RE.search(code):
+        add(out, 'block', 'AG-06', 'kode %s menghapus berkas/direktori' % name)
+    if INTERP_SECRET_RE.search(code):
+        add(out, 'block', 'AG-07', 'kode %s mengakses berkas secret' % name)
+
+
 def reads_stdin(name, args):
     if name in SHELLS:
         if any(a == '-c' or (re.match(r'^-[A-Za-z]*c$', a)) for a in args):
@@ -709,6 +724,13 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
             if DOWNLOAD_ANY_RE.search(a):
                 add(out, 'block', 'DP-06', 'memuat skrip hasil unduhan')
     elif INTERP_RE.match(name):
+        for i, a in enumerate(args):
+            if a in ('-c', '-e', '-E', '-r', '-p', '--eval', '--print') or re.match(r'^-[A-Za-z]*[ce]$', a):
+                scan_code(name, ' '.join(args[i + 1:]), out)
+                break
+        if reads_stdin(name, args):
+            for body, quoted in seg_info.get('heredocs', []):
+                scan_code(name, body, out)
         for a in args:
             if DOWNLOAD_ANY_RE.search(a) and a.startswith('<('):
                 add(out, 'block', 'DP-06', 'mengeksekusi hasil unduhan lewat process substitution')
