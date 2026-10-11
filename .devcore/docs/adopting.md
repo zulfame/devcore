@@ -68,5 +68,19 @@ Seluruh `.devcore/` diganti; file milik proyek tidak berubah. Perubahan lokal di
 ## Serah terima sesi
 Agent tidak mengingat sesi sebelumnya. Hook `session-status-loader.sh` memuat awal `docs/status.md` dan daftar brief `approved` di setiap awal sesi; agent memperbarui `docs/status.md` di akhir tugas lewat skill `verify-done` (`AG-17`). Jaga berkas itu singkat (±40 baris).
 
+Hook Stop `stop-status-reminder.sh` mengingatkan satu kali di akhir jawaban bila kode berubah (menurut git) tetapi `docs/status.md` tidak. Ia pengingat, bukan jaminan: percobaan berhenti kedua selalu diizinkan.
+
+## Masalah umum
+| Gejala | Penyebab | Penanganan |
+|---|---|---|
+| Sync menolak: "bukan repo git" / "working tree tidak bersih" | folder belum `git init`, atau ada perubahan belum di-commit | `git init` lalu commit kondisi awal; atau commit/stash dulu |
+| INFO: ".gitignore proyek mengabaikan berkas devcore" | `.gitignore` memuat `/.claude` atau `/CLAUDE.md` (mis. Laravel Boost) | hapus barisnya; tanpa itu hook/aturan tidak ter-commit dan CI tidak melihatnya |
+| `run-checks.sh` gagal di tautan dokumen milik pustaka | versi sebelum 0.6.3 memindai `vendor/` | perbarui devcore (`sync-devcore.sh --source ... --apply`) |
+| `run-checks.sh` gagal "PENAMAAN" untuk dokumen lama proyek | aturan `DC-05` terhadap berkas yang tidak sesuai | catat pengecualian di tabel "Pengecualian devcore" pada `CLAUDE.md`, jangan ganti nama berkas lama (`AG-16`) |
+| Hook tidak terasa aktif | sesi dibuka sebelum pemasangan, atau `.claude/settings.json` terabaikan git | buka ulang Claude Code di folder proyek; periksa `git check-ignore -v .claude/settings.json` |
+| Perintah diblokir padahal tidak berbahaya | penjaga membaca teks (mis. skrip yang menyebut `rmtree` atau berkas rahasia di dalam string) | jalankan lewat tool Edit/Write atau ubah penulisan; jangan memecah perintah untuk mengakali (`Aturan mesin`) |
+| Gerbang brief menolak perubahan kode | belum ada brief `approved` | skill `write-brief`; atau `BRIEF_GATE=ask` selama masa uji |
+| Dokumen lama proyek gagal pemeriksaan CI devcore | cakupan pemeriksa tautan di proyek terpasang: `CLAUDE.md`, `docs/`, `.devcore/` | perbaiki tautan di dokumen itu atau pindahkan ke luar `docs/` |
+
 ## Melepas devcore
 Hapus `.devcore/`, skill dan subagent yang tercatat di `.devcore/owned-claude.txt`, entri hook dengan prefix `$CLAUDE_PROJECT_DIR/.devcore/` di `.claude/settings.json`, dan baris impor di `CLAUDE.md`. Berkas milik proyek tetap milik Anda.

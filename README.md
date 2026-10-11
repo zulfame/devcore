@@ -26,7 +26,14 @@ Versi: [.devcore/VERSION](.devcore/VERSION) · Perubahan: [CHANGELOG.md](CHANGEL
 Penjaga adalah **pagar pengaman, bukan sandbox**; batasnya dicatat jujur di [.devcore/docs/enforcement-map.md](.devcore/docs/enforcement-map.md).
 
 ## Memasang di proyek lain
-Syarat: `git`, `jq`, Claude Code; `python3` 3.6+ disarankan. Target harus repo git dengan working tree bersih. Skrip **tidak pernah commit** dan **tidak pernah menimpa** berkas milik proyek Anda. Mulai dengan klon devcore:
+Syarat: `git`, `jq`, Claude Code; `python3` 3.6+ disarankan. Skrip **tidak pernah commit** dan **tidak pernah menimpa** berkas milik proyek Anda.
+
+**Cek dulu sebelum memasang**
+1. Target harus **repo git dengan working tree bersih**. Folder yang belum repo (mis. hasil `laravel new`) perlu `git init`, lalu commit kondisi awal.
+2. Periksa `.gitignore` proyek: bila mengabaikan `/.claude` atau `/CLAUDE.md` (Laravel Boost melakukannya), berkas devcore **tidak akan ter-commit**, sehingga rekan tim dan CI tidak melihat hook dan aturannya. Hapus dua baris itu dari `.gitignore`; sync hanya memberi INFO dan tidak mengubahnya. Untuk memeriksa: `git check-ignore -v CLAUDE.md .claude/settings.json`.
+3. Folder `vendor/` dan `node_modules/` tidak masalah; pemeriksa tidak memindainya.
+
+Mulai dengan klon devcore:
 ```bash
 git clone https://github.com/zulfame/devcore.git && cd devcore
 ```
@@ -58,6 +65,24 @@ Lalu di proyek: isi `CLAUDE.md` (konteks dan perintah test), jalankan `.devcore/
 | `TAMBAH` | `CLAUDE.md` hanya ditambah satu baris impor; `.gitignore` ditambah baris | tidak ada |
 | `BENTROK` | skill/subagent senama milik Anda: **dilewati**, tetap utuh | ubah salah satu nama bila ingin memakai versi devcore |
 | `INFO` | catatan (mis. `AGENTS.md` belum diimpor, workflow CI lain, hook proyek berdampingan) | baca, putuskan sendiri |
+| `INFO: .gitignore proyek mengabaikan berkas devcore` | berkas devcore tidak akan ter-commit | hapus barisnya dari `.gitignore` (tidak diubah otomatis) |
+
+### Memastikan terpasang benar
+Setelah `--apply`, di folder proyek:
+1. `.devcore/scripts/run-checks.sh` harus berakhir `SEMUA PEMERIKSAAN LULUS`.
+2. `git status` harus menampilkan `.devcore/`, `.claude/`, `CLAUDE.md`, `docs/status.md`, `.github/workflows/devcore-checks.yml` sebagai berkas baru (bukan terabaikan).
+3. Buka Claude Code **ulang** di folder itu (hook dibaca saat sesi mulai). Di awal sesi akan ada pesan serah terima dari `docs/status.md`.
+4. Uji cepat: minta agent menjalankan `rm -rf` pada folder sementara; hook harus memblokirnya dengan rujukan aturan.
+5. Isi `CLAUDE.md` (konteks, perintah test) lalu jalankan skill `profile-project` agar perintah proyek tercatat.
+
+### Yang akan Anda alami
+- **Diblokir** (rujukan aturan tampil): `rm -r`, git destruktif, baca/tulis secret, `sudo`, `curl | sh`, ubah kode tanpa brief `approved`. Agent akan menjelaskan dan meminta keputusan Anda.
+- **Meminta konfirmasi**: pasang dependency baru, perubahan di `.devcore/` atau `.claude/settings.json`, brief ditandai `approved`.
+- **Pengingat**: di akhir tugas, bila kode berubah tetapi `docs/status.md` belum, agent diingatkan satu kali memperbaruinya.
+- Mode gerbang brief: `BRIEF_GATE=block|ask|off` di `.claude/devcore.conf`.
+
+### Batas yang diakui
+Penjaga adalah pagar pengaman, bukan sandbox. Tidak dijaga hook: SQL/migrasi destruktif lewat shell (kecuali daftar konfirmasi di `permissions.ask`), `mv` ke luar proyek, dan perintah yang sengaja disusun untuk mengakali. Pemakaian jangka panjang belum teruji; status dan batas lengkap di [peta penegakan](.devcore/docs/enforcement-map.md) dan [hasil uji buta](docs/blind-test/results.md).
 
 ### Membatalkan
 Sebelum commit: `git stash -u` menyimpan semua perubahan adopsi (dan bisa dibuang atau dikembalikan nanti); atau cukup tinggalkan cabang adopsi tanpa merge. Sesudah commit: `git revert` commit adopsinya. Melepas devcore sepenuhnya: lihat bagian "Melepas devcore" di [adopting.md](.devcore/docs/adopting.md).
