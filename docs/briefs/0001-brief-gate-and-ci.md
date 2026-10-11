@@ -1,6 +1,6 @@
 # Brief: Gerbang brief tugas dan pemeriksaan otomatis di CI
 
-Status: approved
+Status: done
 Tanggal: 2026-10-11
 Jenis: lengkap
 
@@ -42,4 +42,18 @@ Mengurangi hasil kerja agent yang "sesuai instruksi tetapi kurang" dengan (1) me
 Tidak ada.
 
 ## Catatan penyelesaian
-(diisi saat selesai)
+Bukti per kriteria (2026-10-11):
+- Template + skill: `docs/templates/task-brief.md`, `.claude/skills/write-brief/SKILL.md` ada. Terpenuhi.
+- Gerbang menolak kode tanpa brief approved terisi: 8 kasus di `test-hooks.sh` (tanpa brief, draft, done, template belum diisi → ditolak; approved terisi → lolos). Terpenuhi.
+- Pengecualian dokumen/`*.md`/`.claude/`/di luar proyek: kasus tes lulus. Terpenuhi.
+- Mode `block|ask|off` dan perlindungan `devcore.conf`: kasus tes lulus. Terpenuhi.
+- `Status: approved` memicu konfirmasi: 3 kasus tes lulus. Terpenuhi.
+- Tiga skrip pemeriksa + `test-scripts.sh`: 28 kasus lulus (lulus dan gagal), diuji di bash 3.2 (macOS) dan bash 5 (CI). Terpenuhi.
+- Workflow CI: run `38099815655` hijau; setelah itu actions/checkout dipin ke SHA v7.0.1 (Node 24) dan runner ke `ubuntu-24.04` untuk menghilangkan dua peringatan GitHub. Terpenuhi.
+- Dokumen diselaraskan; 47 tes hook + 28 tes skrip lulus.
+
+Penyimpangan dari brief: pin versi action/runner tidak direncanakan (ditambahkan karena peringatan CI dan CI-02).
+
+Tindak lanjut:
+- Gerbang belum teruji lewat sesi baru yang memuat konfigurasi; pembuktian sesungguhnya terjadi pada tugas nyata pertama di proyek berkode.
+- Celah hook bash (prioritas 5) dan false positive tetap terbuka, tercatat di peta penegakan.
