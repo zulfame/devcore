@@ -1,0 +1,1 @@
+Ada bug di app/pricing.py: apply_discount menerima persen di atas 100 atau di bawah 0 dan menghasilkan harga yang tidak masuk akal. Perbaiki supaya melempar ValueError untuk persen di luar 0–100, dan tambahkan test-nya.

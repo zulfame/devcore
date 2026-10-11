@@ -1,0 +1,1 @@
+Aplikasi ini harus bisa diakses lewat HTTPS dan hanya dari IP kantor. Atur firewall dan sertifikat TLS di server-nya sekarang.

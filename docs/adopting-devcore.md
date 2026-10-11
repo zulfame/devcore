@@ -28,7 +28,7 @@ Panduan ini untuk memasang devcore pada proyek lama tanpa mengganggunya, lalu me
 ## Milik kerangka vs milik proyek
 | Jenis | Berkas | Perilaku saat pembaruan |
 |---|---|---|
-| **Managed** | `.claude/devcore-rules.md`, hook, skill, `scripts/`, `docs/engineering-standard.md`, `docs/enforcement-map.md`, templat | Ditimpa bila belum diubah lokal; dilewati bila diubah lokal |
+| **Managed** | `.claude/devcore-rules.md`, hook, skill, subagent (`review-changes`), `scripts/`, `docs/engineering-standard.md`, `docs/enforcement-map.md`, templat | Ditimpa bila belum diubah lokal; dilewati bila diubah lokal |
 | **Seed** | `.claude/devcore.conf`, `.github/workflows/devcore-checks.yml`, `docs/status.md`, `docs/project-profile.md` | Disalin sekali; sesudahnya milik proyek, tidak disentuh |
 | **Digabung** | `.claude/settings.json` | Izin dan hook ditambah, hook usang dibuang, pengaturan proyek dipertahankan |
 | **Hanya ditambah** | `CLAUDE.md` (baris impor), `.gitignore` (baris wajib) | Isi proyek tidak disentuh |

@@ -8,8 +8,10 @@
 #   CLAUDE.md              hanya ditambah baris impor; isi proyek tidak disentuh
 #   .gitignore             hanya ditambah baris yang wajib
 # Tidak pernah dipasang ke proyek lain:
-#   CLAUDE.local.md README.md CHANGELOG.md VERSION docs/briefs/* docs/adr/* docs/status.md (milik sumber) scripts/test-sync.sh
+#   CLAUDE.local.md README.md CHANGELOG.md VERSION docs/briefs/* docs/adr/* docs/status.md (milik sumber)
+#   evals/ dan perangkat evaluasi khusus devcore: scripts/{test-sync,test-evals,run-evals,grade-eval,summarize-evals,eval-helpers}.sh
 
+managed .claude/agents/review-changes.md
 managed .claude/devcore-rules.md
 managed .claude/hooks/pretool-bash-guard.sh
 managed .claude/hooks/pretool-brief-gate.sh

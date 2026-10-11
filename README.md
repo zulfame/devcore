@@ -17,10 +17,19 @@ devcore/
 │   ├── check-weakened-tests.sh        Deteksi skip/ignore/any baru pada diff (AG-09)
 │   ├── test-scripts.sh                Tes untuk tiga pemeriksa di atas
 │   ├── sync-devcore.sh                Pasang / perbarui kerangka di proyek lain
-│   └── test-sync.sh                   Tes sync-devcore.sh (khusus devcore, tidak dipasang)
+│   ├── test-sync.sh                   Tes sync-devcore.sh (khusus devcore, tidak dipasang)
+│   ├── run-evals.sh                   Jalankan skenario evaluasi pada agent sungguhan (BERBIAYA; dry-run bawaan)
+│   ├── grade-eval.sh · eval-helpers.sh   Penilai deterministik satu run
+│   ├── summarize-evals.sh             Tabel ringkasan hasil evaluasi
+│   └── test-evals.sh                  Tes perangkat evaluasi (tanpa model; khusus devcore)
+├── evals/                             Khusus devcore, tidak dipasang
+│   ├── fixtures/base-app/             Proyek kecil (Python stdlib) untuk skenario
+│   ├── scenarios/<id>/                9 skenario: prompt.txt, grade.sh, [overlay/], [brief.md]
+│   └── results/                       Ringkasan hasil (.md masuk git); raw/ diabaikan git
 ├── docs/
 │   ├── engineering-standard.md        Standar lengkap (aturan ber-ID)
 │   ├── enforcement-map.md             Aturan mana dijaga oleh mekanisme apa
+│   ├── evaluating-agents.md           Cara mengukur kepatuhan agent (khusus devcore)
 │   ├── adopting-devcore.md            Panduan memasang & memperbarui di proyek yang sudah berjalan
 │   ├── status.md                      Serah terima sesi (milik proyek; di sini milik devcore)
 │   ├── adr/                           Keputusan arsitektur (milik proyek)
@@ -32,6 +41,8 @@ devcore/
     ├── devcore.conf                   Mode gerbang brief: block | ask | off
     ├── devcore.lock                   (di proyek lain) versi terpasang + hash berkas
     ├── settings.json                  Izin (deny/ask) + pendaftaran hook
+    ├── agents/
+    │   └── review-changes.md          Subagent peninjau independen (konteks bersih, baca-saja; AG-19)
     ├── hooks/
     │   ├── pretool-bash-guard.sh      Blokir perintah destruktif / akses secret
     │   ├── pretool-write-guard.sh     Blokir secret di file, lockfile manual, ubah aturan mesin; konfirmasi saat brief di-approve
@@ -51,7 +62,7 @@ devcore/
 1. **Awal sesi:** status sesi sebelumnya dan brief aktif dimuat otomatis.
 2. Tugas non-trivial → skill `write-brief` → brief `draft` → Anda setuju → `approved` (hook meminta konfirmasi Anda).
 3. Agent mengerjakan; hook menolak perubahan kode bila tidak ada brief `approved`.
-4. Selesai → `verify-done`: periksa tiap kriteria, tutup brief (`done`), perbarui `docs/status.md`.
+4. Selesai → `verify-done`: periksa tiap kriteria, minta tinjauan independen dari subagent `review-changes` (tugas non-trivial), tutup brief (`done`), perbarui `docs/status.md`.
 5. Setiap push: CI menjalankan `scripts/run-checks.sh`. Ini lapisan yang tetap berlaku untuk commit manual.
 
 Gerbang brief tidak berlaku untuk dokumen (`docs/`, `*.md`) dan `.claude/`. Mode diatur di `.claude/devcore.conf`: `block` (bawaan), `ask` (tanya Anda tiap perubahan, cocok untuk adopsi bertahap di proyek lama), `off`.
@@ -75,6 +86,7 @@ Syarat: `git` dan `jq`, proyek berupa repo git dengan working tree bersih. Perub
 | Dokumen topik lainnya | `kebab-case.md`, huruf kecil | `engineering-standard.md`, `adopting-devcore.md` |
 | ADR dan brief | `docs/adr/` dan `docs/briefs/` + `NNNN-judul-singkat.md` (nomor 4 digit berurutan) | `0001-layered-enforcement.md` |
 | Skill | folder `kata-kerja-objek` + `SKILL.md` | `write-brief`, `profile-project` |
+| Subagent | `.claude/agents/kata-kerja-objek.md`, `name` sama dengan nama berkas | `review-changes.md` |
 | Hook | `event-tujuan.sh`, sejajar dengan event di `settings.json` | `pretool-bash-guard.sh`, `session-status-loader.sh` |
 | Skrip | `kata-kerja-objek.sh` huruf kecil di `scripts/` | `check-naming.sh`, `sync-devcore.sh` |
 | File dengan nama tetap dari alat | ikuti alatnya | `SKILL.md`, `settings.json`, `CLAUDE.local.md` |
@@ -83,6 +95,7 @@ Bahasa: **nama file dan folder berbahasa Inggris**; isi dokumen berbahasa Indone
 
 ## Bekerja di devcore sendiri
 - Izin atau preferensi khusus satu proyek ditulis di `CLAUDE.local.md` proyek itu, bukan di `CLAUDE.md`.
-- Berkas baru di hooks, skills, scripts, atau templates **wajib** didaftarkan di `.claude/devcore.manifest` (tes `test-sync.sh` akan gagal bila lupa).
+- Berkas baru di hooks, skills, agents, scripts, atau templates **wajib** didaftarkan di `.claude/devcore.manifest`, kecuali yang khusus devcore (tes `test-sync.sh` akan gagal bila lupa).
+- Perangkat evaluasi (`evals/`, `scripts/*-evals.sh`) khusus devcore. Jalankan `scripts/run-evals.sh` hanya dengan sadar biaya; lihat `docs/evaluating-agents.md`.
 - Perubahan yang sampai ke proyek lain → naikkan `VERSION` dan catat di `CHANGELOG.md`.
 - Sebelum push: `scripts/run-checks.sh`.

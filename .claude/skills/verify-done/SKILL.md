@@ -25,6 +25,12 @@ Baca bagian *Perintah proyek* di `docs/project-profile.md` lebih dulu. Bila koso
 - [ ] Dokumentasi/changelog terdampak diperbarui.
 - [ ] Perubahan tidak keluar dari ruang lingkup yang diminta (AG-05).
 
+### 3a. Tinjauan independen (tugas non-trivial dengan brief) — AG-19
+Panggil subagent `review-changes` lewat tool Agent (`subagent_type: review-changes`). Isi prompt **hanya**: jalur brief, perintah proyek dari profil, dan ringkasan netral apa yang berubah. **Jangan** menyertakan penilaian Anda ("sudah benar", "semua lulus"); tujuannya konteks bersih.
+- Verdict dan temuannya masuk laporan akhir **apa adanya**.
+- `PERLU PERBAIKAN` → perbaiki, lalu minta tinjau ulang (maksimal dua putaran). Masih gagal → laporkan sisa temuan, jangan menyatakan selesai.
+- Subagent tidak tersedia atau gagal → tulis itu di laporan; jangan mengklaim tinjauan terjadi.
+
 ## 4. Laporan akhir (format tetap)
 1. **Ringkasan**: apa yang diubah (file dan alasan).
 2. **Bukti**: perintah yang dijalankan dan hasilnya.

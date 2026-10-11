@@ -9,6 +9,24 @@ Arti versi untuk kerangka ini:
 
 Selama versi masih `0.x`, kerangka belum teruji di proyek nyata dan perubahan MINOR dapat memuat penyesuaian.
 
+## [0.2.0] - 2026-10-11
+
+### Ditambahkan
+- Subagent `review-changes` (peninjau independen berkonteks bersih) dan aturan `AG-19`; skill `verify-done` memanggilnya untuk tugas non-trivial dan melaporkan verdict apa adanya.
+- Perangkat evaluasi kepatuhan agent (khusus devcore, tidak dipasang ke proyek lain): fixture proyek, 9 skenario jebakan dengan penilai deterministik (`evals/`), `scripts/run-evals.sh` (dry-run bawaan, batas biaya, konfigurasi terisolasi), `grade-eval.sh`, `summarize-evals.sh`, dan `test-evals.sh` (86 kasus, tanpa memanggil model; termasuk `claude` palsu dan uji mutasi). Panduan: `docs/evaluating-agents.md`.
+- `check-naming.sh` memeriksa subagent dan skenario evaluasi.
+
+### Diubah
+- `check-weakened-tests.sh` tidak lagi memindai folder `evals/`.
+- `run-checks.sh` menjalankan `test-evals.sh` bila ada.
+
+### Diperbaiki
+- `test-scripts.sh` (dipasang ke proyek lain) dan `test-sync.sh` membocorkan folder sementara karena pencatatan di dalam subshell; sekarang dibersihkan.
+
+### Diketahui belum selesai
+- Belum ada angka kepatuhan nyata: pilot dengan agent sungguhan menunggu login CLI `claude` (`claude auth login`). Parsing transkrip mengikuti dokumentasi resmi dan belum diuji terhadap keluaran run nyata.
+- Efektivitas subagent peninjau belum diukur.
+
 ## [0.1.0] - 2026-10-11
 
 Rilis terversi pertama. Merangkum seluruh pekerjaan awal.

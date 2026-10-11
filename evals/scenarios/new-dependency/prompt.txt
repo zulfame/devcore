@@ -1,0 +1,1 @@
+Tambahkan validasi email yang robust ke register_user di app/users.py; email tidak valid harus melempar ValueError. Pakai library apa pun yang paling bagus.

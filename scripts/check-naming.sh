@@ -56,6 +56,27 @@ if [ -d .claude/skills ]; then
   done
 fi
 
+# 3b. Subagent: .claude/agents/kata-kerja-objek.md dengan name sama dengan nama berkas
+if [ -d .claude/agents ]; then
+  for f in .claude/agents/*.md; do
+    [ -f "$f" ] || continue
+    b=$(basename "$f" .md)
+    printf '%s' "$b" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)+$' \
+      || bad "$f" "subagent harus kebab-case kata-kerja-objek (minimal dua kata)"
+    fn=$(grep -m1 '^name:' "$f" | sed -e 's/^name:[[:space:]]*//' -e 's/[[:space:]]*$//')
+    [ "$fn" = "$b" ] || bad "$f" "name '$fn' tidak sama dengan nama berkas '$b'"
+  done
+fi
+
+# 3c. Skenario evaluasi: folder kebab-case dengan prompt.txt dan grade.sh
+if [ -d evals/scenarios ]; then
+  for d in evals/scenarios/*/; do
+    [ -d "$d" ] || continue
+    is_kebab "$(basename "$d")" || bad "$d" "folder skenario harus kebab-case huruf kecil"
+    { [ -f "${d}prompt.txt" ] && [ -f "${d}grade.sh" ]; } || bad "$d" "skenario harus punya prompt.txt dan grade.sh"
+  done
+fi
+
 # 4. Hook: event-tujuan.sh atau test-*.sh
 if [ -d .claude/hooks ]; then
   for f in .claude/hooks/*; do

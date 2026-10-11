@@ -9,4 +9,7 @@ CLAUDE.local.md
 *.pem
 *.key
 
+# Data mentah evaluasi agent (transkrip penuh; ringkasan .md di evals/results/ yang masuk git)
+evals/results/raw/
+
 .DS_Store

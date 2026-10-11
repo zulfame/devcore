@@ -3,10 +3,11 @@
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 pass=0; fail=0
-tmpdirs=()
-cleanup() { for d in "${tmpdirs[@]:-}"; do [ -n "$d" ] && rm -r "$d" 2>/dev/null; done; }
+REG=$(mktemp)
+cleanup() { while IFS= read -r d; do [ -n "$d" ] && rm -rf "$d"; done < "$REG"; rm -f "$REG"; }
 trap cleanup EXIT
-mkd() { local d; d=$(mktemp -d); tmpdirs+=("$d"); printf '%s' "$d"; }
+# Catat folder sementara di berkas (aman dipakai dalam $(...))
+mkd() { local d; d=$(mktemp -d); echo "$d" >> "$REG"; printf '%s' "$d"; }
 
 check() { # nama exit_harapan pola_output(boleh kosong) perintah...
   local name=$1 exp=$2 pat=$3; shift 3
@@ -19,7 +20,8 @@ check() { # nama exit_harapan pola_output(boleh kosong) perintah...
 
 # ---------- check-naming ----------
 N=$(mkd)
-mkdir -p "$N/docs/adr" "$N/.claude/skills/change-thing" "$N/.claude/hooks" "$N/scripts"
+mkdir -p "$N/docs/adr" "$N/.claude/skills/change-thing" "$N/.claude/hooks" "$N/.claude/agents" "$N/scripts"
+printf -- '---\nname: review-thing\n---\n' > "$N/.claude/agents/review-thing.md"
 touch "$N/README.md" "$N/CLAUDE.md" "$N/CHANGELOG.md" "$N/docs/engineering-standard.md" "$N/docs/ARCHITECTURE.md" "$N/docs/adr/0001-pilih-stack.md" \
       "$N/.claude/hooks/pretool-a-guard.sh" "$N/.claude/hooks/test-hooks.sh" "$N/scripts/check-x.sh"
 printf -- '---\nname: change-thing\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
@@ -33,6 +35,12 @@ bad_file "ADR tanpa nomor"      "docs/adr/pilih-stack.md"
 bad_file "ADR nomor 1 digit"    "docs/adr/1-x.md"
 bad_file "hook tanpa event"     ".claude/hooks/guard.sh"
 bad_file "skrip huruf besar"    "scripts/Do_It.sh"
+bad_file "subagent satu kata"   ".claude/agents/reviewer.md"
+printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/agents/review-thing.md"
+check "naming: name subagent != berkas" 1 "tidak sama" "$here/check-naming.sh" "$N"
+printf -- '---\nname: review-thing\n---\n' > "$N/.claude/agents/review-thing.md"
+mkdir -p "$N/evals/scenarios/Bad_Name"; touch "$N/evals/scenarios/Bad_Name/prompt.txt"
+check "naming: skenario evaluasi tidak kebab/tanpa grade.sh" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm -r "$N/evals"
 mkdir "$N/.claude/skills/single"; printf -- '---\nname: single\n---\n' > "$N/.claude/skills/single/SKILL.md"
 check "naming: skill satu kata" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm -r "$N/.claude/skills/single"
 printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
@@ -76,6 +84,7 @@ scenario "any di TypeScript gagal"   1 "PELEMAHAN" src/a.ts 'const a: any = 1;'
 scenario "any di JavaScript lulus"   0 "tidak ditemukan" src/a.js '// any value works here: any'
 scenario "devcore-allow lulus"       0 "tidak ditemukan" src/a.test.js 'it.skip("b", () => {}) // devcore-allow: flaky, tiket 12'
 scenario "markdown diabaikan"        0 "tidak ditemukan" docs/x.md 'contoh: it.skip( dijelaskan di sini'
+scenario "folder evals diabaikan"    0 "tidak ditemukan" evals/scenarios/x/grade.sh 'grep -Eq "it.skip(" file'
 scenario "perubahan biasa lulus"     0 "tidak ditemukan" src/a.js 'const total = a + b;'
 scenario "continue-on-error gagal"   1 "PELEMAHAN" .github/workflows/ci.yml '    continue-on-error: true'
 

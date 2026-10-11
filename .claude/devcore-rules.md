@@ -26,7 +26,7 @@ Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Bac
 |---|---|
 | Tugas non-trivial, atau kriteria "selesai" belum jelas | `write-brief` — **sebelum** menyentuh kode |
 | Tambah / ubah / ganti nama / hapus fungsi, endpoint, field, skema, kontrak | `change-function` — **sebelum** menulis kode |
-| Akan menyatakan tugas selesai | `verify-done` |
+| Akan menyatakan tugas selesai | `verify-done` (tugas non-trivial: memanggil subagent `review-changes`, AG-19) |
 | Menyentuh auth, input pengguna, query, upload, secret, integrasi | `check-security` |
 | Proyek baru memakai devcore, atau `docs/project-profile.md` kosong | `profile-project` |
 
