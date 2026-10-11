@@ -8,6 +8,11 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.3] - 2026-10-11
+Ditemukan saat memasang ke starter kit Laravel asli:
+- `check-links.sh` hanya memindai markdown yang dilacak/tidak diabaikan git (tanpa `vendor/`, `node_modules/`); di proyek terpasang cakupannya `CLAUDE.md`, `docs/`, `.devcore/`.
+- `sync-devcore.sh` memberi INFO bila `.gitignore` proyek mengabaikan berkas devcore (mis. `/.claude`, `/CLAUDE.md` dari Laravel Boost); `.gitignore` tidak diubah otomatis.
+
 ## [0.6.2] - 2026-10-11
 - Nama berkas dan folder buatan agent yang berbahasa Indonesia diganti ke Inggris sesuai `DC-05` (`docs/history.md`, `docs/blind-test/`, slug brief 0007–0011). Pelanggaran ditemukan pengguna; `check-naming.sh` hanya memeriksa huruf/format, bukan bahasa. Isi rubrik terkunci tidak berubah (hash cocok).
 - Batas yang diakui: bahasa nama berkas belum ditegakkan mesin (daftar kata Indonesia akan rapuh dan salah untuk proyek berbahasa Indonesia); tetap aturan teks `DC-05` plus review.
