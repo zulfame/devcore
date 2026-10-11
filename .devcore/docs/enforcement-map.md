@@ -47,6 +47,7 @@ Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi 
   - kode interpreter yang menghapus/membaca secret lewat jalur tak umum (hanya pola umum dikenali), SQL/migrasi destruktif, dan kebocoran non-berkas seperti `echo $TOKEN | curl …`;
   - Windows (PowerShell/cmd).
 - **Nama perintah dinamis** (`$X -rf y`, `$(echo rm) …`, `{rm,-rf,x}`) meminta konfirmasi, tidak diblokir.
+- **Mode `ask` (AG-15):** alasan konfirmasi hanya tampil ke pengguna; agent tidak menerima sinyal setujui/tolak dari Claude Code (tidak terdokumentasi), jadi arahannya hanya berupa aturan teks (`rules.md`, skill `write-brief`). Penanda PreToolUse/PostToolUse untuk menyuntik "disetujui pengguna" sengaja tidak dibangun: itu inferensi, dan bisa menyuntik klaim palsu bila mode izin otomatis menyetujui tanpa pengguna. Permintaan fitur: `docs/anthropic-feedback.md`.
 - **Diterima sebagai batas (audit final):**
   - penghapusan yang dibungkus program lain: `ssh host 'rm -rf …'`, `docker run … rm -rf`, `rsync --delete`; `git -C <dir> rebase|merge` melewati `permissions.ask` (pencocokan prefiks);
   - git lokal yang tidak diblokir: `commit --amend`, `reset` non-hard, `tag -d`, `branch -d` (hanya `-D`/paksa yang diblokir);

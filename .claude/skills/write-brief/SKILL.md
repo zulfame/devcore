@@ -10,6 +10,7 @@ Tanpa brief berstatus `approved`, hook menolak perubahan pada file kode. Tujuan 
 ## 1. Perlu brief?
 - **Perlu:** fitur baru, perubahan perilaku/kontrak/skema, hal menyentuh keamanan atau data, permintaan yang hasil akhirnya belum jelas.
 - **Tidak perlu:** perubahan dokumen (`*.md`, `docs/`) dan berkas konfigurasi agent. Berkas ini tidak terkena gerbang.
+- **Mode `ask`:** bila `BRIEF_GATE=ask`, pengguna yang menjawab prompt izin dan Anda tidak melihat prompt itu. Tool yang berhasil setelah gerbang berarti pengguna menyetujui; jangan melaporkan "tanpa prompt" atau mengusulkan mengubah `BRIEF_GATE`. Untuk tugas lebih dari satu perubahan kode, tetap susun brief supaya persetujuan tercatat di berkas, bukan hanya di prompt.
 - **Gerbang hook tidak menilai ukuran:** setiap perubahan berkas kode (termasuk typo atau komentar di kode) ditolak tanpa brief `approved`. Tugas kecil cukup brief **ringkas** (3 bagian wajib saja); satu brief yang masih `approved` membuka gerbang untuk tugas kecil berikutnya selama cakupannya cocok.
 
 ## 2. Periksa yang sudah ada
