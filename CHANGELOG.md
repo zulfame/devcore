@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.4] - 2026-10-11
+- README memuat prompt siap pakai untuk agent (verifikasi pasca-pasang, uji kepatuhan, tugas harian, melanjutkan sesi, audit silang dokumen–kode, review, koreksi pelanggaran). README dan `adopting.md` memuat temuan uji nyata: cek sebelum memasang (repo git, `.gitignore` yang mengabaikan `/.claude` atau `/CLAUDE.md`), cara memastikan terpasang benar, apa yang akan dialami pengguna, batas yang diakui, dan tabel masalah umum; hook Stop dijelaskan.
+
 ## [0.6.3] - 2026-10-11
 Ditemukan saat memasang ke starter kit Laravel asli:
 - `check-links.sh` hanya memindai markdown yang dilacak/tidak diabaikan git (tanpa `vendor/`, `node_modules/`); di proyek terpasang cakupannya `CLAUDE.md`, `docs/`, `.devcore/`.

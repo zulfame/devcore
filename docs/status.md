@@ -46,3 +46,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 
 ## Pembaruan 0.6.3 (branch kerja/temuan-laravel)
 - Uji pemasangan di starter kit Laravel asli (/Users/Bananay/Claude/laravel-test-devcore) menemukan 2 masalah, keduanya diperbaiki: check-links memindai vendor/, dan .gitignore proyek mengabaikan berkas devcore (kini ada INFO).
+
+## Pembaruan 0.6.4 (branch kerja/panduan-temuan)
+- README dan adopting.md diperbarui dengan temuan uji (repo git, .gitignore, verifikasi pemasangan, masalah umum).
