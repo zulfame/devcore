@@ -28,7 +28,15 @@ printf '.claude/skills/change-thing\n.claude/agents/review-thing.md\n' > "$N/.de
 touch "$N/README.md" "$N/CLAUDE.md" "$N/CHANGELOG.md" "$N/docs/ARCHITECTURE.md" "$N/docs/adr/0001-pilih-stack.md" \
       "$N/.devcore/docs/engineering-standard.md" "$N/.devcore/hooks/pretool-a-guard.sh" "$N/.devcore/hooks/test-hooks.sh" \
       "$N/.devcore/hooks/lib/bash-analyzer.py" "$N/.devcore/scripts/check-x.sh"
+mkdir -p "$N/scripts"; touch "$N/scripts/test-sync.sh"   # penanda repo devcore sendiri = mode ketat
 check "naming: struktur benar lulus" 0 "OK" "$here/check-naming.sh" "$N"
+
+# proyek terpasang (tanpa penanda): dokumen lama proyek tidak diperiksa, yang dibuat kerangka tetap
+M=$(mkd); mkdir -p "$M/docs/briefs" "$M/.devcore/docs" "$M/.devcore/hooks" "$M/.devcore/scripts"
+touch "$M/TODO.md" "$M/RELEASE_NOTES.md" "$M/docs/API_v2.md" "$M/docs/briefs/0001-ok.md"
+check "naming proyek: dokumen lama tidak diperiksa" 0 "OK" "$here/check-naming.sh" "$M"
+touch "$M/docs/briefs/jelek.md"
+check "naming proyek: brief salah nama tetap gagal" 1 "PENAMAAN" "$here/check-naming.sh" "$M"
 
 bad_file() { # nama path
   : > "$N/$2"; check "naming: $1" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm "$N/$2"; }
@@ -66,6 +74,10 @@ check "links: tautan rusak gagal" 1 "TAUTAN RUSAK" "$here/check-links.sh" "$L"
 rm "$L/c.md"
 printf '[naik](../a.md)\n' > "$L/docs/d.md"
 check "links: relatif ../ valid" 0 "OK" "$here/check-links.sh" "$L"
+printf 'Contoh sintaks: `[x](tidak-ada.md)`\n\n```\n[y](juga-tidak-ada.md)\n```\n' > "$L/docs/contoh.md"
+check "links: tautan di dalam kode inline/blok diabaikan" 0 "OK" "$here/check-links.sh" "$L"
+printf '# spasi\n' > "$L/docs/dengan spasi.md"; printf '[s](docs/dengan%%20spasi.md)\n' > "$L/e.md"
+check "links: %20 pada tautan didekode" 0 "OK" "$here/check-links.sh" "$L"
 
 # ---------- check-weakened-tests ----------
 R=$(mkd)

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Periksa penamaan sesuai DC-05 pada area kerangka dan dokumen proyek:
-#   - dokumen *.md di root, docs/, dan .devcore/docs/
+# Periksa penamaan sesuai DC-05.
+#   Repo devcore sendiri (ada scripts/test-sync.sh): dokumen *.md di root, docs/, dan .devcore/docs/.
+#   Proyek terpasang: hanya yang dibuat kerangka (docs/briefs/, docs/adr/, .devcore/docs/); dokumen lama proyek
+#   tidak diperiksa agar adopsi tidak gagal di CI sejak hari pertama (AG-16: baseline, bukan refactor).
 #   - hook, pustaka hook, dan skrip di .devcore/
 #   - skill dan subagent MILIK KERANGKA (daftar di .devcore/managed-claude.txt); skill/subagent proyek tidak diperiksa
 # Folder kode dan skrip milik proyek (src/, scripts/, ...) sengaja tidak diperiksa.
@@ -18,9 +20,14 @@ is_role() { case "$role_names" in *" $1 "*) return 0 ;; esac; return 1; }
 name_of() { grep -m1 '^name:' "$1" | sed -e 's/^name:[[:space:]]*//' -e 's/[[:space:]]*$//'; }
 
 # 1. Dokumen markdown
+strict=0; [ -f scripts/test-sync.sh ] && strict=1
 list_docs() {
-  find . -maxdepth 1 -type f -name '*.md'
-  for d in docs .devcore/docs; do [ -d "$d" ] && find "$d" -type f -name '*.md'; done
+  if [ "$strict" -eq 1 ]; then
+    find . -maxdepth 1 -type f -name '*.md'
+    for d in docs .devcore/docs; do [ -d "$d" ] && find "$d" -type f -name '*.md'; done
+  else
+    for d in docs/briefs docs/adr .devcore/docs; do [ -d "$d" ] && find "$d" -type f -name '*.md'; done
+  fi
 }
 while IFS= read -r f; do
   rel=${f#./}; file=$(basename "$rel"); base=${file%.md}
@@ -35,7 +42,8 @@ while IFS= read -r f; do
 done < <(list_docs | sort)
 
 # 2. Folder di dalam docs/ dan .devcore/docs/
-for base in docs .devcore/docs; do
+folder_bases=".devcore/docs"; [ "$strict" -eq 1 ] && folder_bases="docs .devcore/docs"
+for base in $folder_bases; do
   [ -d "$base" ] || continue
   while IFS= read -r d; do
     [ "$d" = "$base" ] && continue

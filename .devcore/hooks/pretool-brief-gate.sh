@@ -11,6 +11,20 @@ path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_input.notebo
 root=${CLAUDE_PROJECT_DIR:-$(pwd)}
 root=${root%/}
 
+# Normalisasi jalur (buang ./ dan ../, jalur relatif dihitung dari cwd) agar pengecualian tidak bisa dilewati
+norm() { # jalur basis
+  local p=$1 res="" seg old=$IFS
+  case "$p" in /*) ;; *) p="$2/$p" ;; esac
+  IFS=/; set -f
+  for seg in $p; do
+    case "$seg" in ''|.) ;; ..) res=${res%/*} ;; *) res="$res/$seg" ;; esac
+  done
+  set +f; IFS=$old
+  printf '%s' "${res:-/}"
+}
+cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
+path=$(norm "$path" "${cwd:-$root}")
+
 mode=block
 conf="$root/.claude/devcore.conf"
 if [ -f "$conf" ]; then

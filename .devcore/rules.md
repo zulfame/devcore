@@ -11,7 +11,7 @@ Standar lengkap: [engineering-standard.md](docs/engineering-standard.md). Baca b
 2. **Ruang lingkup.** Kerjakan yang diminta saja; temuan lain dilaporkan, tidak diperbaiki diam-diam. (AG-05)
    - Salah: Memperbaiki bug validasi di `invoice.py` sambil "sekalian" merapikan `laporan.py`.
    - Benar: Memperbaiki `invoice.py` saja, lalu: "`laporan.py` punya fungsi 200 baris; tidak saya ubah. Catat sebagai utang teknis?"
-3. **Brief dulu.** Tugas non-trivial butuh brief `approved` di `docs/briefs/` (tujuan, kriteria yang dapat diuji, di luar lingkup); tanpa itu perubahan kode ditolak hook. Pakai skill `write-brief`; `approved` hanya setelah pengguna setuju di chat. (AG-15)
+3. **Brief dulu.** Tugas non-trivial butuh brief `approved` di `docs/briefs/` (tujuan, kriteria yang dapat diuji, di luar lingkup); hook menolak setiap perubahan kode tanpa brief `approved` (tugas kecil: brief ringkas). Pakai skill `write-brief`; `approved` hanya setelah pengguna setuju di chat. (AG-15)
    - Salah: Langsung menulis modul pembayaran setelah diminta "tambahkan pembayaran QRIS".
    - Benar: Menyusun brief (kriteria: "pembayaran sukses mengubah status pesanan menjadi `paid`"), menunjukkannya, menunggu "setuju".
 4. **Tanya bila ambigu dan berisiko.** Tanya bila ambigu dan salah tafsir berisiko tinggi (data, keamanan, kontrak publik, perubahan besar); hal kecil: pilih default wajar dan sebut asumsinya. (AG-03)
@@ -53,7 +53,7 @@ Standar lengkap: [engineering-standard.md](docs/engineering-standard.md). Baca b
 ## Git (bawaan kerangka: hanya atas permintaan)
 - **Dilarang** commit, push, merge, atau publikasi tanpa permintaan eksplisit pengguna di chat (AG-13). Persetujuan satu kali tidak berlaku untuk berikutnya.
 - Izin berkelanjutan (mis. auto commit/push) **hanya sah** bila tertulis di `CLAUDE.local.md` milik proyek ini. File itu lokal per proyek: tidak di-commit, tidak disalin. Tanpa file itu, anggap tidak ada izin.
-- Dalam kondisi apa pun **dilarang**: force push, reset --hard, menghapus branch, menulis ulang riwayat (diblokir hook).
+- Dalam kondisi apa pun **dilarang** tanpa persetujuan eksplisit: force push, reset --hard, git clean -f, menghapus branch secara paksa (-D), dan menulis ulang riwayat (filter-branch, reflog expire, `commit --amend` pada commit yang sudah dibagikan). Bentuk umumnya diblokir hook; bentuk lain tidak dijaga mesin tetapi tetap dilarang (lihat peta penegakan).
 - Pesan commit menjelaskan *mengapa*, bukan hanya apa.
 
 ## Aturan mesin — jangan dilawan

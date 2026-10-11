@@ -72,7 +72,14 @@ main() {
   echo
 
   local n_new=0 n_upd=0 n_same=0 n_conf=0 changed_dir=1
-  put() { [ "$apply" -eq 1 ] || return 0; mkdir -p "$(dirname "$2")"; rm -rf "$2"; cp -R "$1" "$2"; }
+  # salin ke samping dulu; yang lama hanya diganti bila salinan berhasil (kegagalan di tengah jalan tidak merusak pemasangan lama)
+  put() {
+    [ "$apply" -eq 1 ] || return 0
+    mkdir -p "$(dirname "$2")"
+    rm -rf "$2.baru"
+    cp -R "$1" "$2.baru" || { rm -rf "$2.baru"; die "gagal menyalin $1; pemasangan lama tidak diubah"; }
+    rm -rf "$2"; mv "$2.baru" "$2"
+  }
 
   # ---------- skill dan subagent milik kerangka (di .claude/) ----------
   local p
@@ -91,7 +98,8 @@ main() {
   else say GANTI ".devcore/ ($old_ver → $ver)"; n_upd=$((n_upd+1)); fi
   if [ "$apply" -eq 1 ]; then
     if [ "$changed_dir" -eq 1 ]; then
-      rm -rf "$tgt/.devcore.baru"; cp -R "$src/.devcore" "$tgt/.devcore.baru"
+      rm -rf "$tgt/.devcore.baru"
+      cp -R "$src/.devcore" "$tgt/.devcore.baru" || { rm -rf "$tgt/.devcore.baru"; die "gagal menyalin .devcore; pemasangan lama tidak diubah"; }
       rm -rf "$tgt/.devcore"; mv "$tgt/.devcore.baru" "$tgt/.devcore"
     fi
     cp "$tmp/newowned" "$tgt/.devcore/owned-claude.txt"
@@ -100,7 +108,7 @@ main() {
   # ---------- .claude/settings.json: hook milik kerangka dikenali dari prefix .devcore/ ----------
   cat > "$tmp/merge.jq" <<'JQ'
 def dedupe: reduce .[] as $x ([]; if index([$x]) == null then . + [$x] else . end);
-def own: startswith("$CLAUDE_PROJECT_DIR/.devcore/");
+def own: test("^\"?\\$CLAUDE_PROJECT_DIR\"?/\\.devcore/");
 def strip: map(.hooks |= map(select(((.command // "") | own) | not))) | map(select((.hooks | length) > 0));
 def merge($sg): reduce $sg[] as $g (.;
     (map(.matcher // "") | index([$g.matcher // ""])) as $i
@@ -174,7 +182,7 @@ JQ
     [ "$nwf" -gt 0 ] && echo "INFO: ada $nwf workflow CI lain; devcore-checks.yml berjalan terpisah dan hanya memeriksa kerangka, tambahkan test proyek Anda di workflow yang ada."
   fi
   if [ -e "$ds" ] && jq empty "$ds" >/dev/null 2>&1; then
-    local ph; ph=$(jq '[.hooks // {} | .[][]?.hooks[]? | select(((.command // "") | startswith("$CLAUDE_PROJECT_DIR/.devcore/")) | not)] | length' "$ds")
+    local ph; ph=$(jq '[.hooks // {} | .[][]?.hooks[]? | select(((.command // "") | test("^\"?\\$CLAUDE_PROJECT_DIR\"?/\\.devcore/")) | not)] | length' "$ds")
     [ "${ph:-0}" -gt 0 ] && echo "INFO: settings.json punya $ph hook milik proyek; dipertahankan dan berjalan berdampingan dengan hook devcore."
   fi
   echo "Ringkasan: baru=$n_new perbarui=$n_upd sama=$n_same bentrok=$n_conf"

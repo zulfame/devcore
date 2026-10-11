@@ -10,11 +10,15 @@ base=${1:-}
 if [ -z "$base" ] && git rev-parse --verify -q origin/main >/dev/null 2>&1; then base=origin/main; fi
 
 fail=0
+skipped=0
 step() { # judul perintah...
-  local title=$1; shift
+  local title=$1 out rc; shift
   echo
   echo "== $title"
-  "$@" || { echo "GAGAL: $title"; fail=1; }
+  out=$("$@" 2>&1); rc=$?
+  printf '%s\n' "$out"
+  case "$out" in *DILEWATI*) skipped=1 ;; esac
+  [ "$rc" -eq 0 ] || { echo "GAGAL: $title"; fail=1; }
 }
 
 step "Tes hook penjaga"          .devcore/hooks/test-hooks.sh
@@ -27,4 +31,5 @@ step "Pelemahan pemeriksaan (AG-09)" .devcore/scripts/check-weakened-tests.sh "$
 
 echo
 if [ "$fail" -eq 0 ]; then echo "SEMUA PEMERIKSAAN LULUS"; else echo "ADA PEMERIKSAAN YANG GAGAL"; fi
+[ "$skipped" -eq 1 ] && echo "Catatan: ada pemeriksaan yang DILEWATI (lihat di atas); lulus tidak berarti semuanya dijalankan."
 exit "$fail"

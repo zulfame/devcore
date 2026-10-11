@@ -60,10 +60,10 @@ Perintah destruktif database framework (`migrate:fresh`, `db:wipe`, `wp db reset
 
 ## Memperbarui
 ```bash
-.devcore/scripts/sync-devcore.sh --source https://github.com/zulfame/devcore.git          # dry-run
-.devcore/scripts/sync-devcore.sh --source https://github.com/zulfame/devcore.git --apply
+.devcore/scripts/sync-devcore.sh --source https://github.com/zulfame/devcore.git --ref v0.7.0          # dry-run
+.devcore/scripts/sync-devcore.sh --source https://github.com/zulfame/devcore.git --ref v0.7.0 --apply
 ```
-Seluruh `.devcore/` diganti; file milik proyek tidak berubah. Perubahan lokal di dalam `.devcore/` ikut tertimpa, dan terlihat di `git diff` sebelum Anda commit. Versi terpasang ada di `.devcore/VERSION`; perubahan antarversi di `CHANGELOG.md` repositori devcore.
+Tanpa `--ref`, sumber mengikuti cabang default (versi terbaru di `main`), bukan rilis bertag; untuk pemasangan yang dapat diulang, pin ke tag. Seluruh `.devcore/` diganti; file milik proyek tidak berubah. Perubahan lokal di dalam `.devcore/` ikut tertimpa, dan terlihat di `git diff` sebelum Anda commit. Versi terpasang ada di `.devcore/VERSION`; perubahan antarversi di `CHANGELOG.md` repositori devcore.
 
 ## Serah terima sesi
 Agent tidak mengingat sesi sebelumnya. Hook `session-status-loader.sh` memuat awal `docs/status.md` dan daftar brief `approved` di setiap awal sesi; agent memperbarui `docs/status.md` di akhir tugas lewat skill `verify-done` (`AG-17`). Jaga berkas itu singkat (±40 baris).
@@ -76,11 +76,17 @@ Hook Stop `stop-status-reminder.sh` mengingatkan satu kali di akhir jawaban bila
 | Sync menolak: "bukan repo git" / "working tree tidak bersih" | folder belum `git init`, atau ada perubahan belum di-commit | `git init` lalu commit kondisi awal; atau commit/stash dulu |
 | INFO: ".gitignore proyek mengabaikan berkas devcore" | `.gitignore` memuat `/.claude` atau `/CLAUDE.md` (sebagian generator proyek atau alat agent menambahkannya otomatis) | hapus barisnya; tanpa itu hook/aturan tidak ter-commit dan CI tidak melihatnya |
 | `run-checks.sh` gagal di tautan dokumen milik pustaka | versi sebelum 0.6.3 memindai `vendor/` | perbarui devcore (`sync-devcore.sh --source ... --apply`) |
-| `run-checks.sh` gagal "PENAMAAN" untuk dokumen lama proyek | aturan `DC-05` terhadap berkas yang tidak sesuai | catat pengecualian di tabel "Pengecualian devcore" pada `CLAUDE.md`, jangan ganti nama berkas lama (`AG-16`) |
+| `run-checks.sh` gagal "PENAMAAN" | brief/ADR di `docs/briefs/` atau `docs/adr/`, atau berkas di `.devcore/`, tidak sesuai `NNNN-judul-singkat.md`. Dokumen lama proyek tidak diperiksa (`AG-16`) | ganti nama berkas baru itu; atau catat pengecualian di tabel "Pengecualian devcore" pada `CLAUDE.md` |
 | Hook tidak terasa aktif | sesi dibuka sebelum pemasangan, atau `.claude/settings.json` terabaikan git | buka ulang Claude Code di folder proyek; periksa `git check-ignore -v .claude/settings.json` |
 | Perintah diblokir padahal tidak berbahaya | penjaga membaca teks (mis. skrip yang menyebut `rmtree` atau berkas rahasia di dalam string) | jalankan lewat tool Edit/Write atau ubah penulisan; jangan memecah perintah untuk mengakali (`Aturan mesin`) |
 | Gerbang brief menolak perubahan kode | belum ada brief `approved` | skill `write-brief`; atau `BRIEF_GATE=ask` selama masa uji |
 | Dokumen lama proyek gagal pemeriksaan CI devcore | cakupan pemeriksa tautan di proyek terpasang: `CLAUDE.md`, `docs/`, `.devcore/` | perbaiki tautan di dokumen itu atau pindahkan ke luar `docs/` |
 
 ## Melepas devcore
-Hapus `.devcore/`, skill dan subagent yang tercatat di `.devcore/owned-claude.txt`, entri hook dengan prefix `$CLAUDE_PROJECT_DIR/.devcore/` di `.claude/settings.json`, dan baris impor di `CLAUDE.md`. Berkas milik proyek tetap milik Anda.
+Urutan penting (daftar kepemilikan ada di dalam `.devcore/`, jadi baca dulu sebelum menghapusnya):
+1. Catat skill dan subagent di `.devcore/owned-claude.txt`, lalu hapus berkas itu satu per satu (`.claude/skills/<nama>`, `.claude/agents/<nama>.md`).
+2. Hapus entri hook yang perintahnya diawali `"$CLAUDE_PROJECT_DIR"/.devcore/` (atau bentuk lama `$CLAUDE_PROJECT_DIR/.devcore/`) dan entri `permissions` devcore dari `.claude/settings.json`.
+3. Hapus baris `@.devcore/rules.md` di `CLAUDE.md`.
+4. Hapus `.github/workflows/devcore-checks.yml` (ia memanggil `.devcore/scripts/run-checks.sh`, sehingga CI gagal bila `.devcore/` hilang) dan `.claude/devcore.conf`.
+5. Terakhir hapus folder `.devcore/`.
+Berkas milik proyek (`docs/status.md`, `docs/project-profile.md`, `docs/briefs/`) tetap milik Anda.

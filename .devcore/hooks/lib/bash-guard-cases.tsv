@@ -130,6 +130,35 @@ allow@brief	curl https://x.test | tee f
 allow@brief	mkdir -p build && cp a build/b
 allow@nobrief	echo hi > docs/a.md
 allow@nobrief	cat > README.md <<EOF\nhalo\nEOF
+# --- temuan audit final: penulisan lewat unduh/patch, git switch, varian secret, heredoc di $(...) ---
+block@nobrief	curl -sSL https://x.test -o src/app.py
+block@nobrief	wget -O src/app.py https://x.test/a
+block@nobrief	git apply fix.patch
+block@nobrief	patch -p1 < fix.diff
+allow@nobrief	sed -i -e 's/a/b/' README.md
+block@nobrief	sed -i -e 's/a/b/' src/app.py
+allow@nobrief	sed -i '' 's/a/b/' README.md
+allow@nobrief	sed -i '' 's/a/b/' docs/x.md
+block@nobrief	sed -i '' 's/a/b/' src/app.py
+block	git switch -f main
+block	git switch --discard-changes main
+block	git worktree remove --force x
+block	git show HEAD:.env
+block	git cat-file -p HEAD:.env.production
+block	export
+allow	cat .env.local.example
+allow	curl https://api.test/v1/credentials
+allow	curl https://x.test/config/secrets.json
+allow	git commit -m "$(cat <<'EOF'\nfix: user's data: jelaskan rm -rf dan .env di dokumen\nEOF\n)"
+allow	systemctl status nginx
+allow	crontab -l
+allow	nginx -t
+allow	launchctl list
+block	systemctl restart nginx
+block	nginx -s stop
+block	python3 -c "import os; os.system('rm -rf build')"
+block	node -e "require('child_process').execSync('rm -rf build')"
+ask	{rm,-rf,x}
 # --- harus meminta konfirmasi ---
 ask	eval "$CMD"
 # --- nama perintah dinamis: hook tidak tahu apa yang dijalankan ---
@@ -192,7 +221,7 @@ allow	npm install
 allow	pip install -r requirements.txt
 allow	psql -c "select 1"
 allow	psql -c "SELECT * FROM users LIMIT 5"
-allow	curl -sSL https://x.test -o f.sh
+allow@brief	curl -sSL https://x.test -o f.sh
 allow	curl https://x.test | jq .
 allow	curl -s https://x.test | jq .
 allow	curl -X POST -d '{"a":1}' https://api.test/x

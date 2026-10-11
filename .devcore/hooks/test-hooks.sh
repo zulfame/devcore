@@ -82,6 +82,9 @@ runp "gerbang: .claude bebas"           $G 0 "$P" "$(edit_in "$P/.claude/x.json"
 runp "gerbang: README bebas"            $G 0 "$P" "$(edit_in "$P/README.md")"
 runp "gerbang: .devcore bebas (milik kerangka, bukan kode proyek)" $G 0 "$P" "$(edit_in "$P/.devcore/hooks/x.sh")"
 runp "gerbang: di luar proyek bebas"    $G 0 "$P" "$(edit_in "/tmp/lain/app.py")"
+runp "gerbang: traversal docs/.. -> blokir"  $G 2 "$P" "$(edit_in "$P/docs/../src/app.py")"
+runp "gerbang: traversal .claude/.. -> blokir" $G 2 "$P" "$(edit_in "$P/.claude/../src/app.py")"
+runp "gerbang: jalur relatif kode -> blokir" $G 2 "$P" "$(edit_in "src/app.py" | jq --arg c "$P" ".cwd=\$c")"
 filled_brief draft    > "$P/docs/briefs/0001-t.md"
 runp "gerbang: brief draft -> blokir"   $G 2 "$P" "$(edit_in "$P/src/app.py")"
 filled_brief done     > "$P/docs/briefs/0001-t.md"
@@ -103,6 +106,12 @@ P=$(newproj); W=pretool-write-guard.sh
 is_ask "tulis Status: approved -> ask"  $W "$P" "$(write_in "$P/docs/briefs/0002-x.md" $'# B\n\nStatus: approved\n')" yes
 is_ask "tulis Status: draft -> tanpa ask" $W "$P" "$(write_in "$P/docs/briefs/0002-x.md" $'# B\n\nStatus: draft\n')" no
 is_ask "ubah devcore.conf -> ask"       $W "$P" "$(write_in "$P/.claude/devcore.conf" 'BRIEF_GATE=off')" yes
+is_ask "edit parsial draft->approved -> ask" $W "$P" "$(jq -n --arg p "$P/docs/briefs/0002-x.md" '{tool_name:"Edit",tool_input:{file_path:$p,old_string:"draft",new_string:"approved"}}')" yes
+is_ask "settings.local.json -> ask"     $W "$P" "$(write_in "$P/.claude/settings.local.json" '{}')" yes
+is_ask "skill diubah -> ask"            $W "$P" "$(write_in "$P/.claude/skills/x/SKILL.md" 'x')" yes
+is_ask "subagent diubah -> ask"         $W "$P" "$(write_in "$P/.claude/agents/a.md" 'x')" yes
+is_ask "CLAUDE.local.md -> ask"         $W "$P" "$(write_in "$P/CLAUDE.local.md" 'x')" yes
+is_ask "CLAUDE.md biasa -> tanpa ask"   $W "$P" "$(write_in "$P/CLAUDE.md" 'x')" no
 rm -r "$P"
 
 # ---------- stop-status-reminder (AG-17) ----------
@@ -139,6 +148,12 @@ printf '# Status\n\nDiperbarui: 2026-01-01 oleh agent\n\n## Fokus saat ini\nMeng
 out=$(sess_out "$P")
 expect_out "sesi: status terisi dimuat" yes "Mengerjakan fitur X" "$out"
 expect_out "sesi: ada penanda AG-17" yes "AG-17" "$out"
+{ printf '# Status\n\nDiperbarui: 2026-01-01 oleh agent\n\n'; for i in $(seq 1 45); do echo "- baris $i"; done; } > "$P/docs/status.md"
+out=$(sess_out "$P")
+expect_out "sesi: status >40 baris memberi tanda terpotong" yes "dipotong saat dimuat" "$out"
+printf '# Status\n\nDiperbarui: 2026-01-01 oleh agent\n\nRingkas.\n' > "$P/docs/status.md"
+out=$(sess_out "$P")
+expect_out "sesi: status ringkas tanpa tanda terpotong" no "dipotong saat dimuat" "$out"
 printf '# Status\n\nDiperbarui: <YYYY-MM-DD> oleh <agent>\n' > "$P/docs/status.md"
 out=$(sess_out "$P")
 expect_out "sesi: templat kosong diberi catatan" yes "templat kosong" "$out"
