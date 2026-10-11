@@ -21,7 +21,8 @@ step "Tes hook penjaga"          .devcore/hooks/test-hooks.sh
 step "Tes skrip pemeriksa"       .devcore/scripts/test-scripts.sh
 [ -x scripts/test-sync.sh ] && step "Tes sinkronisasi" scripts/test-sync.sh
 step "Penamaan (DC-05)"          .devcore/scripts/check-naming.sh
-step "Tautan dokumen"            .devcore/scripts/check-links.sh
+step "Ukuran analyzer"           .devcore/scripts/check-analyzer-size.sh
+step "Tautan dokumen"           .devcore/scripts/check-links.sh
 step "Pelemahan pemeriksaan (AG-09)" .devcore/scripts/check-weakened-tests.sh "$base"
 
 echo

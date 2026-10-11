@@ -97,5 +97,9 @@ check "weakened: test dihapus -> peringatan" 0 "PERINGATAN" bash -c "cd '$R' && 
 check "weakened: base tidak valid dilewati" 0 "DILEWATI" bash -c "cd '$R' && '$here/check-weakened-tests.sh' 0000000000000000000000000000000000000000"
 check "weakened: base kosong dilewati" 0 "DILEWATI" bash -c "cd '$R' && '$here/check-weakened-tests.sh' ''"
 
+# ---------- check-analyzer-size ----------
+check "ukuran analyzer: di bawah batas lulus" 0 "OK" "$here/check-analyzer-size.sh"
+check "ukuran analyzer: melebihi batas gagal" 1 "melebihi batas" env ANALYZER_MAX_LINES=10 "$here/check-analyzer-size.sh"
+
 echo "Lulus: $pass  Gagal: $fail"
 [ "$fail" -eq 0 ]
