@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.6.6] - 2026-10-11
+- README: bagian "Apa yang Anda dapat" menjelaskan isi dan manfaat tiap komponen (standar, aturan inti, pengingat, skill, subagent, hook, template, pemeriksa/CI, sync, peta penegakan) dan mengelompokkan 22 bagian standar.
+
 ## [0.6.5] - 2026-10-11
 - README: bagian prompt dirapikan (tabel kapan memakai; prompt 1–3 "mulai di sini"; prompt 4–7 dilipat). Isi prompt tidak berubah.
 

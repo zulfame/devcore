@@ -4,6 +4,32 @@ Kerangka kerja untuk membangun sistem bersama agent AI (Claude Code): **standar*
 
 Versi: [.devcore/VERSION](.devcore/VERSION) · Perubahan: [CHANGELOG.md](CHANGELOG.md) · Latar belakang keputusan: [docs/history.md](docs/history.md)
 
+## Apa yang Anda dapat
+Masalah yang dijawab: aturan yang hanya ditulis di markdown sering dilanggar agent, dan tiap sesi baru harus dijelaskan ulang. devcore menyatukan **aturan, prosedur, dan penjaga otomatis** dalam satu folder yang bisa dipasang di proyek baru maupun existing, tanpa mengikat bahasa atau framework.
+
+| Komponen | Isi | Manfaat untuk proyek |
+|---|---|---|
+| **Standar rekayasa** ([engineering-standard.md](.devcore/docs/engineering-standard.md)) | 22 bagian, ±130 aturan ber-ID (mis. `AG-06`, `SC-07`), ditandai WAJIB/DILARANG | Satu acuan bersama untuk kode, data, keamanan, test, dan dokumentasi; review bisa menyebut ID, bukan selera |
+| **Aturan inti** ([rules.md](.devcore/rules.md)) | 17 aturan ringkas dengan contoh Salah → Benar, dimuat ke setiap sesi lewat `CLAUDE.md` | Agent tahu aturan tanpa Anda mengulang; contoh mengurangi salah tafsir |
+| **Pengingat per pesan** (`reminder.txt`) | Ringkasan aturan yang disuntik tiap pesan Anda | Aturan tetap segar di sesi yang panjang |
+| **5 skill** (`.claude/skills/`) | `write-brief` (brief tugas), `change-function` (cek dampak sebelum ubah fungsi/kontrak), `verify-done` (bukti per kriteria sebelum "selesai"), `check-security`, `profile-project` (catat baseline proyek lama) | Prosedur berulang yang tidak bergantung ingatan agent; tugas jelas batasnya dan selesai dengan bukti |
+| **Subagent `review-changes`** | Peninjau independen dengan konteks bersih | Pekerjaan tidak dinilai oleh pembuatnya sendiri; ikut memeriksa kecocokan dokumen–kode (`DC-06`) |
+| **6 hook penjaga** (`.devcore/hooks/`) | Penjaga bash (rm -r, git destruktif, secret, `sudo`, `curl \| sh`), penjaga tulis (secret literal, berkas kerangka), gerbang brief (kode hanya berubah bila ada brief `approved`), pengingat aturan, pemuat serah terima sesi, pengingat status di akhir tugas | Aturan terpenting ditegakkan mesin, bukan hanya diminta; agent berikutnya melanjutkan dari `docs/status.md` tanpa membaca seluruh proyek |
+| **4 template** (`.devcore/docs/templates/`) | Brief tugas, status sesi, profil proyek, `CLAUDE.md` awal | Dokumen kerja seragam; proyek lama dapat mencatat kondisi awal tanpa refactor |
+| **Pemeriksa dan CI** (`run-checks.sh`, `devcore-checks.yml`) | Penamaan, tautan dokumen, deteksi pelemahan test, batas ukuran penjaga bash, tes hook | Pelanggaran yang lolos dari sesi tetap tertangkap di commit/CI |
+| **`sync-devcore.sh`** | Pasang dan perbarui dengan dry-run, laporan bentrok, penggabungan `settings.json` | Aman untuk proyek existing: milik proyek tidak ditimpa |
+| **Peta penegakan** ([enforcement-map.md](.devcore/docs/enforcement-map.md)) | Daftar tiap aturan: dijaga mesin, terpandu prosedur, atau sekadar saran, beserta batasnya | Kejujuran tentang apa yang benar-benar terjamin |
+
+**Cakupan 22 bagian standar**
+- **Cara kerja agent:** alur kerja, disiplin ruang lingkup dan tindakan aman, Definition of Done (bagian 1–3).
+- **Desain dan kode:** arsitektur, standar kode, aksesibilitas/usability/konsistensi UI (4, 5, 19).
+- **Data dan keamanan:** validasi UI–backend, keamanan aplikasi, API dan integrasi, database, konfigurasi, dependency dan supply chain (6–9, 14, 15).
+- **Keandalan:** performa, error handling, logging (10, 11, 13).
+- **Kualitas dan rilis:** testing, build/CI/rilis, dokumentasi dan tata kelola, checklist kesiapan rilis (12, 16, 17, 20).
+- **Batas dan penerapan:** hal yang dikelola server/OS (dicatat sebagai prasyarat, bukan tugas agent), penerapan lintas teknologi, referensi (18, 21, 22).
+
+**Batas yang diakui:** efektivitas jangka panjang belum terbukti dan penjaga adalah pagar pengaman, bukan sandbox ([rinciannya di bawah](#batas-yang-diakui)).
+
 ## Isi
 ```
 .devcore/                       seluruh kerangka (satu folder; diganti utuh saat pembaruan)
