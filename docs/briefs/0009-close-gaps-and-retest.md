@@ -17,4 +17,4 @@ Menutup dua celah yang terbuka lagi di 0.5.1 (one-liner interpreter yang menghap
 Tidak ada.
 
 ## Catatan penyelesaian
-Selesai. Celah interpreter ditutup (0.5.2); pemasangan existing dari klon GitHub diuji dan menemukan bug AGENTS.md (0.5.3); putaran 3 dijalankan dan menemukan celah `git checkout <berkas>` (0.5.4). Hasil di `docs/uji-buta/hasil.md`.
+Selesai. Celah interpreter ditutup (0.5.2); pemasangan existing dari klon GitHub diuji dan menemukan bug AGENTS.md (0.5.3); putaran 3 dijalankan dan menemukan celah `git checkout <berkas>` (0.5.4). Hasil di `docs/blind-test/results.md`.

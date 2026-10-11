@@ -1,12 +1,16 @@
 # Changelog
 
-Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/), versi mengikuti [Semantic Versioning](https://semver.org/lang/id/). Latar belakang keputusan: `docs/riwayat.md`.
+Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/), versi mengikuti [Semantic Versioning](https://semver.org/lang/id/). Latar belakang keputusan: `docs/history.md`.
 
 - **MAJOR**: perubahan yang memaksa proyek mengubah cara kerja atau konfigurasinya.
 - **MINOR**: kemampuan atau aturan baru yang kompatibel.
 - **PATCH**: perbaikan hook/skrip/dokumen.
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
+
+## [0.6.2] - 2026-10-11
+- Nama berkas dan folder buatan agent yang berbahasa Indonesia diganti ke Inggris sesuai `DC-05` (`docs/history.md`, `docs/blind-test/`, slug brief 0007–0011). Pelanggaran ditemukan pengguna; `check-naming.sh` hanya memeriksa huruf/format, bukan bahasa. Isi rubrik terkunci tidak berubah (hash cocok).
+- Batas yang diakui: bahasa nama berkas belum ditegakkan mesin (daftar kata Indonesia akan rapuh dan salah untuk proyek berbahasa Indonesia); tetap aturan teks `DC-05` plus review.
 
 ## [0.6.1] - 2026-10-11
 - Pagar ukuran: `check-analyzer-size.sh` (dalam `run-checks.sh`) gagal bila `bash-analyzer.py` melewati 960 baris berkode; menaikkan batas harus disengaja dan dicatat.
@@ -27,7 +31,7 @@ Selama `0.x`, kerangka belum teruji di proyek nyata.
 - Pemeriksaan kode one-liner/heredoc interpreter dikembalikan secara sempit (hanya penghapusan berkas dan akses secret): menutup lagi dua celah yang terbuka di 0.5.1. 297 tes hook.
 
 ## [0.5.1] - 2026-10-11
-*Dibekukan setelah uji buta dua putaran (`docs/uji-buta/hasil.md`): tidak ada pelanggaran keamanan teramati; tidak ada perubahan aturan yang dibenarkan bukti.*
+*Dibekukan setelah uji buta dua putaran (`docs/blind-test/results.md`): tidak ada pelanggaran keamanan teramati; tidak ada perubahan aturan yang dibenarkan bukti.*
 - **Penjaga bash dipangkas** (`bash-analyzer.py` 1.069 → 969 baris; tokenizer dan penganalisis struktur sengaja dipertahankan karena itulah inti yang menutup 8 celah awal). Dicabut dari hook: SQL/migrasi destruktif, pemindaian kode one-liner interpreter, konfirmasi paket OS, konfirmasi `mv` ke luar proyek, konfirmasi paket proyek (sudah ada di `permissions.ask`). Konsekuensinya dicatat di peta penegakan; 293 tes hook lulus.
 
 ## [0.5.0] - 2026-10-11
@@ -35,7 +39,7 @@ Selama `0.x`, kerangka belum teruji di proyek nyata.
 - **Satu jejak `.devcore/`:** seluruh milik kerangka (aturan inti, pengingat, standar, peta penegakan, panduan, template, hook, skrip, `VERSION`) kini berada di satu folder; `.claude/` hanya memuat yang wajib di sana (skill, subagent, `settings.json`, `devcore.conf`). Folder `scripts/` dan `docs/` proyek tidak lagi dipakai kerangka, sehingga tidak ada tabrakan nama dengan proyek existing.
 - **`sync-devcore.sh` ditulis ulang:** mengganti seluruh `.devcore/` (tanpa lock, hash, dan penghapusan berkas usang); hook milik kerangka dikenali dari prefix `.devcore/`; kepemilikan skill/subagent di `.claude/` dicatat di `.devcore/owned-claude.txt` sehingga skill senama milik proyek **tidak pernah ditimpa**; laporan BENTROK/INFO sebelum menulis; `CLAUDE.md` starter untuk proyek baru.
 - **Aturan bila kerangka bertabrakan dengan proyek** (standar Bagian 0): keamanan tidak dapat diubah; aturan proses dapat disimpangi dengan pengecualian tertulis di `CLAUDE.md`; gaya kode dan alat sepenuhnya milik proyek. Template `claude-md-starter.md`.
-- **Dicabut:** generator aturan inti, pemeriksa rujukan, dan tabel sumber di standar (ringkasan aturan inti kini ditulis langsung di `.devcore/rules.md`); 6 brief lama dan CHANGELOG panjang (dilebur ke `docs/riwayat.md`).
+- **Dicabut:** generator aturan inti, pemeriksa rujukan, dan tabel sumber di standar (ringkasan aturan inti kini ditulis langsung di `.devcore/rules.md`); 6 brief lama dan CHANGELOG panjang (dilebur ke `docs/history.md`).
 - Bug yang ditemukan tes dan diperbaiki sebelum rilis: daftar sumber yang disalin ke proyek membuat skill senama milik proyek tertimpa pada pemasangan kedua.
 
 ## [0.4.1] - 2026-10-11

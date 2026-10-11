@@ -10,7 +10,7 @@ Mengembalikan devcore ke esensinya (standar, aturan kerja agent, dan cara agent 
 ## Kriteria penerimaan (wajib)
 **Batch 1 — pangkas**
 - [ ] Generator aturan inti, pemeriksa rujukan (`check-rule-refs`), tes generator, dan tabel sumber di standar dicabut. Ringkasan aturan inti ditulis langsung di aturan inti (sumber tunggal ringkasan); standar merujuk ke sana.
-- [ ] `docs/riwayat.md` merangkum 6 brief, ADR, dan CHANGELOG lama; 6 brief lama dihapus (tetap di riwayat git); CHANGELOG diringkas.
+- [ ] `docs/history.md` merangkum 6 brief, ADR, dan CHANGELOG lama; 6 brief lama dihapus (tetap di riwayat git); CHANGELOG diringkas.
 - [ ] README ≤ 60 baris.
 
 **Batch 2 — satu jejak**
