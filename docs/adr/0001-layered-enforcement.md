@@ -18,7 +18,7 @@ Gunakan penegakan **berlapis**, makin ke atas makin pasti:
 4. **Referensi:** standar lengkap di `docs/engineering-standard.md`, dibaca sesuai kebutuhan, bukan dimuat seluruhnya.
 5. **Manusia:** review untuk aturan yang bersifat penilaian.
 
-Setiap aturan dipetakan ke tingkat penegakannya di [enforcement-map.md](../enforcement-map.md). Saat agent dikoreksi karena melanggar aturan, tindak lanjutnya adalah menaikkan penegakan aturan itu ke tingkat mesin bila memungkinkan.
+Setiap aturan dipetakan ke tingkat penegakannya di [enforcement-map.md](../../.devcore/docs/enforcement-map.md). Saat agent dikoreksi karena melanggar aturan, tindak lanjutnya adalah menaikkan penegakan aturan itu ke tingkat mesin bila memungkinkan.
 
 ## Konsekuensi
 - (+) Pelanggaran paling berbahaya dicegah, bukan hanya dilarang.

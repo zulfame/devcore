@@ -8,9 +8,13 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
-## [0.5.0] - dalam pengerjaan
-Pemangkasan dan satu jejak. Rinciannya diisi saat batch selesai.
-- **Dicabut:** generator aturan inti, pemeriksa rujukan, dan tabel sumber di standar (ringkasan aturan inti kini ditulis langsung di aturan inti); 6 brief lama dan CHANGELOG panjang (dilebur ke `docs/riwayat.md`).
+## [0.5.0] - 2026-10-11
+**Perubahan MAJOR struktur (belum ada proyek terpasang yang diketahui, sehingga tanpa migrasi otomatis; pasang ulang dengan `sync-devcore.sh`).** Pemangkasan dan satu jejak.
+- **Satu jejak `.devcore/`:** seluruh milik kerangka (aturan inti, pengingat, standar, peta penegakan, panduan, template, hook, skrip, `VERSION`) kini berada di satu folder; `.claude/` hanya memuat yang wajib di sana (skill, subagent, `settings.json`, `devcore.conf`). Folder `scripts/` dan `docs/` proyek tidak lagi dipakai kerangka, sehingga tidak ada tabrakan nama dengan proyek existing.
+- **`sync-devcore.sh` ditulis ulang:** mengganti seluruh `.devcore/` (tanpa lock, hash, dan penghapusan berkas usang); hook milik kerangka dikenali dari prefix `.devcore/`; kepemilikan skill/subagent di `.claude/` dicatat di `.devcore/owned-claude.txt` sehingga skill senama milik proyek **tidak pernah ditimpa**; laporan BENTROK/INFO sebelum menulis; `CLAUDE.md` starter untuk proyek baru.
+- **Aturan bila kerangka bertabrakan dengan proyek** (standar Bagian 0): keamanan tidak dapat diubah; aturan proses dapat disimpangi dengan pengecualian tertulis di `CLAUDE.md`; gaya kode dan alat sepenuhnya milik proyek. Template `claude-md-starter.md`.
+- **Dicabut:** generator aturan inti, pemeriksa rujukan, dan tabel sumber di standar (ringkasan aturan inti kini ditulis langsung di `.devcore/rules.md`); 6 brief lama dan CHANGELOG panjang (dilebur ke `docs/riwayat.md`).
+- Bug yang ditemukan tes dan diperbaiki sebelum rilis: daftar sumber yang disalin ke proyek membuat skill senama milik proyek tertimpa pada pemasangan kedua.
 
 ## [0.4.1] - 2026-10-11
 - **Dicabut:** perangkat evaluasi kepatuhan agent (`evals/`, 5 skrip, dokumennya), karena menjalankannya memakai jatah akun dan di luar inti proyek. Efektivitas aturan tidak diukur otomatis.

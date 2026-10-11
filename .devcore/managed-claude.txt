@@ -1,0 +1,9 @@
+# Berkas di .claude/ yang dimiliki kerangka (wajib berada di .claude/ agar dikenali Claude Code).
+# Sinkronisasi menimpa berkas ini hanya bila tercatat di salinan daftar ini yang SUDAH terpasang;
+# berkas senama yang belum tercatat dianggap milik proyek dan dilaporkan sebagai bentrok.
+.claude/skills/change-function
+.claude/skills/check-security
+.claude/skills/profile-project
+.claude/skills/verify-done
+.claude/skills/write-brief
+.claude/agents/review-changes.md

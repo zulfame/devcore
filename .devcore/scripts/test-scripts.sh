@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tes untuk skrip pemeriksa. Jalankan: scripts/test-scripts.sh
+# Tes untuk skrip pemeriksa. Jalankan: .devcore/scripts/test-scripts.sh
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 pass=0; fail=0
@@ -20,37 +20,41 @@ check() { # nama exit_harapan pola_output(boleh kosong) perintah...
 
 # ---------- check-naming ----------
 N=$(mkd)
-mkdir -p "$N/docs/adr" "$N/.claude/skills/change-thing" "$N/.claude/hooks" "$N/.claude/agents" "$N/scripts"
+mkdir -p "$N/docs/adr" "$N/.claude/skills/change-thing" "$N/.claude/agents" \
+         "$N/.devcore/docs" "$N/.devcore/hooks/lib" "$N/.devcore/scripts"
 printf -- '---\nname: review-thing\n---\n' > "$N/.claude/agents/review-thing.md"
-touch "$N/README.md" "$N/CLAUDE.md" "$N/CHANGELOG.md" "$N/docs/engineering-standard.md" "$N/docs/ARCHITECTURE.md" "$N/docs/adr/0001-pilih-stack.md" \
-      "$N/.claude/hooks/pretool-a-guard.sh" "$N/.claude/hooks/test-hooks.sh" "$N/scripts/check-x.sh"
 printf -- '---\nname: change-thing\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
+printf '.claude/skills/change-thing\n.claude/agents/review-thing.md\n' > "$N/.devcore/managed-claude.txt"
+touch "$N/README.md" "$N/CLAUDE.md" "$N/CHANGELOG.md" "$N/docs/ARCHITECTURE.md" "$N/docs/adr/0001-pilih-stack.md" \
+      "$N/.devcore/docs/engineering-standard.md" "$N/.devcore/hooks/pretool-a-guard.sh" "$N/.devcore/hooks/test-hooks.sh" \
+      "$N/.devcore/hooks/lib/bash-analyzer.py" "$N/.devcore/scripts/check-x.sh"
 check "naming: struktur benar lulus" 0 "OK" "$here/check-naming.sh" "$N"
 
 bad_file() { # nama path
   : > "$N/$2"; check "naming: $1" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm "$N/$2"; }
-bad_file "dokumen snake_case"   "docs/Bad_Name.md"
-bad_file "dokumen camelCase"    "docs/myDoc.md"
-bad_file "ADR tanpa nomor"      "docs/adr/pilih-stack.md"
-bad_file "ADR nomor 1 digit"    "docs/adr/1-x.md"
-bad_file "hook tanpa event"     ".claude/hooks/guard.sh"
-bad_file "skrip huruf besar"    "scripts/Do_It.sh"
-bad_file "subagent satu kata"   ".claude/agents/reviewer.md"
-mkdir -p "$N/.claude/hooks/lib"; : > "$N/.claude/hooks/lib/bash-analyzer.py"
-check "naming: pustaka hook kebab-case lulus" 0 "OK" "$here/check-naming.sh" "$N"
-bad_file "pustaka hook huruf besar" ".claude/hooks/lib/BadName.py"
+bad_file "dokumen snake_case"        "docs/Bad_Name.md"
+bad_file "dokumen camelCase"         "docs/myDoc.md"
+bad_file "dokumen kerangka salah"    ".devcore/docs/Bad_Doc.md"
+bad_file "ADR tanpa nomor"           "docs/adr/pilih-stack.md"
+bad_file "ADR nomor 1 digit"         "docs/adr/1-x.md"
+bad_file "hook tanpa event"          ".devcore/hooks/guard.sh"
+bad_file "skrip kerangka huruf besar" ".devcore/scripts/Do_It.sh"
+bad_file "pustaka hook huruf besar"  ".devcore/hooks/lib/BadName.py"
 printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/agents/review-thing.md"
 check "naming: name subagent != berkas" 1 "tidak sama" "$here/check-naming.sh" "$N"
 printf -- '---\nname: review-thing\n---\n' > "$N/.claude/agents/review-thing.md"
-mkdir "$N/.claude/skills/single"; printf -- '---\nname: single\n---\n' > "$N/.claude/skills/single/SKILL.md"
-check "naming: skill satu kata" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm -r "$N/.claude/skills/single"
 printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
-check "naming: name != folder" 1 "tidak sama" "$here/check-naming.sh" "$N"
+check "naming: name skill != folder" 1 "tidak sama" "$here/check-naming.sh" "$N"
 printf -- '---\nname: change-thing\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
+mkdir "$N/.claude/skills/single"; printf -- '---\nname: single\n---\n' > "$N/.claude/skills/single/SKILL.md"
+printf '.claude/skills/single\n' >> "$N/.devcore/managed-claude.txt"
+check "naming: skill kerangka satu kata" 1 "PENAMAAN" "$here/check-naming.sh" "$N"
+printf '.claude/skills/change-thing\n.claude/agents/review-thing.md\n' > "$N/.devcore/managed-claude.txt"
+check "naming: skill milik proyek (tidak terdaftar) tidak diperiksa" 0 "OK" "$here/check-naming.sh" "$N"
 mkdir "$N/docs/BadDir"
 check "naming: folder docs huruf besar" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rmdir "$N/docs/BadDir"
-mkdir -p "$N/src/MyComponent"   # folder kode tidak diperiksa
-check "naming: folder kode diabaikan" 0 "OK" "$here/check-naming.sh" "$N"
+mkdir -p "$N/src/MyComponent" "$N/scripts"; : > "$N/scripts/Do_It.sh"   # kode dan skrip proyek tidak diperiksa
+check "naming: folder kode dan skrip proyek diabaikan" 0 "OK" "$here/check-naming.sh" "$N"
 
 # ---------- check-links ----------
 L=$(mkd); mkdir -p "$L/docs"

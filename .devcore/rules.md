@@ -1,8 +1,8 @@
 # Aturan Kerja devcore (dikelola kerangka — jangan diedit di proyek)
 
-Berkas ini dipasang dan diperbarui oleh `scripts/sync-devcore.sh`. Perubahan lokal akan dilewati saat pembaruan. Aturan khusus proyek ditulis di `CLAUDE.md` proyek, bukan di sini.
+Seluruh folder `.devcore/` dipasang dan diganti oleh `.devcore/scripts/sync-devcore.sh`; perubahan lokal di dalamnya akan tertimpa. Aturan khusus proyek dan pengecualian ditulis di `CLAUDE.md` proyek, bukan di sini.
 
-Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana. Ringkasan **Aturan inti** di bawah adalah satu-satunya tempat ringkasan ditulis; aturan lengkap dan acuan ada di standar.
+Standar lengkap: [engineering-standard.md](docs/engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana. Ringkasan **Aturan inti** di bawah adalah satu-satunya tempat ringkasan ditulis; aturan lengkap dan acuan ada di standar.
 
 ## Aturan inti (tidak boleh dilanggar)
 1. **Baca sebelum ubah.** Baca file dan cari pemakainya dulu; ikuti konvensi yang sudah ada. (AG-01, AG-02)
@@ -36,7 +36,7 @@ Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Bac
 13. **Di luar proyek.** OS, server, jaringan/TLS, backup/DR, monitoring, dan insiden bukan tugas agent; catat sebagai prasyarat lingkungan. (OS-01)
 14. **Proyek lama: baseline.** Penyimpangan lama dicatat di `docs/project-profile.md`, tidak diperbaiki di luar brief; kode yang disentuh harus memenuhi standar. (AG-16)
 15. **Serah terima sesi.** Di awal sesi baca `docs/status.md` (dimuat otomatis); di akhir tugas atau sesi, perbarui. (AG-17)
-16. **Berkas kerangka.** Jangan edit berkas kerangka di proyek; perbarui lewat `scripts/sync-devcore.sh` (dry-run dulu); kustomisasi di `CLAUDE.md` proyek atau `.claude/devcore.conf`. (AG-18)
+16. **Berkas kerangka.** Jangan edit berkas kerangka di proyek; perbarui lewat `.devcore/scripts/sync-devcore.sh` (dry-run dulu); kustomisasi di `CLAUDE.md` proyek atau `.claude/devcore.conf`. (AG-18)
 
 ## Kapan memakai skill (wajib, bukan opsional)
 | Situasi | Skill |
@@ -54,17 +54,16 @@ Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Bac
 - Pesan commit menjelaskan *mengapa*, bukan hanya apa.
 
 ## Aturan mesin — jangan dilawan
-Folder `.claude/` berisi penegakan otomatis (hook dan izin). Jika sebuah tindakan **diblokir**:
+Folder `.devcore/` dan `.claude/` berisi penegakan otomatis (hook dan izin). Jika sebuah tindakan **diblokir**:
 - Jangan mencari jalan pintas atau memecah perintah untuk mengakalinya.
 - Jelaskan ke pengguna apa yang diblokir dan mengapa, lalu minta keputusan.
-- Mengubah `.claude/settings.json`, `.claude/devcore.conf`, atau `.claude/hooks/*` butuh persetujuan pengguna. Jangan menurunkan mode `BRIEF_GATE` agar pekerjaan lolos.
-- Pemeriksaan CI (`.github/workflows/devcore-checks.yml`, `scripts/`) berlaku untuk semua commit; jangan melemahkannya (AG-09).
+- Mengubah `.claude/settings.json`, `.claude/devcore.conf`, atau apa pun di `.devcore/` butuh persetujuan pengguna. Jangan menurunkan mode `BRIEF_GATE` agar pekerjaan lolos.
+- Pemeriksaan CI (`.github/workflows/devcore-checks.yml`, `.devcore/scripts/`) berlaku untuk semua commit; jangan melemahkannya (AG-09).
 
 ## Saat dikoreksi karena melanggar aturan
-Jangan hanya minta maaf. (1) Perbaiki pelanggarannya. (2) Katakan aturan mana yang dilanggar. (3) Usulkan penegakan mesin agar tidak terulang (hook, izin, tes) dan catat di [enforcement-map.md](../docs/enforcement-map.md).
+Jangan hanya minta maaf. (1) Perbaiki pelanggarannya. (2) Katakan aturan mana yang dilanggar. (3) Usulkan penegakan mesin agar tidak terulang (hook, izin, tes) dan catat di [enforcement-map.md](docs/enforcement-map.md).
 
-## Peta berkas kerangka
-- `docs/engineering-standard.md` standar lengkap · `docs/enforcement-map.md` aturan → mekanisme · `docs/adopting-devcore.md` panduan adopsi · `docs/templates/` templat.
-- Milik proyek: `docs/briefs/` brief tugas · `docs/status.md` serah terima sesi · `docs/project-profile.md` profil dan utang teknis · `docs/adr/` keputusan arsitektur.
-- `.claude/hooks/` penjaga + tes · `.claude/skills/` prosedur · `.claude/devcore.conf` mode gerbang brief · `.claude/devcore.lock` versi terpasang.
-- `scripts/` pemeriksa otomatis (`run-checks.sh` menjalankan semuanya) dan `sync-devcore.sh` untuk memperbarui kerangka.
+## Peta berkas
+- **Milik kerangka** (`.devcore/`, jangan diedit): `docs/` standar, peta penegakan, panduan adopsi, template · `hooks/` penjaga + tes · `scripts/` pemeriksa dan `sync-devcore.sh` · `VERSION`.
+- **Milik kerangka di `.claude/`** (wajib di sana): `skills/`, `agents/` (daftar di `.devcore/owned-claude.txt`).
+- **Milik proyek:** `CLAUDE.md` · `.claude/devcore.conf` (mode gerbang brief) · `docs/briefs/` · `docs/status.md` · `docs/project-profile.md` · `docs/adr/`.

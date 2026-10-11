@@ -4,7 +4,7 @@
 #
 # Analisis utama oleh lib/bash-analyzer.py (tokenisasi shell, keputusan dari argv, bukan teks mentah).
 # Bila python3 tidak ada atau perintah tidak dapat diparse, dipakai penjaga regex lama di bawah (fallback,
-# bukan allow). Ini pagar pengaman, bukan sandbox: lihat docs/enforcement-map.md untuk batasnya.
+# bukan allow). Ini pagar pengaman, bukan sandbox: lihat .devcore/docs/enforcement-map.md untuk batasnya.
 set -u
 
 input=$(cat)

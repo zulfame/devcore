@@ -17,6 +17,16 @@
 4. Dokumen ini.
 5. Preferensi atau kebiasaan agent sendiri.
 
+**Bila kerangka bertabrakan dengan proyek** (proyek baru maupun existing). Aturan dibagi tiga golongan:
+
+| Golongan | Isi | Perlakuan |
+|---|---|---|
+| **Tidak dapat diubah proyek** | Keamanan: `AG-06`, `AG-07`, `AG-11`, `SC-*`, `OS-01` | Tidak ada pengecualian |
+| **Dapat disimpangi dengan pengecualian tertulis** | Aturan proses: mode gerbang brief (`AG-15`), serah terima sesi (`AG-17`), penamaan (`DC-05`), pemeriksaan CI (`CI-07`) | Catat di bagian "Pengecualian devcore" pada `CLAUDE.md` proyek: ID, penyimpangan, alasan, tanggal, siapa yang menyetujui (Bagian 21). Agent tidak menyetujui pengecualian untuk dirinya sendiri |
+| **Sepenuhnya milik proyek** | Gaya kode, perintah test/lint/build, konvensi commit, struktur folder kode, pilihan alat | Mengikuti konvensi proyek (`AG-02`); standar ini tidak memaksakan gaya kode |
+
+Berkas kerangka (`.devcore/`) tidak diedit di proyek (`AG-18`); kustomisasi ditulis di `CLAUDE.md` proyek dan `.claude/devcore.conf`. Karena seluruh folder `.devcore/` identik di semua proyek pada versi yang sama, perbedaan antar proyek hanya berasal dari berkas milik proyek dan catatan pengecualiannya.
+
 Setiap aturan punya ID (mis. `AG-03`) supaya bisa dirujuk saat laporan, review, atau pengecualian.
 
 **Penegakan.** Aturan teks hanyalah saran bagi model. Aturan yang paling berisiko ditegakkan oleh mesin (hook, izin, tes, CI) dan tidak bergantung pada ingatan agent. Pemetaan tiap aturan ke mekanismenya ada di [enforcement-map.md](enforcement-map.md). Jika sebuah tindakan diblokir mesin, agent **DILARANG** mengakalinya (`AG-09`).
@@ -24,7 +34,7 @@ Setiap aturan punya ID (mis. `AG-03`) supaya bisa dirujuk saat laporan, review, 
 **Prinsip dasar:** security by design, least privilege, fail safely, explicit contracts, single source of truth, automated verification, measure before optimizing, traceability.
 
 ### Aturan inti untuk agent
-Ringkasan aturan inti yang dimuat ke setiap sesi, lengkap dengan contoh salah→benar untuk aturan yang paling sering dilanggar, ada di `.claude/devcore-rules.md`. Itu **satu-satunya tempat ringkasan ditulis**. Bagian bernomor di bawah memuat aturan lengkap ber-ID dan menjadi acuan bila ringkasan tampak berbeda; ringkasan lalu diperbaiki.
+Ringkasan aturan inti yang dimuat ke setiap sesi, lengkap dengan contoh salah→benar untuk aturan yang paling sering dilanggar, ada di `.devcore/rules.md`. Itu **satu-satunya tempat ringkasan ditulis**. Bagian bernomor di bawah memuat aturan lengkap ber-ID dan menjadi acuan bila ringkasan tampak berbeda; ringkasan lalu diperbaiki.
 
 ---
 
@@ -45,10 +55,10 @@ Setiap tugas mengikuti urutan berikut. Tidak boleh ada langkah yang dilewati dia
 - `AG-02` **WAJIB** mengikuti konvensi, struktur, dan gaya yang sudah ada di proyek; jangan memperkenalkan pola baru tanpa alasan tertulis.
 - `AG-03` **WAJIB** bertanya sebelum bertindak jika permintaan ambigu **dan** salah tafsir berisiko tinggi (data, keamanan, kontrak publik, perubahan besar). Untuk hal kecil dan mudah dibatalkan, pilih default yang wajar, lalu sebutkan asumsinya di laporan.
 - `AG-04` **WAJIB** memecah pekerjaan besar menjadi perubahan kecil yang dapat diverifikasi sendiri-sendiri.
-- `AG-15` **WAJIB** memiliki brief tugas berstatus `approved` (templat `docs/templates/task-brief.md`, disimpan di `docs/briefs/`) sebelum mengubah file kode pada tugas non-trivial. Brief memuat tujuan, kriteria penerimaan yang dapat diuji, dan hal di luar ruang lingkup. Status `approved` hanya diberikan setelah pengguna menyatakan setuju di chat. Kebutuhan berubah → perbarui brief dan minta persetujuan ulang. Tugas selesai → verifikasi tiap kriteria lalu ubah status menjadi `done`. Tugas kecil memakai brief ringkas (tiga bagian wajib saja).
+- `AG-15` **WAJIB** memiliki brief tugas berstatus `approved` (templat `.devcore/docs/templates/task-brief.md`, disimpan di `docs/briefs/`) sebelum mengubah file kode pada tugas non-trivial. Brief memuat tujuan, kriteria penerimaan yang dapat diuji, dan hal di luar ruang lingkup. Status `approved` hanya diberikan setelah pengguna menyatakan setuju di chat. Kebutuhan berubah → perbarui brief dan minta persetujuan ulang. Tugas selesai → verifikasi tiap kriteria lalu ubah status menjadi `done`. Tugas kecil memakai brief ringkas (tiga bagian wajib saja).
 - `AG-16` **Proyek yang sudah berjalan: baseline, bukan refactor.** Saat devcore diadopsi, kondisi proyek dicatat apa adanya di `docs/project-profile.md` (perintah proyek, hasil test/lint awal, konvensi, utang teknis, prasyarat lingkungan). Penyimpangan lama **DILARANG** diperbaiki di luar brief; temuan baru dari kode yang tidak disentuh dicatat sebagai utang teknis. Kode yang disentuh tugas **WAJIB** memenuhi standar; bila itu menuntut perubahan di luar brief, catat dan tanya (selaras dengan `AG-05`). Temuan keamanan serius dilaporkan ke pengguna segera. Pemeriksaan diff di CI (`CI-07`) otomatis berlaku hanya pada perubahan baru.
 - `AG-17` **Serah terima sesi.** Agent tidak mengingat sesi sebelumnya. Di akhir setiap tugas atau sesi agent **WAJIB** memperbarui `docs/status.md` (fokus, yang selesai, keputusan penting, langkah berikutnya yang konkret, hal terblokir, jebakan). Di awal sesi, ringkasan itu dan daftar brief `approved` dimuat otomatis; brief yang sudah selesai **WAJIB** ditutup (`Status: done`).
-- `AG-18` **Versi kerangka.** Kerangka devcore memiliki `VERSION` (semver) dan `CHANGELOG.md`. Pemasangan dan pembaruan di proyek hanya melalui `scripts/sync-devcore.sh` (dry-run bawaan, tidak menimpa perubahan lokal, tidak commit). Berkas kerangka (managed) **DILARANG** diedit langsung di proyek; kustomisasi ditulis di `CLAUDE.md` proyek, `.claude/devcore.conf`, atau berkas seed.
+- `AG-18` **Versi kerangka.** Seluruh kerangka berada di satu folder, `.devcore/` (dengan `VERSION` semver), ditambah skill/subagent di `.claude/` yang tercatat di `.devcore/owned-claude.txt`. Pemasangan dan pembaruan di proyek hanya melalui `.devcore/scripts/sync-devcore.sh`: dry-run bawaan, mensyaratkan git bersih, **mengganti seluruh folder `.devcore/`**, tidak pernah menimpa berkas milik proyek atau skill senama yang bukan milik devcore (dilaporkan BENTROK), dan tidak commit. Berkas kerangka **DILARANG** diedit langsung di proyek; kustomisasi ditulis di `CLAUDE.md` proyek dan `.claude/devcore.conf`.
 - `AG-19` **Tinjauan independen.** Agent tidak menilai pekerjaannya sendiri. Pada tugas non-trivial yang punya brief, sebelum menyatakan selesai agent **WAJIB** memanggil subagent `review-changes` (konteks bersih, tanpa opini agent tentang hasilnya), menyertakan verdict dan temuannya apa adanya di laporan, dan memperbaiki temuan `PERLU PERBAIKAN` (maksimal dua putaran). Klaim tinjauan tanpa pemanggilan nyata **DILARANG**.
 ## 2. Disiplin Ruang Lingkup dan Tindakan Aman
 
@@ -67,7 +77,7 @@ Setiap tugas mengikuti urutan berikut. Tidak boleh ada langkah yang dilewati dia
 
 Sebuah tugas baru boleh dinyatakan selesai jika **setiap butir daftar periksa terpenuhi dengan bukti yang benar-benar dijalankan**, atau pengecualiannya dilaporkan (`AG-08`).
 
-Daftar periksa dan format laporan akhir punya **satu rumah kanonik** agar tidak ada dua daftar yang melenceng: skill [`verify-done`](../.claude/skills/verify-done/SKILL.md), bagian 3 (Definition of Done), 3a (tinjauan independen), dan 4 (laporan akhir). Mengubah definisi "selesai" berarti mengubah skill itu, bukan menyalinnya ke sini.
+Daftar periksa dan format laporan akhir punya **satu rumah kanonik** agar tidak ada dua daftar yang melenceng: skill [`verify-done`](../../.claude/skills/verify-done/SKILL.md), bagian 3 (Definition of Done), 3a (tinjauan independen), dan 4 (laporan akhir). Mengubah definisi "selesai" berarti mengubah skill itu, bukan menyalinnya ke sini.
 
 ## 4. Arsitektur dan Desain
 
@@ -209,7 +219,7 @@ Daftar periksa dan format laporan akhir punya **satu rumah kanonik** agar tidak 
 - `CI-04` Siapkan smoke test dan skrip rollback/migrasi-balik di repositori bila rilis memerlukannya.
 - `CI-05` Perubahan berisiko tinggi (skema, autentikasi, kontrak publik) ditandai dan butuh review/persetujuan manusia.
 - `CI-06` Rilis disertai changelog; kriteria penghentian rilis dicatat di `DEPLOYMENT.md`.
-- `CI-07` Pipeline **WAJIB** menjalankan pemeriksaan otomatis yang tidak bergantung pada agent: tes hook/aturan, pemeriksaan penamaan dan tautan dokumen, serta deteksi pelemahan pemeriksaan pada diff (`scripts/check-weakened-tests.sh`). Hook hanya berjalan di sesi agent; CI berlaku untuk semua commit, termasuk commit manual.
+- `CI-07` Pipeline **WAJIB** menjalankan pemeriksaan otomatis yang tidak bergantung pada agent: tes hook/aturan, pemeriksaan penamaan dan tautan dokumen, serta deteksi pelemahan pemeriksaan pada diff (`.devcore/scripts/check-weakened-tests.sh`). Hook hanya berjalan di sesi agent; CI berlaku untuk semua commit, termasuk commit manual.
 
 ## 17. Dokumentasi dan Tata Kelola
 
@@ -231,7 +241,7 @@ Aturan tambahan:
 - `DC-05` **Penamaan file dan folder** harus seragam:
   - Dokumen dengan peran baku memakai `HURUF_BESAR.md` (`README`, `CLAUDE`, `CHANGELOG`, `SECURITY` di root; `ARCHITECTURE`, `TESTING`, `DEPLOYMENT` di `docs/`).
   - Dokumen topik lain memakai `kebab-case.md` huruf kecil di `docs/`.
-  - ADR di `docs/adr/` dan brief tugas di `docs/briefs/` memakai format `NNNN-judul-singkat.md`; templat di `docs/templates/`; skrip pemeriksa di `scripts/` (`kata-kerja-objek.sh`, huruf kecil).
+  - ADR di `docs/adr/` dan brief tugas di `docs/briefs/` memakai format `NNNN-judul-singkat.md`; templat di `.devcore/docs/templates/`; skrip pemeriksa di `scripts/` (`kata-kerja-objek.sh`, huruf kecil).
   - Skill: folder `kata-kerja-objek`; hook: `event-tujuan.sh` sejajar dengan nama event di `settings.json`.
   - Nama file dan folder berbahasa Inggris; isi dokumen mengikuti bahasa tim. Nama tetap dari alat (`SKILL.md`, `settings.json`) diikuti apa adanya.
   - Sebelum membuat file baru, periksa konvensi di atas dan file yang sudah ada; **DILARANG** menciptakan pola penamaan baru tanpa alasan (`AG-02`).

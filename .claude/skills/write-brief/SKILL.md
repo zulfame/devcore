@@ -21,7 +21,7 @@ Lihat `docs/briefs/`. Jika sudah ada brief untuk tugas yang sama, perbarui, jang
 - Hal kecil dan mudah dibatalkan: pilih default wajar, catat di *Risiko dan asumsi*.
 
 ## 4. Tulis brief
-- Salin `docs/templates/task-brief.md` ke `docs/briefs/NNNN-judul-singkat.md` (NNNN = nomor berikutnya, 4 digit; judul `kebab-case` bahasa Inggris). Status: `draft`.
+- Salin `.devcore/docs/templates/task-brief.md` ke `docs/briefs/NNNN-judul-singkat.md` (NNNN = nomor berikutnya, 4 digit; judul `kebab-case` bahasa Inggris). Status: `draft`.
 - **Kriteria penerimaan harus dapat diuji:** setiap butir bisa dijawab "terpenuhi/belum" dengan bukti (tes, perintah, contoh I/O). Ganti kata kabur ("cepat", "bagus", "aman") dengan angka atau perilaku.
 - Tulis **Di luar ruang lingkup** secara aktif; ini penjaga `AG-05`.
 - Kosongkan *Pertanyaan terbuka* sebelum meminta persetujuan.

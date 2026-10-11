@@ -38,7 +38,7 @@ esac
 
 # 3. Aturan mesin tidak boleh diubah agent tanpa persetujuan pengguna (minta konfirmasi, bukan blokir total)
 case "$path" in
-  */.claude/settings.json|*/.claude/devcore.conf|*/.claude/hooks/*)
+  */.claude/settings.json|*/.claude/devcore.conf|*/.devcore/*)
     ask "Perubahan pada aturan mesin ($path) butuh persetujuan pengguna. Melonggarkan aturan agar pekerjaan lolos adalah pelanggaran AG-09." ;;
 esac
 

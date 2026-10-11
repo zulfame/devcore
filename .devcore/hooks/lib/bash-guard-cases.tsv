@@ -119,7 +119,9 @@ block@brief	echo 'k=@AKIA@' > tests/test_x.py
 block	cat > .env <<EOF\nA=1\nEOF
 ask@brief	echo 'DB_PASSWORD = "@PW@"' > tests/test_cfg.py
 ask@brief	echo 'DB_PASSWORD = "@PW@"' > evals/x/grade.sh
-ask@brief	sed -i 's/a/b/' .claude/hooks/pretool-bash-guard.sh
+ask@brief	sed -i 's/a/b/' .devcore/hooks/pretool-bash-guard.sh
+ask@brief	echo "x" > .devcore/rules.md
+ask@brief	cp a.txt .devcore/docs/engineering-standard.md
 ask@brief	echo '{}' > .claude/settings.json
 ask@brief	tee .claude/devcore.conf <<< 'BRIEF_GATE=off'
 ask@brief	echo "Status: approved" >> docs/briefs/0002-y.md

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Periksa bahwa tautan relatif pada dokumen markdown menunjuk ke berkas/folder yang ada.
 # Tautan http(s), mailto, dan anchor murni dilewati.
-# Pakai: scripts/check-links.sh [root]
+# Pakai: .devcore/scripts/check-links.sh [root]
 set -u
-root=${1:-$(cd "$(dirname "$0")/.." && pwd)}
+root=${1:-$(cd "$(dirname "$0")/../.." && pwd)}
 cd "$root" || { echo "root tidak ditemukan: $root"; exit 2; }
 fail=0
 

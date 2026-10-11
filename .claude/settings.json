@@ -26,14 +26,14 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-status-loader.sh" }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/session-status-loader.sh" }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-rules-reminder.sh" }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/prompt-rules-reminder.sh" }
         ]
       }
     ],
@@ -41,14 +41,14 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pretool-bash-guard.sh" }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/pretool-bash-guard.sh" }
         ]
       },
       {
         "matcher": "Write|Edit|MultiEdit|NotebookEdit",
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pretool-brief-gate.sh" },
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pretool-write-guard.sh" }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/pretool-brief-gate.sh" },
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.devcore/hooks/pretool-write-guard.sh" }
         ]
       }
     ]

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tes untuk hook penjaga. Jalankan: .claude/hooks/test-hooks.sh
+# Tes untuk hook penjaga. Jalankan: .devcore/hooks/test-hooks.sh
 # Setiap kasus: nama | hook | JSON input | exit code yang diharapkan
 set -u
 dir="$(cd "$(dirname "$0")" && pwd)"
@@ -59,7 +59,7 @@ if printf '%s' "$out" | jq -e '.hookSpecificOutput.permissionDecision=="ask"' >/
   pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: edit settings harus 'ask'"; fi
 
 # ---------- pretool-brief-gate (AG-15) ----------
-tmpl="$dir/../../docs/templates/task-brief.md"
+tmpl="$dir/../docs/templates/task-brief.md"
 newproj() { local d; d=$(mktemp -d); mkdir -p "$d/docs/briefs" "$d/.claude"; printf '%s' "$d"; }
 filled_brief() { printf '# Brief: t\n\nStatus: %s\n\n## Tujuan (wajib)\nMemperbaiki X.\n\n## Kriteria penerimaan (wajib)\n- [ ] Y lulus\n\n## Di luar ruang lingkup (wajib)\n- Z\n' "$1"; }
 edit_in() { jq -n --arg p "$1" '{tool_name:"Edit",tool_input:{file_path:$p,new_string:"x=1"}}'; }
@@ -80,6 +80,7 @@ runp "gerbang: tanpa brief -> blokir"   $G 2 "$P" "$(edit_in "$P/src/app.py")"
 runp "gerbang: dokumen bebas"           $G 0 "$P" "$(edit_in "$P/docs/catatan.md")"
 runp "gerbang: .claude bebas"           $G 0 "$P" "$(edit_in "$P/.claude/x.json")"
 runp "gerbang: README bebas"            $G 0 "$P" "$(edit_in "$P/README.md")"
+runp "gerbang: .devcore bebas (milik kerangka, bukan kode proyek)" $G 0 "$P" "$(edit_in "$P/.devcore/hooks/x.sh")"
 runp "gerbang: di luar proyek bebas"    $G 0 "$P" "$(edit_in "/tmp/lain/app.py")"
 filled_brief draft    > "$P/docs/briefs/0001-t.md"
 runp "gerbang: brief draft -> blokir"   $G 2 "$P" "$(edit_in "$P/src/app.py")"
@@ -194,6 +195,8 @@ WG=pretool-write-guard.sh; PW_DIR=$(newproj)
 run "write: token npm -> blokir"                    $WG 2 "$(write_in '/p/a.txt' "x=$NPM")"
 run "write: kunci di berkas uji tetap blokir"       $WG 2 "$(write_in '/p/tests/test_a.py' "k='$KEY'")"
 run "write: password di src -> blokir"              $WG 2 "$(write_in '/p/src/c.py' "DB_PASSWORD = \"$PW\"")"
+is_ask "write: perubahan apa pun di .devcore/ -> ask" $WG "$PW_DIR" "$(write_in '/p/.devcore/rules.md' 'catatan')" yes
+is_ask "write: .claude/settings.json -> ask"        $WG "$PW_DIR" "$(write_in '/p/.claude/settings.json' '{}')" yes
 is_ask "write: password palsu di tests/ -> ask"     $WG "$PW_DIR" "$(write_in '/p/tests/test_a.py' "DB_PASSWORD = \"$PW\"")" yes
 is_ask "write: password palsu di fixtures/ -> ask"  $WG "$PW_DIR" "$(write_in '/p/fixtures/x.json' "{\"api_key\": \"$PW\"}")" yes
 is_ask "write: password palsu di evals/ -> ask"     $WG "$PW_DIR" "$(write_in '/p/evals/s/grade.sh' "DB_PASSWORD = \"$PW\"")" yes
@@ -208,7 +211,7 @@ run "notebook: kunci AWS di sel -> blokir"          $WG 2 "$(nb_in /p/n.ipynb "k
 run "notebook: sel biasa -> lolos"                  $WG 0 "$(nb_in /p/n.ipynb 'print(1)')"
 runp "gerbang: notebook tanpa brief -> blokir"      pretool-brief-gate.sh 2 "$NB" "$(nb_in "$NB/n.ipynb" 'print(1)')"
 runp "gerbang: notebook dengan brief -> lolos"      pretool-brief-gate.sh 0 "$BR" "$(nb_in "$BR/n.ipynb" 'print(1)')"
-t_matcher() { jq -e '.hooks.PreToolUse[] | select(.hooks[].command | test("pretool-write-guard")) | .matcher | test("NotebookEdit")' "$dir/../settings.json" >/dev/null 2>&1; }
+t_matcher() { jq -e '.hooks.PreToolUse[] | select(.hooks[].command | test("pretool-write-guard")) | .matcher | test("NotebookEdit")' "$dir/../../.claude/settings.json" >/dev/null 2>&1; }
 if t_matcher; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: settings.json harus memasang penjaga tulis pada NotebookEdit"; fi
 HK=$(mktemp -d); cp -R "$dir/." "$HK/"; rm -f "$HK/lib/secret-patterns.txt"
 out=$(write_in '/p/src/c.py' 'x = 1' | "$HK/pretool-write-guard.sh" 2>/dev/null)

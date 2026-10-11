@@ -941,7 +941,7 @@ def check_writes(name, args, seg, seg_text, ctx, out):
         if is_secret_path(path) and kind != 'remove':
             add(out, 'block', 'SC-07', 'menulis ke berkas secret (%s) dilarang; gunakan .env.example' % raw)
             continue
-        rel_claude = ctx.root and path.startswith(os.path.join(ctx.root, '.claude') + os.sep)
+        rel_claude = ctx.root and any(path.startswith(os.path.join(ctx.root, d) + os.sep) for d in ('.claude', '.devcore'))
         if kind == 'remove' and not rel_claude:
             continue
         content = '' if kind == 'remove' else seg_text

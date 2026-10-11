@@ -1,4 +1,4 @@
-[Pengingat aturan proyek — ringkasan lengkap dengan contoh: .claude/devcore-rules.md]
+[Pengingat aturan proyek — ringkasan lengkap dengan contoh: .devcore/rules.md]
 - Baca sebelum ubah (AG-01, AG-02).
 - Ruang lingkup (AG-05).
 - Brief dulu (AG-15).

@@ -24,7 +24,7 @@ case "$path" in "$root"/*) rel=${path#"$root"/} ;; *) exit 0 ;; esac
 
 # Dikecualikan: dokumen, konfigurasi agent, berkas lokal
 case "$rel" in
-  docs/*|.claude/*|*.md|.gitignore|LICENSE) exit 0 ;;
+  docs/*|.claude/*|.devcore/*|*.md|.gitignore|LICENSE) exit 0 ;;
 esac
 
 # Bagian brief terisi = ada baris selain kosong / placeholder <...>

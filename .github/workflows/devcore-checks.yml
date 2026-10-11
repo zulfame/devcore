@@ -28,4 +28,4 @@ jobs:
           else
             base="$BEFORE_SHA"
           fi
-          scripts/run-checks.sh "$base"
+          .devcore/scripts/run-checks.sh "$base"

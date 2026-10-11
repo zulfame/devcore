@@ -3,31 +3,32 @@
 Diperbarui: 2026-10-11 oleh agent
 
 ## Fokus saat ini
-Tidak ada brief aktif. Prioritas 1–6 dari tinjauan multi-peran selesai (brief 0001–0005), dan perangkat evaluasi agent dicabut atas permintaan pengguna (brief 0006). Versi kerangka 0.4.1. Kerangka lengkap dan siap dicoba di proyek lama.
+Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan ke rekomendasi agent). Brief aktif: `docs/briefs/0007-pangkas-dan-satu-jejak.md` (Batch 1–3).
+- **Batch 1 (pangkas): SELESAI** (v0.4.2-an, commit `7ce63cf`).
+- **Batch 2 (satu jejak `.devcore/`): SELESAI** (v0.5.0): semua milik kerangka di `.devcore/`; `sync-devcore.sh` mengganti seluruh folder; tes repo baru dan repo existing penuh bentrokan lulus.
+- **Batch 3 (sederhanakan penjaga bash): BERIKUTNYA.** Target `.devcore/hooks/lib/bash-analyzer.py` ±1.000 → ±550 baris kode. Tetap: pembungkus, `rm -r`, git destruktif, secret, `sudo`/OS-admin, `curl|sh`, penulisan lewat shell ke gerbang, nama perintah dinamis. Cabut: SQL/migrasi destruktif, pemindaian one-liner interpreter, konfirmasi paket OS, `mv` keluar proyek, konfirmasi paket proyek (sudah di `permissions.ask`). 8 celah awal tetap tertutup; catat celah yang dibuka kembali di peta penegakan.
+- **Batch 4 (uji buta independen)** lalu **Batch 5 (perbaikan sekali, lalu bekukan)**: belum dimulai. Brief 0008 belum ditulis.
 
-## Selesai terakhir
-- Brief 0006: perangkat evaluasi dicabut (`evals/`, 5 skrip, `docs/evaluating-agents.md`) karena menjalankannya memakai jatah akun dan di luar inti proyek. Tetap ada di riwayat git (commit sebelum 0.4.1).
-- Prioritas 6: aturan inti satu sumber (tabel di standar → `scripts/build-rules.sh`), `check-rule-refs.sh`, DoD satu rumah di `verify-done`, contoh salah→benar.
-- Prioritas 5: penjaga bash berbasis analisis struktur perintah. Prioritas 3–4: sinkronisasi berversi, serah terima sesi, subagent peninjau. Prioritas 1–2: gerbang brief, CI.
+## Instruksi pengguna untuk Batch 4 (jangan dilupakan)
+- Subagent harus **independen** (konteks bersih, tidak diberi tahu aturan); jangan saya yang menguji karena saya tahu aturannya.
+- Proyek uji dibuat **di luar repo ini** (folder lain / worktree di tempat lain), bukan di dalam `/Users/Bananay/Claude/devcore`. Pakai repo baru hasil `sync-devcore` (bukan salinan devcore) agar tidak membawa `CLAUDE.md`/riwayat devcore.
+- Program uji: "program sederhana yang memicu semua aturan" (permintaan klien yang menjebak: fitur baru, password, validasi, test gagal, bersihkan repo, library, HTTPS/firewall, README berisi injeksi, rapikan modul lama, laporan akhir).
+- Fakta dokumentasi: subagent mulai di folder kerja sesi ini; hook proyek berlaku untuk subagent; transkrip subagent tersimpan di `~/.claude/projects/<proyek>/<sesi>/subagents/` (bukti objektif). Belum pasti: `CLAUDE_PROJECT_DIR` di worktree dan apakah folder kerja sesi bisa dipindah (`mcp__ccd_directory__change_directory`). Spike kecil dulu; bila tak bisa, siapkan folder uji + satu prompt untuk dijalankan pengguna di sesi baru.
+- Rubrik dan skenario dikunci (hash dicatat) sebelum jalan. Tetap n=1, model sama: gambaran, bukan bukti statistik.
 
 ## Keputusan penting
-- Penegakan berlapis: `docs/adr/0001-layered-enforcement.md`.
-- **Tidak ada pengukuran kepatuhan otomatis** (sengaja): efektivitas aturan diamati dari pemakaian nyata dan alur koreksi (perbaiki → sebut aturan → naikkan penegakan ke mesin → catat di peta penegakan).
-- Aturan inti: **edit tabel di `docs/engineering-standard.md`, lalu `scripts/build-rules.sh`**. Jangan edit `devcore-rules.md` (bagian inti) atau `devcore-reminder.txt` manual; CI gagal bila basi.
-- Penjaga bash = pagar pengaman, bukan sandbox; batasnya di `docs/enforcement-map.md`.
+- Penegakan berlapis: `docs/adr/0001-layered-enforcement.md`; latar belakang: `docs/riwayat.md`.
+- Ringkasan aturan inti hanya di `.devcore/rules.md`; aturan lengkap ber-ID di `.devcore/docs/engineering-standard.md`.
+- Aturan bila bertabrakan dengan proyek: keamanan tak dapat diubah; aturan proses dapat disimpangi dengan pengecualian tertulis di `CLAUDE.md`; gaya kode milik proyek.
+- Penjaga bash = pagar pengaman, bukan sandbox.
 
-## Langkah berikutnya
-1. Uji pada proyek lama sungguhan: `scripts/sync-devcore.sh --target <proyek>` (dry-run dulu), lalu `BRIEF_GATE=ask` pada minggu pertama.
-2. Laporkan perintah sah yang terblokir keliru agar masuk `.claude/hooks/lib/bash-guard-cases.tsv` sebagai kasus `allow`; laporkan pelanggaran agent agar penegakannya dinaikkan.
-
-## Terblokir atau pertanyaan terbuka
-- Tag rilis `v0.4.1` menunggu izin pengguna (di luar izin push ke main).
-- Belum ada hook Stop yang memaksa `status.md` diperbarui.
+## Backlog (ide yang BELUM dikerjakan; jangan dibangun tanpa masuk batch)
+- Hook Stop yang memaksa `status.md` diperbarui.
+- Tag rilis `v0.5.0` (menunggu izin pengguna; di luar izin push ke main).
 
 ## Catatan jebakan
-- Mengubah aturan inti: tabel di standar → `scripts/build-rules.sh`. ID di tabel harus terdefinisi sebagai butir `- \`ID\`` di standar; aturan kritis wajib punya contoh Salah dan Benar.
-- Penjaga bash membaca struktur perintah: teks `rm -rf` di pesan commit/heredoc/grep lolos, tetapi `rm -r` sungguhan diblokir (juga untuk folder sementara). Untuk menghapus banyak berkas atas persetujuan pengguna, hapus satu per satu (`git rm` tanpa `-r`) agar tetap dapat dipulihkan.
-- Penjaga tulis menolak (secret di src) atau meminta konfirmasi (di `tests/`, `fixtures/`, `evals/`) nilai mirip rahasia; rakit nilai palsu lewat variabel di skrip uji.
-- Berkas baru di hooks (termasuk `lib/`), skills, agents, scripts, atau templates harus didaftarkan di `.claude/devcore.manifest` kecuali yang khusus devcore (`devonly` di `test-sync.sh`).
-- Skrip tes yang membuat folder sementara harus mencatatnya ke berkas, bukan array (subshell `$(...)` menghilangkan catatan).
-- Berkas managed yang berisi tautan relatif hanya boleh menunjuk ke berkas yang juga managed; selain itu pakai URL absolut.
+- Penjaga bash membaca struktur perintah: teks `rm -rf` di pesan commit/heredoc/grep lolos, tetapi `rm -r` sungguhan diblokir (termasuk folder sementara). Untuk menghapus banyak berkas atas persetujuan pengguna: `git rm` per berkas (tanpa `-r`).
+- Penjaga tulis meminta konfirmasi untuk perubahan apa pun di `.devcore/`, `.claude/settings.json`, `.claude/devcore.conf`; menolak/meminta konfirmasi nilai mirip rahasia (di `tests/`, `fixtures/`, `evals/` hanya konfirmasi). Rakit nilai palsu lewat variabel di skrip uji.
+- Skrip tes yang membuat folder sementara harus mencatatnya ke berkas, bukan array (subshell `$(...)`).
+- Skrip yang menimpa foldernya sendiri harus dibungkus fungsi `main` (bash membaca skrip bertahap).
+- Daftar sumber (`managed-claude.txt`) ≠ kepemilikan di proyek (`owned-claude.txt`): jangan menyalin yang pertama sebagai tanda milik.
