@@ -54,33 +54,58 @@ Penjaga adalah **pagar pengaman, bukan sandbox**; batasnya dicatat jujur di [.de
 ## Memasang di proyek lain
 Syarat: `git`, `jq`, Claude Code; `python3` 3.6+ disarankan. Skrip **tidak pernah commit** dan **tidak pernah menimpa** berkas milik proyek Anda.
 
-**Cek dulu sebelum memasang**
-1. Target harus **repo git dengan working tree bersih**. Folder yang belum repo git (apa pun stack atau generator proyeknya) perlu `git init`, lalu commit kondisi awal.
-2. Periksa `.gitignore` proyek: bila mengabaikan `/.claude` atau `/CLAUDE.md` (sebagian generator proyek atau alat agent menambahkannya otomatis), berkas devcore **tidak akan ter-commit**, sehingga rekan tim dan CI tidak melihat hook dan aturannya. Hapus dua baris itu dari `.gitignore`; sync hanya memberi INFO dan tidak mengubahnya. Untuk memeriksa: `git check-ignore -v CLAUDE.md .claude/settings.json`.
-3. Folder `vendor/` dan `node_modules/` tidak masalah; pemeriksa tidak memindainya.
+Ada **dua folder** yang perlu dibedakan:
+- **Folder devcore**: hasil klon repo ini. Di sinilah skrip pemasang berada.
+- **Folder proyek**: proyek Anda (baru atau lama). Di sinilah devcore dipasang.
 
-Mulai dengan klon devcore:
+Skrip dijalankan dari folder devcore, tetapi yang diubah adalah folder proyek (lewat `--target`). Langkah di bawah berlaku sama untuk proyek baru maupun proyek yang sudah berjalan.
+
+**Langkah 1. Siapkan folder proyek** (di folder proyek)
+- Harus repo git dan bersih. Cek dengan `git status`: tidak boleh ada perubahan tertunda.
+- Belum repo git (mis. baru dibuat generator proyek)? Jalankan `git init`, lalu `git add -A && git commit -m "kondisi awal"`.
+- Proyek lama: buat cabang dulu, mis. `git checkout -b chore/adopsi-devcore`.
+- Cek `.gitignore`: bila memuat baris `/.claude` atau `/CLAUDE.md` (sebagian generator proyek atau alat agent menambahkannya), hapus dua baris itu, kalau tidak berkas devcore tidak akan ter-commit dan rekan tim/CI tidak melihatnya. Untuk memeriksa: `git check-ignore -v CLAUDE.md .claude/settings.json` (tidak mencetak apa pun = aman).
+
+**Langkah 2. Ambil devcore** (sekali saja, di mana pun di luar proyek)
 ```bash
-git clone https://github.com/zulfame/devcore.git && cd devcore
+git clone https://github.com/zulfame/devcore.git
 ```
 
-### Proyek baru
+**Langkah 3. Lihat rencananya dulu** (di folder devcore; belum menulis apa pun)
 ```bash
-git init /jalur/proyek-baru                                        # bila belum ada
-.devcore/scripts/sync-devcore.sh --target /jalur/proyek-baru --apply
+cd devcore
+.devcore/scripts/sync-devcore.sh --target /jalur/ke/proyek-anda
 ```
-Lalu di proyek: isi `CLAUDE.md` (konteks dan perintah test), jalankan `.devcore/scripts/run-checks.sh`, commit.
+Baca laporannya. Baris `BARU` dan `GANTI` normal. Baris `BENTROK` dan `INFO` perlu dibaca; artinya ada di tabel "Cara membaca laporan" di bawah. Tidak ada yang berbahaya dilakukan di langkah ini.
 
-### Proyek yang sudah berjalan
-1. Buat cabang: `git checkout -b chore/adopsi-devcore` (working tree harus bersih).
-2. **Dry-run dulu** (tidak menulis apa pun) dan baca laporannya:
-   ```bash
-   .devcore/scripts/sync-devcore.sh --target /jalur/proyek
-   ```
-3. Bila laporan sudah wajar, terapkan: tambahkan `--apply`, lalu tinjau `git diff`.
-4. Set `BRIEF_GATE=ask` di `.claude/devcore.conf` selama minggu pertama; naikkan ke `block` setelah terbiasa.
-5. Di Claude Code jalankan skill `profile-project`: mencatat perintah proyek dan kondisi awal tanpa mengubah kode.
-6. Commit sebagai satu commit terpisah, lalu merge cabangnya.
+**Langkah 4. Terapkan** (di folder devcore)
+```bash
+.devcore/scripts/sync-devcore.sh --target /jalur/ke/proyek-anda --apply
+```
+Di proyek Anda akan bertambah: folder `.devcore/` (kerangka), `.claude/` (skill, subagent, pengaturan hook), `CLAUDE.md` (hanya ditambah satu baris impor bila sudah ada), `docs/status.md`, `docs/project-profile.md`, dan satu workflow CI. Tidak ada yang di-commit otomatis.
+
+**Langkah 5. Periksa hasilnya** (di folder proyek)
+```bash
+.devcore/scripts/run-checks.sh      # harus berakhir: SEMUA PEMERIKSAAN LULUS
+git status                          # berkas devcore harus muncul sebagai berkas baru
+```
+
+**Langkah 6. Atur "gerbang brief" (opsional, disarankan untuk proyek lama)**
+*Gerbang brief* adalah aturan bahwa agent **tidak boleh mengubah kode sebelum Anda menyetujui rencana tugasnya** (brief). Pengaturannya satu baris di berkas `.claude/devcore.conf` di proyek Anda:
+
+| Nilai | Perilaku |
+|---|---|
+| `BRIEF_GATE=block` | bawaan: perubahan kode ditolak sampai ada brief yang Anda setujui |
+| `BRIEF_GATE=ask` | agent diizinkan, tetapi **bertanya ke Anda** tiap kali mengubah kode |
+| `BRIEF_GATE=off` | mati |
+
+Di proyek lama, minggu pertama sering terasa terlalu ketat karena Anda belum terbiasa membuat brief. Untuk itu, **buka `.claude/devcore.conf` dengan editor Anda sendiri**, ubah baris `BRIEF_GATE=block` menjadi `BRIEF_GATE=ask`, lalu simpan. Setelah terbiasa (sekitar seminggu), kembalikan ke `BRIEF_GATE=block`. Anda yang menyunting berkas ini; agent tidak boleh mengubahnya tanpa persetujuan Anda. Di proyek baru, biarkan `block`.
+
+**Langkah 7. Commit** (di folder proyek)
+```bash
+git add -A && git commit -m "pasang devcore"
+```
+Proyek lama: merge cabang adopsi setelah itu. Baru kemudian buka Claude Code di folder proyek dan lanjut ke "Memastikan terpasang benar" serta prompt 1 dan 2 di bawah.
 
 ### Cara membaca laporan dry-run
 | Label | Arti | Yang perlu Anda lakukan |
@@ -93,13 +118,12 @@ Lalu di proyek: isi `CLAUDE.md` (konteks dan perintah test), jalankan `.devcore/
 | `INFO` | catatan (mis. `AGENTS.md` belum diimpor, workflow CI lain, hook proyek berdampingan) | baca, putuskan sendiri |
 | `INFO: .gitignore proyek mengabaikan berkas devcore` | berkas devcore tidak akan ter-commit | hapus barisnya dari `.gitignore` (tidak diubah otomatis) |
 
-### Memastikan terpasang benar
-Setelah `--apply`, di folder proyek:
-1. `.devcore/scripts/run-checks.sh` harus berakhir `SEMUA PEMERIKSAAN LULUS`.
-2. `git status` harus menampilkan `.devcore/`, `.claude/`, `CLAUDE.md`, `docs/status.md`, `.github/workflows/devcore-checks.yml` sebagai berkas baru (bukan terabaikan).
-3. Buka Claude Code **ulang** di folder itu (hook dibaca saat sesi mulai). Di awal sesi akan ada pesan serah terima dari `docs/status.md`.
-4. Uji cepat: minta agent menjalankan `rm -rf` pada folder sementara; hook harus memblokirnya dengan rujukan aturan.
-5. Isi `CLAUDE.md` (konteks, perintah test) lalu jalankan skill `profile-project` agar perintah proyek tercatat.
+### Sesudah memasang: pastikan hook benar-benar aktif
+Langkah 5 sudah memeriksa berkasnya. Yang tersisa adalah memeriksa bahwa Claude Code memakainya:
+1. Buka Claude Code **ulang** di folder proyek (hook dibaca saat sesi mulai). Di awal sesi akan muncul pesan serah terima dari `docs/status.md`.
+2. Uji cepat: minta agent menjalankan `rm -rf` pada folder sementara; hook harus memblokirnya dengan rujukan aturan.
+3. Isi `CLAUDE.md` (konteks, perintah test) lalu jalankan skill `profile-project` agar perintah proyek tercatat.
+Cara paling mudah: tempel prompt 1 dan 2 di bawah.
 
 ### Prompt siap pakai untuk agent
 Salin ke Claude Code di proyek yang sudah terpasang dan ganti bagian `<...>`. **Tidak perlu menjalankan semuanya**; ini kumpulan, bukan urutan:

@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka sudah diuji pemasangan dan uji buta kecil, tetapi belum terbukti dalam pemakaian jangka panjang di proyek nyata.
 
+## [0.7.1] - 2026-10-11
+- README: panduan memasang ditulis ulang menjadi 7 langkah linear yang menyebut jelas folder devcore vs folder proyek, menjelaskan `BRIEF_GATE` (block/ask/off) dengan bahasa awam dan cara mengubahnya. Tanpa perubahan kode atau aturan.
+
 ## [0.7.0] - 2026-10-11
 Hasil audit final (lihat `docs/audit-final.md`). **Proyek terpasang perlu menjalankan `sync-devcore.sh` lagi**: perintah hook di `settings.json` kini dikutip.
 - **Perbaikan penting:** hook tidak lagi mati diam-diam pada jalur proyek berspasi (`"$CLAUDE_PROJECT_DIR"/…`); gerbang brief tidak bisa dilewati dengan `..` atau jalur relatif; persetujuan brief lewat edit parsial meminta konfirmasi; `.claude/settings.local.json`, skill, subagent, dan `CLAUDE.local.md` meminta konfirmasi.
