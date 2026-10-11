@@ -25,7 +25,7 @@ ver=$(tr -d '[:space:]' < "$repo/VERSION")
 # ---------- cakupan manifest ----------
 missing=""
 # Khusus pengembangan devcore: sengaja TIDAK dipasang ke proyek lain
-devonly=" scripts/test-sync.sh scripts/test-evals.sh scripts/test-rules.sh scripts/build-rules.sh scripts/run-evals.sh scripts/grade-eval.sh scripts/summarize-evals.sh scripts/eval-helpers.sh "
+devonly=" scripts/test-sync.sh scripts/test-rules.sh scripts/build-rules.sh "
 for f in .claude/hooks/*.sh .claude/hooks/lib/* .claude/devcore-reminder.txt .claude/skills/*/SKILL.md .claude/agents/*.md scripts/*.sh docs/templates/*.md; do
   [ -f "$repo/$f" ] || continue
   case "$devonly" in *" $f "*) continue ;; esac
@@ -65,8 +65,7 @@ t "install: pola secret terpasang"       test -f "$P/.claude/hooks/lib/secret-pa
 t "install: berkas pengingat turunan terpasang" test -f "$P/.claude/devcore-reminder.txt"
 t "install: pemeriksa rujukan terpasang"  test -x "$P/scripts/check-rule-refs.sh"
 t "install: generator aturan (khusus devcore) tidak dipasang" test ! -e "$P/scripts/build-rules.sh"
-t "install: tidak menyalin folder evals"  test ! -e "$P/evals"
-t "install: tidak menyalin skrip evaluasi" test -z "$(ls "$P"/scripts | grep -E 'eval' )"
+t "install: tidak menyalin skrip khusus devcore (tes sync/aturan, generator)" test -z "$(ls "$P"/scripts | grep -E '^(test-sync|test-rules|build-rules)\.sh$')"
 t "install: tidak ada sisa berkas sementara" test -z "$(find "$P" -name '*.devcore-new' -not -path '*/.git/*')"
 
 # ---------- idempoten ----------

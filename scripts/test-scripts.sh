@@ -42,8 +42,6 @@ bad_file "pustaka hook huruf besar" ".claude/hooks/lib/BadName.py"
 printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/agents/review-thing.md"
 check "naming: name subagent != berkas" 1 "tidak sama" "$here/check-naming.sh" "$N"
 printf -- '---\nname: review-thing\n---\n' > "$N/.claude/agents/review-thing.md"
-mkdir -p "$N/evals/scenarios/Bad_Name"; touch "$N/evals/scenarios/Bad_Name/prompt.txt"
-check "naming: skenario evaluasi tidak kebab/tanpa grade.sh" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm -r "$N/evals"
 mkdir "$N/.claude/skills/single"; printf -- '---\nname: single\n---\n' > "$N/.claude/skills/single/SKILL.md"
 check "naming: skill satu kata" 1 "PENAMAAN" "$here/check-naming.sh" "$N"; rm -r "$N/.claude/skills/single"
 printf -- '---\nname: lain-nama\n---\n' > "$N/.claude/skills/change-thing/SKILL.md"
@@ -107,7 +105,6 @@ scenario "any di TypeScript gagal"   1 "PELEMAHAN" src/a.ts 'const a: any = 1;'
 scenario "any di JavaScript lulus"   0 "tidak ditemukan" src/a.js '// any value works here: any'
 scenario "devcore-allow lulus"       0 "tidak ditemukan" src/a.test.js 'it.skip("b", () => {}) // devcore-allow: flaky, tiket 12'
 scenario "markdown diabaikan"        0 "tidak ditemukan" docs/x.md 'contoh: it.skip( dijelaskan di sini'
-scenario "folder evals diabaikan"    0 "tidak ditemukan" evals/scenarios/x/grade.sh 'grep -Eq "it.skip(" file'
 scenario "perubahan biasa lulus"     0 "tidak ditemukan" src/a.js 'const total = a + b;'
 scenario "continue-on-error gagal"   1 "PELEMAHAN" .github/workflows/ci.yml '    continue-on-error: true'
 

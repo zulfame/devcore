@@ -43,6 +43,7 @@ Membuat klaim "kerangka ini membuat agent lebih patuh" dapat diukur, bukan diasu
 - Asumsi: "lanjut prioritas 4" berarti menyetujui lingkup prioritas 4 termasuk pilot berbiaya terbatas di atas.
 
 ## Perubahan setelah persetujuan
+0. **Bagian perangkat evaluasi dari brief ini DICABUT pada brief 0006** (versi 0.4.1) atas permintaan pengguna, karena menjalankannya memakai jatah akun dan di luar inti proyek. Subagent `review-changes` dan `AG-19` tetap. Catatan di bawah dipertahankan sebagai riwayat.
 1. **Pilot nyata tidak dapat dijalankan di sesi ini.** Probe menunjukkan `claude auth status` → `loggedIn: false`: CLI mandiri tidak berbagi autentikasi dengan aplikasi desktop, dan login membutuhkan langkah interaktif pengguna (`claude auth login` atau variabel `ANTHROPIC_API_KEY`). Saya tidak mengambil token dari lingkungan sesi sebagai pengganti. Dampak: lingkup berkurang; hasil kepatuhan nyata (angka) belum ada, hanya alat ukurnya yang terbukti dengan transkrip sintetis. Pilot dijalankan pengguna setelah login (perintah di dokumen evaluasi).
 
 ## Pertanyaan terbuka

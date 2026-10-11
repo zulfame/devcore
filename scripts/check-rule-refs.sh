@@ -20,11 +20,11 @@ defined=$(grep -oE "^- \`${ID_RE}\`" "$std" | grep -oE "$ID_RE" | sort -u)
 
 # Berkas yang dipindai: hanya berkas KERANGKA. Berkas milik proyek (README, CLAUDE.md, docs/status.md, briefs, adr, ...)
 # tidak dipindai agar nomor tiket/ID milik proyek sendiri tidak memicu galat palsu. Di repo devcore
-# (ditandai adanya scripts/build-rules.sh) README.md, CLAUDE.md, dan skenario evaluasi ikut dipindai.
+# (ditandai adanya scripts/build-rules.sh) README.md dan CLAUDE.md ikut dipindai.
 scan_files() {
   local extra=""
-  [ -x scripts/build-rules.sh ] && extra="CLAUDE.md README.md evals/scenarios/*/grade.sh"
-  for f in docs/enforcement-map.md docs/adopting-devcore.md docs/evaluating-agents.md docs/templates/*.md \
+  [ -x scripts/build-rules.sh ] && extra="CLAUDE.md README.md"
+  for f in docs/enforcement-map.md docs/adopting-devcore.md docs/templates/*.md \
            .claude/devcore-rules.md .claude/devcore-reminder.txt .claude/skills/*/SKILL.md .claude/agents/*.md \
            .claude/hooks/*.sh .claude/hooks/lib/* scripts/*.sh $extra; do
     [ -f "$f" ] || continue

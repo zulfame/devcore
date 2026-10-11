@@ -20,19 +20,10 @@ devcore/
 │   ├── test-rules.sh                  Tes pembangun aturan inti (khusus devcore)
 │   ├── test-scripts.sh                Tes untuk tiga pemeriksa di atas
 │   ├── sync-devcore.sh                Pasang / perbarui kerangka di proyek lain
-│   ├── test-sync.sh                   Tes sync-devcore.sh (khusus devcore, tidak dipasang)
-│   ├── run-evals.sh                   Jalankan skenario evaluasi pada agent sungguhan (BERBIAYA; dry-run bawaan)
-│   ├── grade-eval.sh · eval-helpers.sh   Penilai deterministik satu run
-│   ├── summarize-evals.sh             Tabel ringkasan hasil evaluasi
-│   └── test-evals.sh                  Tes perangkat evaluasi (tanpa model; khusus devcore)
-├── evals/                             Khusus devcore, tidak dipasang
-│   ├── fixtures/base-app/             Proyek kecil (Python stdlib) untuk skenario
-│   ├── scenarios/<id>/                9 skenario: prompt.txt, grade.sh, [overlay/], [brief.md]
-│   └── results/                       Ringkasan hasil (.md masuk git); raw/ diabaikan git
+│   └── test-sync.sh                   Tes sync-devcore.sh (khusus devcore, tidak dipasang)
 ├── docs/
 │   ├── engineering-standard.md        Standar lengkap (aturan ber-ID)
 │   ├── enforcement-map.md             Aturan mana dijaga oleh mekanisme apa
-│   ├── evaluating-agents.md           Cara mengukur kepatuhan agent (khusus devcore)
 │   ├── adopting-devcore.md            Panduan memasang & memperbarui di proyek yang sudah berjalan
 │   ├── status.md                      Serah terima sesi (milik proyek; di sini milik devcore)
 │   ├── adr/                           Keputusan arsitektur (milik proyek)
@@ -104,7 +95,6 @@ Bahasa: **nama file dan folder berbahasa Inggris**; isi dokumen berbahasa Indone
 ## Bekerja di devcore sendiri
 - Izin atau preferensi khusus satu proyek ditulis di `CLAUDE.local.md` proyek itu, bukan di `CLAUDE.md`.
 - Berkas baru di hooks, skills, agents, scripts, atau templates **wajib** didaftarkan di `.claude/devcore.manifest`, kecuali yang khusus devcore (tes `test-sync.sh` akan gagal bila lupa).
-- Perangkat evaluasi (`evals/`, `scripts/*-evals.sh`) khusus devcore. Jalankan `scripts/run-evals.sh` hanya dengan sadar biaya; lihat `docs/evaluating-agents.md`.
 - Perubahan yang sampai ke proyek lain → naikkan `VERSION` dan catat di `CHANGELOG.md`.
 - Mengubah aturan inti: edit tabel "Aturan Inti untuk Agent" di `docs/engineering-standard.md`, lalu `scripts/build-rules.sh`. Jangan mengedit `devcore-rules.md` (bagian daftar inti) atau `devcore-reminder.txt` manual.
 - Sebelum push: `scripts/run-checks.sh`.

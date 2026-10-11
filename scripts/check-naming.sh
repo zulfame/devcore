@@ -68,15 +68,6 @@ if [ -d .claude/agents ]; then
   done
 fi
 
-# 3c. Skenario evaluasi: folder kebab-case dengan prompt.txt dan grade.sh
-if [ -d evals/scenarios ]; then
-  for d in evals/scenarios/*/; do
-    [ -d "$d" ] || continue
-    is_kebab "$(basename "$d")" || bad "$d" "folder skenario harus kebab-case huruf kecil"
-    { [ -f "${d}prompt.txt" ] && [ -f "${d}grade.sh" ]; } || bad "$d" "skenario harus punya prompt.txt dan grade.sh"
-  done
-fi
-
 # 4. Hook: event-tujuan.sh atau test-*.sh
 if [ -d .claude/hooks ]; then
   for f in .claude/hooks/*; do

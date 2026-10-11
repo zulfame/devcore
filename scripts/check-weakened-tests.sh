@@ -5,7 +5,7 @@
 #   - "any" baru pada file TypeScript
 #   - continue-on-error: true pada workflow
 # Baris yang sengaja dikecualikan harus memuat:  devcore-allow: <alasan>
-# Folder docs/, .claude/, scripts/, evals/ dan berkas *.md tidak dipindai. Test yang dihapus hanya diberi PERINGATAN.
+# Folder docs/, .claude/, scripts/ dan berkas *.md tidak dipindai. Test yang dihapus hanya diberi PERINGATAN.
 # Pakai: scripts/check-weakened-tests.sh <base-ref>
 set -u
 base=${1:-}
@@ -20,7 +20,7 @@ tsany='(:[[:space:]]*|as[[:space:]]+|<)any([^A-Za-z0-9_]|$)'
 raw=$(mktemp); added=$(mktemp); err=$(mktemp)
 trap 'rm -f "$raw" "$added" "$err"' EXIT
 
-if ! git diff --unified=0 --no-color "${base}...HEAD" -- . ':(exclude)docs' ':(exclude).claude' ':(exclude)scripts' ':(exclude)evals' ':(exclude)*.md' >"$raw" 2>"$err"; then
+if ! git diff --unified=0 --no-color "${base}...HEAD" -- . ':(exclude)docs' ':(exclude).claude' ':(exclude)scripts' ':(exclude)*.md' >"$raw" 2>"$err"; then
   echo "GAGAL membandingkan dengan '${base}': $(cat "$err")"
   exit 2
 fi

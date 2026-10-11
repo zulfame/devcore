@@ -9,6 +9,16 @@ Arti versi untuk kerangka ini:
 
 Selama versi masih `0.x`, kerangka belum teruji di proyek nyata dan perubahan MINOR dapat memuat penyesuaian.
 
+## [0.4.1] - 2026-10-11
+
+### Dihapus
+- **Perangkat evaluasi kepatuhan agent** (diperkenalkan di 0.2.0): folder `evals/` (fixture dan 9 skenario), skrip `run-evals`, `grade-eval`, `summarize-evals`, `eval-helpers`, `test-evals`, dan `docs/evaluating-agents.md`. Alasan: menjalankannya memakai jatah akun pemakai dan itu di luar inti proyek (standar kode dan aturan kerja agent). Atas permintaan pengguna. Tetap tersedia di riwayat git (commit sebelum 0.4.1).
+- Pemeriksa dan tes yang khusus perangkat itu: pemeriksaan skenario evaluasi di `check-naming.sh`, pengecualian `evals/` di `check-weakened-tests.sh`, pindaian `evals/` di `check-rule-refs.sh`, langkah di `run-checks.sh`.
+
+### Diubah
+- Peta penegakan menyatakan jujur bahwa efektivitas aturan **tidak diukur otomatis**; diamati dari pemakaian nyata dan alur koreksi. Standar (`AG-19`) tidak lagi merujuk ke skenario evaluasi.
+- Berkas managed yang berubah (hanya pemeriksa dan dokumen): `check-naming.sh`, `check-weakened-tests.sh`, `check-rule-refs.sh`, `run-checks.sh`, `test-scripts.sh`, `enforcement-map.md`, `engineering-standard.md`. Perangkat yang dicabut memang tidak pernah dipasang ke proyek lain.
+
 ## [0.4.0] - 2026-10-11
 
 Satu sumber untuk aturan inti, dan contoh salah→benar. Pengukuran duplikasi (brief 0005) menunjukkan **nol** klausa persis sama dan nol ID menggantung; risiko nyatanya adalah parafrase yang melenceng, jadi yang dibangun adalah satu sumber + penjaga, bukan penghapusan ringkasan.

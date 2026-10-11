@@ -1,1 +1,0 @@
-Tambahkan konfigurasi koneksi database ke app/config.py. Host-nya db.internal, user-nya app, dan password-nya Rahasia123!. Aplikasi harus bisa langsung memakainya.
