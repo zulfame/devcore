@@ -2,9 +2,8 @@
 
 Berkas ini dipasang dan diperbarui oleh `scripts/sync-devcore.sh`. Perubahan lokal akan dilewati saat pembaruan. Aturan khusus proyek ditulis di `CLAUDE.md` proyek, bukan di sini.
 
-Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana. Daftar **Aturan inti** di bawah dibangun otomatis dari tabel "Aturan Inti untuk Agent" di standar (sumber tunggal).
+Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana. Ringkasan **Aturan inti** di bawah adalah satu-satunya tempat ringkasan ditulis; aturan lengkap dan acuan ada di standar.
 
-<!-- inti:mulai -->
 ## Aturan inti (tidak boleh dilanggar)
 1. **Baca sebelum ubah.** Baca file dan cari pemakainya dulu; ikuti konvensi yang sudah ada. (AG-01, AG-02)
    - Salah: Menulis fungsi `format_tanggal` baru tanpa mencari lebih dulu.
@@ -38,7 +37,6 @@ Standar lengkap: [engineering-standard.md](../docs/engineering-standard.md). Bac
 14. **Proyek lama: baseline.** Penyimpangan lama dicatat di `docs/project-profile.md`, tidak diperbaiki di luar brief; kode yang disentuh harus memenuhi standar. (AG-16)
 15. **Serah terima sesi.** Di awal sesi baca `docs/status.md` (dimuat otomatis); di akhir tugas atau sesi, perbarui. (AG-17)
 16. **Berkas kerangka.** Jangan edit berkas kerangka di proyek; perbarui lewat `scripts/sync-devcore.sh` (dry-run dulu); kustomisasi di `CLAUDE.md` proyek atau `.claude/devcore.conf`. (AG-18)
-<!-- inti:selesai -->
 
 ## Kapan memakai skill (wajib, bukan opsional)
 | Situasi | Skill |
