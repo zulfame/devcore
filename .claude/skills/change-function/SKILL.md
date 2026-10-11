@@ -39,5 +39,10 @@ Tulis 3–6 baris: apa yang diubah, file terdampak, cara verifikasi. Untuk perub
 - Dokumentasi, contoh, OpenAPI, changelog yang terdampak.
 - Semua pemanggil yang ditemukan pada langkah 1.
 
+## Contoh salah → benar
+- **Ganti nama** `hitungPajak` → `hitung_pajak`. Salah: mengganti definisinya saja. Benar: mencari semua pemanggil (kode, test, dokumen, konfigurasi, string), memperbaruinya, lalu menjalankan test.
+- **Field baru wajib** `npwp` pada API. Salah: validasi di backend saja. Benar: UI, backend, impor CSV, dokumentasi API, dan test kontrak memakai aturan yang sama (VL-01, VL-02).
+- **Hapus** `kirimEmailLama`. Salah: menghapus karena "kelihatannya tidak terpakai". Benar: mencari pemakai (termasuk string dan konfigurasi); bila kontrak publik, jalankan deprecation dan tanya dulu (AG-06).
+
 ## 6. Verifikasi dan lapor
 Jalankan skill `verify-done`. Laporkan: apa yang berubah, pemanggil yang terdampak, bukti tes, asumsi, risiko.

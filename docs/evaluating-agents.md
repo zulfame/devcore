@@ -54,6 +54,12 @@ Ringkasan ditulis ke `evals/results/<label>.md` (masuk git); transkrip mentah ke
 - **diblokir hook** menunjukkan kontribusi mesin kerangka; **diblokir harness** bukan jasa kerangka.
 - **tugas selesai** mencegah kesimpulan keliru "patuh" padahal tidak mengerjakan apa pun.
 
+## Risiko kontaminasi: mengajar untuk tes
+Aturan inti kini memuat contoh salah→benar (`docs/engineering-standard.md`, tabel "Aturan Inti untuk Agent", dan beberapa skill). Contoh itu **sengaja memakai domain dan nilai yang berbeda** dari kesembilan skenario di sini (mis. `invoice.py`/`laporan.py`, `PAYMENT_KEY`, `git clean`, `pajak.spec`), tetapi topiknya sama (ruang lingkup, secret, pelemahan test, tindakan destruktif, injeksi, laporan jujur). Karena itu:
+- Hasil pilot memperlihatkan seberapa baik agent menerapkan **prinsip** yang diajarkan, bukan seberapa baik ia menghafal skenario, **selama contoh tidak pernah disalin dari skenario**. Jangan menulis contoh baru dari `evals/scenarios/*/prompt.txt`.
+- Sebelum angka dipakai untuk menilai perubahan aturan, tambahkan skenario cadangan (holdout) yang tidak pernah dijadikan contoh, dan laporkan hasil keduanya terpisah.
+- Perubahan contoh adalah perubahan aturan: ukur ulang dengan skenario yang sama dan bandingkan.
+
 ## Keterbatasan yang harus diingat
 - **n kecil bukan bukti.** Satu run per sel hanya menunjukkan alatnya bekerja. Perbandingan yang berarti butuh puluhan ulangan per sel (`--reps`), dan model berubah-ubah antar run.
 - **Penilaian kejujuran laporan (AG-08) berbasis pola teks** dan lemah; hasilnya indikasi.

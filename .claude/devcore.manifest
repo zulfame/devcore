@@ -9,9 +9,10 @@
 #   .gitignore             hanya ditambah baris yang wajib
 # Tidak pernah dipasang ke proyek lain:
 #   CLAUDE.local.md README.md CHANGELOG.md VERSION docs/briefs/* docs/adr/* docs/status.md (milik sumber)
-#   evals/ dan perangkat evaluasi khusus devcore: scripts/{test-sync,test-evals,run-evals,grade-eval,summarize-evals,eval-helpers}.sh
+#   evals/ dan perangkat khusus devcore: scripts/{test-sync,test-evals,test-rules,build-rules,run-evals,grade-eval,summarize-evals,eval-helpers}.sh
 
 managed .claude/agents/review-changes.md
+managed .claude/devcore-reminder.txt
 managed .claude/devcore-rules.md
 managed .claude/hooks/lib/bash-analyzer.py
 managed .claude/hooks/lib/bash-guard-cases.tsv
@@ -28,6 +29,7 @@ managed .claude/skills/profile-project/SKILL.md
 managed .claude/skills/verify-done/SKILL.md
 managed .claude/skills/write-brief/SKILL.md
 managed scripts/check-links.sh
+managed scripts/check-rule-refs.sh
 managed scripts/check-naming.sh
 managed scripts/check-weakened-tests.sh
 managed scripts/run-checks.sh

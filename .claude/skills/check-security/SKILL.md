@@ -28,6 +28,25 @@ Periksa perubahan Anda terhadap daftar ini. Laporkan tiap butir sebagai OK, tida
 - [ ] Endpoint sensitif punya rate limit/proteksi brute force di level aplikasi (SC-08).
 - [ ] Konfigurasi gagal aman bila hilang/tidak valid (CF-02, CF-03).
 
+## Contoh salah → benar (pseudo-kode, berlaku di bahasa apa pun)
+```
+# Query dari string input + tanpa cek kepemilikan (SC-03, SC-01)
+SALAH: db.query("SELECT * FROM pesanan WHERE id = " + request.id)
+BENAR: db.query("SELECT * FROM pesanan WHERE id = ? AND pemilik_id = ?", [request.id, user.id])
+
+# Sandi (SC-05)
+SALAH: simpan(user, sandi = sha1(request.sandi))
+BENAR: simpan(user, sandi = argon2id(request.sandi))        # hash adaptif dengan salt
+
+# Error ke pengguna (SC-12)
+SALAH: return 500, str(exception) + stacktrace
+BENAR: log.error(exception, request_id); return 500, {"pesan": "Terjadi kesalahan", "id": request_id}
+
+# Validasi hanya di UI (VL-03)
+SALAH: formulir membatasi panjang nama 50; endpoint /daftar menerima berapa pun
+BENAR: endpoint menolak nama > 50 dengan 422 dan pesan yang sama dengan UI
+```
+
 ## Lapor
 Sebut temuan, tingkat dampak, dan usulan perbaikan. Jangan menyatakan "aman"; nyatakan apa yang diperiksa dan apa yang tidak.
 Hal di luar proyek (TLS, firewall, dll.) → catat sebagai prasyarat lingkungan (Bagian 18), bukan dikerjakan.

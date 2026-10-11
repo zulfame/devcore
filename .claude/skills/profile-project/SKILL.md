@@ -29,6 +29,12 @@ Bandingkan dengan standar secara ringan dan catat **temuan yang terbukti dari ko
 - Dependency tanpa lockfile (DP-01).
 Jangan memperbaikinya. Temuan keamanan serius **dilaporkan ke pengguna segera**, bukan hanya dicatat.
 
+Contoh baris utang teknis. Salah: "Kodenya kurang rapi." (tanpa lokasi atau aturan). Benar:
+
+| Temuan | Lokasi | Dampak | Aturan terkait |
+|---|---|---|---|
+| Validasi hanya di formulir; endpoint tidak memeriksa ulang | `src/api/pendaftaran.js:41` | Data tidak valid bisa masuk lewat API langsung | VL-03 |
+
 ## 5. Catat prasyarat lingkungan
 Hal yang dibutuhkan proyek tetapi dikelola di luar proyek (TLS, backup, monitoring, dsb.) ditulis di bagian *Prasyarat lingkungan* (OS-01).
 

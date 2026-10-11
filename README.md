@@ -15,6 +15,9 @@ devcore/
 │   ├── check-naming.sh                Penamaan sesuai DC-05
 │   ├── check-links.sh                 Tautan relatif dokumen tidak rusak
 │   ├── check-weakened-tests.sh        Deteksi skip/ignore/any baru pada diff (AG-09)
+│   ├── check-rule-refs.sh             ID aturan yang dirujuk harus terdefinisi; batas ukuran berkas yang selalu dimuat
+│   ├── build-rules.sh                 Bangun aturan inti + pengingat dari tabel di standar (khusus devcore)
+│   ├── test-rules.sh                  Tes pembangun aturan inti (khusus devcore)
 │   ├── test-scripts.sh                Tes untuk tiga pemeriksa di atas
 │   ├── sync-devcore.sh                Pasang / perbarui kerangka di proyek lain
 │   ├── test-sync.sh                   Tes sync-devcore.sh (khusus devcore, tidak dipasang)
@@ -36,7 +39,8 @@ devcore/
 │   ├── briefs/                        Brief tugas (milik proyek)
 │   └── templates/                     task-brief.md · status.md · project-profile.md
 └── .claude/
-    ├── devcore-rules.md               Aturan inti generik (dikelola kerangka)
+    ├── devcore-rules.md               Aturan inti generik (dikelola kerangka; daftar inti DIBANGUN dari tabel di standar)
+    ├── devcore-reminder.txt           Pengingat per pesan (DIBANGUN; dibaca hook pengingat)
     ├── devcore.manifest               Daftar berkas managed / seed untuk sync
     ├── devcore.conf                   Mode gerbang brief: block | ask | off
     ├── devcore.lock                   (di proyek lain) versi terpasang + hash berkas
@@ -51,7 +55,7 @@ devcore/
     │   ├── pretool-bash-guard.sh      Blokir/konfirmasi perintah destruktif, secret, OS-admin, unduh-lalu-eksekusi (fallback regex bila tanpa python3)
     │   ├── pretool-write-guard.sh     Blokir secret di file, lockfile manual, ubah aturan mesin; konfirmasi saat brief di-approve
     │   ├── pretool-brief-gate.sh      Tolak ubah kode tanpa brief approved (AG-15)
-    │   ├── prompt-rules-reminder.sh   Pengingat aturan inti tiap pesan pengguna
+    │   ├── prompt-rules-reminder.sh   Menyisipkan devcore-reminder.txt tiap pesan pengguna (tanpa teks aturan sendiri)
     │   ├── session-status-loader.sh   Muat docs/status.md + brief approved di awal sesi (AG-17)
     │   └── test-hooks.sh              Tes untuk hook
     └── skills/
@@ -102,4 +106,5 @@ Bahasa: **nama file dan folder berbahasa Inggris**; isi dokumen berbahasa Indone
 - Berkas baru di hooks, skills, agents, scripts, atau templates **wajib** didaftarkan di `.claude/devcore.manifest`, kecuali yang khusus devcore (tes `test-sync.sh` akan gagal bila lupa).
 - Perangkat evaluasi (`evals/`, `scripts/*-evals.sh`) khusus devcore. Jalankan `scripts/run-evals.sh` hanya dengan sadar biaya; lihat `docs/evaluating-agents.md`.
 - Perubahan yang sampai ke proyek lain → naikkan `VERSION` dan catat di `CHANGELOG.md`.
+- Mengubah aturan inti: edit tabel "Aturan Inti untuk Agent" di `docs/engineering-standard.md`, lalu `scripts/build-rules.sh`. Jangan mengedit `devcore-rules.md` (bagian daftar inti) atau `devcore-reminder.txt` manual.
 - Sebelum push: `scripts/run-checks.sh`.

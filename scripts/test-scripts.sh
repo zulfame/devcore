@@ -65,6 +65,26 @@ rm "$L/c.md"
 printf '[naik](../a.md)\n' > "$L/docs/d.md"
 check "links: relatif ../ valid" 0 "OK" "$here/check-links.sh" "$L"
 
+# ---------- check-rule-refs ----------
+RR=$(mkd); mkdir -p "$RR/docs" "$RR/.claude/skills/do-thing" "$RR/scripts"
+printf '%s\n' '- `AG-01` Baca dulu.' '- `SC-07` Tidak ada secret.' '- `OS-01` Di luar proyek.' > "$RR/docs/engineering-standard.md"
+printf '%s\n' '# Aturan' 'Lihat AG-01 dan SC-07.' > "$RR/.claude/devcore-rules.md"
+check "rujukan: semua terdefinisi lulus" 0 "OK" "$here/check-rule-refs.sh" "$RR"
+printf -- '---\nname: do-thing\n---\nIkuti AG-99.\n' > "$RR/.claude/skills/do-thing/SKILL.md"
+check "rujukan: ID tidak terdefinisi gagal" 1 "AG-99" "$here/check-rule-refs.sh" "$RR"
+printf -- '---\nname: do-thing\n---\nNomor tiket CI-123 dan XAG-01 bukan aturan.\n' > "$RR/.claude/skills/do-thing/SKILL.md"
+check "rujukan: ID lebih panjang atau berawalan lain diabaikan" 0 "OK" "$here/check-rule-refs.sh" "$RR"
+printf 'Tiket DB-12 milik proyek.\n' > "$RR/README.md"; printf 'AG-77\n' > "$RR/CLAUDE.md"
+check "rujukan: README dan CLAUDE.md proyek tidak dipindai" 0 "OK" "$here/check-rule-refs.sh" "$RR"
+printf 'AG-88 dulu ada\n' > "$RR/CHANGELOG.md"
+check "rujukan: CHANGELOG tidak dipindai" 0 "OK" "$here/check-rule-refs.sh" "$RR"
+for i in $(seq 1 120); do echo "baris $i"; done >> "$RR/.claude/devcore-rules.md"
+check "rujukan: berkas aturan terlalu panjang gagal" 1 "UKURAN" "$here/check-rule-refs.sh" "$RR"
+check "rujukan: batas dapat diubah lewat lingkungan" 0 "OK" env MAX_RULES_LINES=300 "$here/check-rule-refs.sh" "$RR"
+printf 'a\n%.0s' $(seq 1 20) > "$RR/.claude/devcore-reminder.txt"
+check "rujukan: pengingat terlalu panjang gagal" 1 "devcore-reminder.txt" env MAX_RULES_LINES=300 "$here/check-rule-refs.sh" "$RR"
+check "rujukan: standar tidak ada -> exit 2" 2 "" "$here/check-rule-refs.sh" "$(mkd)"
+
 # ---------- check-weakened-tests ----------
 R=$(mkd)
 ( cd "$R" && git init -q -b main && git config user.email t@t && git config user.name t \

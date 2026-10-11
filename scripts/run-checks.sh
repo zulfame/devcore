@@ -21,6 +21,8 @@ step "Tes hook penjaga"          .claude/hooks/test-hooks.sh
 step "Tes skrip pemeriksa"       scripts/test-scripts.sh
 [ -x scripts/test-sync.sh ] && step "Tes sinkronisasi" scripts/test-sync.sh
 [ -x scripts/test-evals.sh ] && step "Tes perangkat evaluasi agent" scripts/test-evals.sh
+[ -x scripts/test-rules.sh ] && step "Tes pembangun aturan inti" scripts/test-rules.sh
+step "Rujukan aturan dan ukuran konteks" scripts/check-rule-refs.sh
 step "Penamaan (DC-05)"          scripts/check-naming.sh
 step "Tautan dokumen"            scripts/check-links.sh
 step "Pelemahan pemeriksaan (AG-09)" scripts/check-weakened-tests.sh "$base"

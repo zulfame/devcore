@@ -16,6 +16,7 @@ Baca bagian *Perintah proyek* di `docs/project-profile.md` lebih dulu. Bila koso
 - Jangan melemahkan pemeriksaan agar lulus (AG-09): tidak ada skip, ignore, `any`, atau menghapus test.
 
 ## 3. Periksa Definition of Done
+Daftar ini adalah **satu-satunya definisi kanonik** "selesai"; Bagian 3 standar menunjuk ke sini.
 - [ ] Setiap **kriteria penerimaan di brief** (`docs/briefs/`) diperiksa satu per satu dengan bukti; kriteria yang tidak terpenuhi dilaporkan, bukan dihapus dari brief.
 - [ ] Perilaku yang diminta terbukti berfungsi.
 - [ ] Test relevan ada (normal, negatif, batas; regression untuk bug).
@@ -37,6 +38,17 @@ Panggil subagent `review-changes` lewat tool Agent (`subagent_type: review-chang
 3. **Tidak dijalankan / gagal**: apa dan mengapa.
 4. **Asumsi dan risiko tersisa**.
 5. **Tindak lanjut** untuk pengguna atau tim infrastruktur bila ada (OS-03).
+
+**Contoh laporan**
+
+Salah (klaim tanpa bukti, tidak ada yang bisa diperiksa):
+> Selesai! Semua sudah diperbaiki dan berfungsi dengan baik.
+
+Benar (setiap klaim punya bukti; yang tidak dijalankan disebut):
+> **Ringkasan:** validasi tanggal lahir di `pendaftaran.py` dan 3 test baru.
+> **Bukti:** `python3 -m unittest` → 27 lulus, 0 gagal. Kriteria 1–3 di brief terpenuhi (`test_masa_depan`, `test_kabisat`, `test_format`).
+> **Tidak dijalankan:** lint (belum ada konfigurasi); uji manual formulir.
+> **Risiko:** format tanggal lokal belum diuji. **Tinjauan independen:** `LAYAK`, satu saran ditunda ke utang teknis.
 
 ## 5. Tutup brief
 Isi *Catatan penyelesaian* pada brief (bukti per kriteria, penyimpangan, tindak lanjut), lalu ubah `Status: done`. Brief yang dibiarkan `approved` membuka gerbang perubahan kode untuk tugas lain.

@@ -9,6 +9,25 @@ Arti versi untuk kerangka ini:
 
 Selama versi masih `0.x`, kerangka belum teruji di proyek nyata dan perubahan MINOR dapat memuat penyesuaian.
 
+## [0.4.0] - 2026-10-11
+
+Satu sumber untuk aturan inti, dan contoh salah→benar. Pengukuran duplikasi (brief 0005) menunjukkan **nol** klausa persis sama dan nol ID menggantung; risiko nyatanya adalah parafrase yang melenceng, jadi yang dibangun adalah satu sumber + penjaga, bukan penghapusan ringkasan.
+
+### Diubah
+- **Aturan inti kini dibangun dari satu tabel** "Aturan Inti untuk Agent" di `docs/engineering-standard.md` (ID, judul, ringkasan, penanda Kritis, contoh Salah/Benar). `scripts/build-rules.sh` menulis daftar inti di `.claude/devcore-rules.md` dan `.claude/devcore-reminder.txt`; `--check` gagal bila basi. Daftar inti bertambah satu butir (`AG-14`, gagal berulang → berhenti) dan naik dari 15 ke 16.
+- `prompt-rules-reminder.sh` tidak lagi memuat teks aturan sendiri: ia membaca `.claude/devcore-reminder.txt` (turunan).
+- Bagian 3 standar (Definition of Done) menunjuk ke skill `verify-done` sebagai satu-satunya definisi kanonik; daftar tidak lagi disalin di dua tempat.
+- `devcore-rules.md` memuat contoh Salah/Benar untuk 8 aturan kritis (72 baris, batas 110).
+
+### Ditambahkan
+- Contoh salah→benar di skill: `write-brief` (kriteria buruk/baik), `verify-done` (laporan menyesatkan vs jujur), `change-function` (ganti nama, field baru, hapus), `check-security` (pasangan pseudo-kode SC-01/03/05/12, VL-03), `profile-project` (baris utang teknis).
+- `scripts/check-rule-refs.sh` (dipasang ke proyek): ID aturan yang dirujuk harus terdefinisi di standar; batas ukuran untuk berkas yang selalu dimuat (`devcore-rules.md` 110, `CLAUDE.md` 200, pengingat 15 baris); melaporkan ID yang tidak pernah dirujuk. Hanya memindai berkas kerangka agar ID/nomor tiket milik proyek tidak memicu galat palsu.
+- `scripts/test-rules.sh` (29 kasus, khusus devcore, termasuk uji mutasi) dan 9 kasus baru `check-rule-refs` di `test-scripts.sh`. Pemeriksa tidak memindai skrip `test-*.sh` karena memuat ID palsu sebagai data uji (ditemukan oleh pemeriksa itu sendiri saat pertama dijalankan).
+- Peringatan risiko kontaminasi ("mengajar untuk tes") di `docs/evaluating-agents.md`.
+
+### Catatan
+- Proyek yang sudah terpasang menerima berkas baru `.claude/devcore-reminder.txt` dan `scripts/check-rule-refs.sh` lewat `sync-devcore.sh`. Dampak pada kepatuhan agent **belum diukur** (menunggu pilot evaluasi).
+
 ## [0.3.0] - 2026-10-11
 
 Penjaga bash ditulis ulang. **Perubahan perilaku hook** (lebih ketat di beberapa hal, lebih longgar pada teks yang bukan perintah); bacalah sebelum memperbarui proyek yang sudah terpasang.

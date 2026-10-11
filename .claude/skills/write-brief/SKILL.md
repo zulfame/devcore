@@ -26,6 +26,13 @@ Lihat `docs/briefs/`. Jika sudah ada brief untuk tugas yang sama, perbarui, jang
 - Tulis **Di luar ruang lingkup** secara aktif; ini penjaga `AG-05`.
 - Kosongkan *Pertanyaan terbuka* sebelum meminta persetujuan.
 
+### Contoh kriteria dan batas lingkup
+| | Buruk (tidak dapat diuji) | Baik (dapat dijawab "terpenuhi/belum" dengan bukti) |
+|---|---|---|
+| Kriteria | "Login berjalan baik dan cepat." | "`POST /login` dengan sandi salah → 401 dan tidak membuat sesi; 5 kegagalan beruntun dari satu IP dalam 1 menit → 429." |
+| Kriteria | "Validasi tanggal lahir sudah benar." | "Tanggal di masa depan ditolak (422, 'tidak boleh di masa depan'); '29-02-2023' ditolak; '29-02-2024' diterima." |
+| Di luar lingkup | "Tidak ada." | "Tidak mengubah format respons ekspor; tidak menyentuh modul `laporan`; tidak menambah dependency." |
+
 ## 5. Minta persetujuan
 Ringkas brief di chat (tujuan, kriteria, di luar lingkup, asumsi) dan minta persetujuan eksplisit.
 - **Dilarang** mengubah status ke `approved` sebelum pengguna menyatakan setuju di chat.
