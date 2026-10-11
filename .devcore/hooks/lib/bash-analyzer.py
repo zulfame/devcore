@@ -58,6 +58,14 @@ def scan_balanced(s, i, open_c, close_c):
                 j += 1
             j += 1
             continue
+        if open_c == '(' and c == '<' and s.startswith('<<', j) and not s.startswith('<<<', j):
+            m = re.match(r'<<-?[ \t]*([\'"]?)([A-Za-z_][A-Za-z0-9_]*)\1', s[j:])
+            nl = s.find('\n', j)
+            if m and nl != -1:
+                end = re.search(r'^[ \t]*' + re.escape(m.group(2)) + r'[ \t]*$', s[nl + 1:], re.M)
+                if end:
+                    j = nl + 1 + end.end()
+                    continue
         if c == open_c:
             depth += 1
         elif c == close_c:
@@ -351,13 +359,15 @@ PATTERN_CMDS = ('grep', 'egrep', 'fgrep', 'rg', 'ag', 'ack', 'zgrep')
 INTERP_DESTRUCT_RE = re.compile(
     r'\bshutil\.rmtree\b|\bos\.(remove|unlink|rmdir|removedirs)\b|\.unlink\(|\.rmdir\(|\brmtree\b'
     r'|\bfs\.(rm|rmSync|rmdir|rmdirSync|unlink|unlinkSync)\b|\brimraf\b|\.(rmSync|unlinkSync|rmdirSync)\(|\bFileUtils\.rm|\bFile\.delete\b|\bunlink\s*\(')
+INTERP_SHELLOUT_RE = re.compile(
+    r'\b(system|exec|popen|execSync|spawnSync|shell_exec|passthru|check_call|check_output|run|call)\s*\([^)]*\brm\b[^)]*-[A-Za-z]*[rR]')
 INTERP_SECRET_RE = re.compile(
     r'(^|[^A-Za-z0-9_])\.env(\.(?!example|sample|template|dist)[A-Za-z0-9_]+)?(?![A-Za-z0-9_])'
     r'|id_(rsa|dsa|ecdsa|ed25519)(?!\.pub)|\.(pem|key|p12|pfx)\b|\.aws/credentials|\.netrc|\.git-credentials')
 
 SECRET_PATH_RES = [re.compile(p) for p in (
-    r'(^|/)\.env$',
-    r'(^|/)\.env\.(?!example$|sample$|template$|dist$)[^/]+$',
+    r'(^|[/:])\.env$',
+    r'(^|[/:])\.env\.(?![^/]*\.(example|sample|template|dist)$)(?!(example|sample|template|dist)$)[^/]+$',
     r'\.(pem|key|p12|pfx|jks|keystore|ppk|kdbx)$',
     r'(^|/)id_(rsa|dsa|ecdsa|ed25519)$',
     r'(^|/)\.(netrc|pgpass|git-credentials|npmrc|pypirc|dockercfg)$',
@@ -367,6 +377,11 @@ SECRET_PATH_RES = [re.compile(p) for p in (
     r'(^|/)secrets?\.(ya?ml|json|toml|env)$',
 )]
 
+OS_READONLY = {'systemctl': ('status', 'is-active', 'is-enabled', 'list-units', 'list-unit-files', 'show', 'cat'),
+               'service': ('--status-all',), 'launchctl': ('list', 'print', 'print-disabled'), 'crontab': ('-l',),
+               'nginx': ('-t', '-T', '-v', '-V'), 'apachectl': ('-t', 'configtest', '-v', '-S'),
+               'diskutil': ('list', 'info'), 'sysctl': ('-a', '-n'), 'ufw': ('status',), 'iptables': ('-L', '-S', '-n'),
+               'firewall-cmd': ('--list-all',), 'hostnamectl': ('status',), 'timedatectl': ('status',)}
 OS_ADMIN = ('systemctl', 'service', 'launchctl', 'ufw', 'iptables', 'ip6tables', 'nft', 'firewall-cmd', 'pfctl',
             'shutdown', 'reboot', 'halt', 'poweroff', 'fdisk', 'parted', 'diskutil', 'shred', 'mount', 'umount',
             'certbot', 'nginx', 'apachectl', 'httpd', 'crontab', 'useradd', 'userdel', 'usermod', 'passwd', 'chsh',
@@ -432,7 +447,7 @@ def secret_candidates(a):
 
 def is_secret_path(a):
     for cand in secret_candidates(a):
-        if not cand or cand.startswith('-'):
+        if not cand or cand.startswith('-') or '://' in cand:
             continue
         for rx in SECRET_PATH_RES:
             if rx.search(cand):
@@ -548,6 +563,12 @@ def check_git(args, out, ctx=None):
         elif ctx and not any(x in a for x in ('-b', '-B', '--orphan')) and any(
                 resolve(x, ctx) and os.path.exists(resolve(x, ctx)) for x in positional(a)):
             add(out, 'block', 'AG-06', 'git checkout <berkas> menimpa perubahan yang belum di-commit')
+    elif sub == 'switch':
+        if '-f' in a or '--force' in a or '--discard-changes' in a or has_short_flag(a, 'f'):
+            add(out, 'block', 'AG-06', 'git switch -f/--discard-changes membuang perubahan lokal')
+    elif sub == 'worktree':
+        if positional(a)[:1] == ['remove'] and ('-f' in a or '--force' in a):
+            add(out, 'block', 'AG-06', 'git worktree remove --force membuang pekerjaan di worktree')
     elif sub == 'restore':
         staged_only = ('--staged' in a or '-S' in a) and not ('--worktree' in a or '-W' in a)
         if not staged_only:
@@ -635,7 +656,7 @@ def check_xargs(args, out, ctx, depth, seg_info):
 
 
 def scan_code(name, code, out):
-    if INTERP_DESTRUCT_RE.search(code):
+    if INTERP_DESTRUCT_RE.search(code) or INTERP_SHELLOUT_RE.search(code):
         add(out, 'block', 'AG-06', 'kode %s menghapus berkas/direktori' % name)
     if INTERP_SECRET_RE.search(code):
         add(out, 'block', 'AG-07', 'kode %s mengakses berkas secret' % name)
@@ -678,12 +699,17 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
     name, args = un
 
     # --- nama perintah dinamis: hook tidak tahu apa yang akan dijalankan ---
-    if '$' in name or '`' in name:
+    if '$' in name or '`' in name or (name.startswith('{') and ',' in name):
         add(out, 'ask', 'AG-06', 'nama perintah dinamis (%s) tidak dapat diperiksa hook' % name)
         return name, args
 
     # --- administrasi OS ---
-    if name in OS_ADMIN or name.startswith('mkfs'):
+    ro = OS_READONLY.get(name)
+    if ro and args and args[0] in ro:
+        pass  # diagnosis hanya-baca
+    elif name == 'mount' and not args:
+        pass
+    elif name in OS_ADMIN or name.startswith('mkfs'):
         add(out, 'block', 'OS-01', '%s adalah administrasi host; dikelola tim infrastruktur, bukan agent' % name)
     if name == 'dd':
         for a in args:
@@ -693,7 +719,7 @@ def check_effective(words, out, ctx, depth, seg_info, unknown_args=False):
     # --- dump environment ---
     if name == 'printenv' and not positional(args):
         add(out, 'block', 'AG-07', 'printenv mencetak seluruh variabel lingkungan (dapat membocorkan secret)')
-    if name == 'export' and '-p' in args:
+    if name == 'export' and ('-p' in args or not args):
         add(out, 'block', 'AG-07', 'export -p mencetak seluruh variabel lingkungan')
     if name in ('declare', 'typeset') and '-x' in args and len(positional(args)) == 0:
         add(out, 'block', 'AG-07', '%s -x mencetak variabel yang diekspor' % name)
@@ -802,7 +828,8 @@ def write_targets(name, args):
             if name == 'mv':
                 targets += [(p, 'remove') for p in pos[:-1]]
     elif name == 'sed' and any(re.match(r'^-[A-Za-z]*i', a) or a == '--in-place' or a.startswith('--in-place=') for a in args):
-        files = pos[1:] if not any(a in ('-e', '-f') for a in args) else pos
+        files = pos[1:] if not any(a in ('-e', '-f') for a in args) \
+            else positional(args, with_value=('-e', '-f', '--expression', '--file'))
         targets = [(p, 'edit') for p in files]
     elif name == 'perl' and any(re.match(r'^-[A-Za-z]*i', a) for a in args):
         eidx = [i for i, a in enumerate(args) if re.match(r'^-[A-Za-z]*e$', a)]
@@ -814,6 +841,12 @@ def write_targets(name, args):
         targets = [(p, 'write') for p in pos[-1:]] if name == 'truncate' else [(p, 'write') for p in pos]
     elif name in ('rm', 'unlink'):
         targets = [(p, 'remove') for p in pos]
+    elif name in ('curl', 'wget'):
+        for i, a in enumerate(args[:-1]):
+            if a in ('-o', '--output', '-O', '--output-document') and not (name == 'curl' and a == '-O'):
+                targets.append((args[i + 1], 'write'))
+    elif name == 'patch' or (name == 'git' and pos[:1] == ['apply'] and '--check' not in args):
+        targets = [('__patch__', 'write')]  # berkas yang diubah tidak diketahui: perlakukan sebagai penulisan kode
     return targets
 
 

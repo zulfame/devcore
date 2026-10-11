@@ -13,6 +13,10 @@ if [ -f "$root/docs/status.md" ]; then
     status_text="docs/status.md masih berisi templat kosong. Isi setelah tugas pertama selesai (AG-17)."
   else
     status_text=$(head -n 40 "$root/docs/status.md" | cut -c1-200)
+    # beri tahu bila ada yang terpotong (lebih dari 40 baris, atau baris lebih dari 200 karakter)
+    if [ "$(wc -l < "$root/docs/status.md" | tr -d ' ')" -gt 40 ] || head -n 40 "$root/docs/status.md" | awk 'length($0) > 200 {f=1} END {exit !f}'; then
+      status_text="$status_text"$'\n'"[docs/status.md dipotong saat dimuat (maks. 40 baris, 200 karakter per baris); baca berkasnya utuh bila perlu, dan singkatkan agar seluruhnya termuat.]"
+    fi
   fi
 fi
 

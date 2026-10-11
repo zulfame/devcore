@@ -9,7 +9,7 @@ Masalah yang dijawab: aturan yang hanya ditulis di markdown sering dilanggar age
 
 | Komponen | Isi | Manfaat untuk proyek |
 |---|---|---|
-| **Standar rekayasa** ([engineering-standard.md](.devcore/docs/engineering-standard.md)) | 22 bagian, ±130 aturan ber-ID (mis. `AG-06`, `SC-07`), ditandai WAJIB/DILARANG | Satu acuan bersama untuk kode, data, keamanan, test, dan dokumentasi; review bisa menyebut ID, bukan selera |
+| **Standar rekayasa** ([engineering-standard.md](.devcore/docs/engineering-standard.md)) | 22 bagian, 137 aturan ber-ID (mis. `AG-06`, `SC-07`), ditandai WAJIB/DILARANG | Satu acuan bersama untuk kode, data, keamanan, test, dan dokumentasi; review bisa menyebut ID, bukan selera |
 | **Aturan inti** ([rules.md](.devcore/rules.md)) | 17 aturan ringkas dengan contoh Salah → Benar, dimuat ke setiap sesi lewat `CLAUDE.md` | Agent tahu aturan tanpa Anda mengulang; contoh mengurangi salah tafsir |
 | **Pengingat per pesan** (`reminder.txt`) | Ringkasan aturan yang disuntik tiap pesan Anda | Aturan tetap segar di sesi yang panjang |
 | **5 skill** (`.claude/skills/`) | `write-brief` (brief tugas), `change-function` (cek dampak sebelum ubah fungsi/kontrak), `verify-done` (bukti per kriteria sebelum "selesai"), `check-security`, `profile-project` (catat baseline proyek lama) | Prosedur berulang yang tidak bergantung ingatan agent; tugas jelas batasnya dan selesai dengan bukti |
@@ -36,7 +36,7 @@ Masalah yang dijawab: aturan yang hanya ditulis di markdown sering dilanggar age
 ├── rules.md                    aturan inti + contoh salah→benar (dimuat ke setiap sesi lewat CLAUDE.md)
 ├── reminder.txt                pengingat singkat tiap pesan pengguna
 ├── docs/                       standar lengkap, peta penegakan, panduan pasang, template
-├── hooks/                      penjaga: bash, tulis, gerbang brief, pengingat, serah terima sesi (+ tes)
+├── hooks/                      penjaga: bash, tulis, gerbang brief, pengingat, serah terima sesi, pengingat status akhir (+ tes)
 ├── scripts/                    sync-devcore.sh dan pemeriksa CI (penamaan, tautan, pelemahan test)
 └── VERSION · managed-claude.txt
 .claude/                        skills/ (write-brief, change-function, verify-done, check-security,
@@ -162,7 +162,7 @@ Kamu melanggar aturan <ID, mis. AG-15>: <apa yang terjadi>. Perbaiki pelanggaran
 
 ### Yang akan Anda alami
 - **Diblokir** (rujukan aturan tampil): `rm -r`, git destruktif, baca/tulis secret, `sudo`, `curl | sh`, ubah kode tanpa brief `approved`. Agent akan menjelaskan dan meminta keputusan Anda.
-- **Meminta konfirmasi**: pasang dependency baru, perubahan di `.devcore/` atau `.claude/settings.json`, brief ditandai `approved`.
+- **Meminta konfirmasi**: pasang dependency baru (dan perintah merusak data pada daftar `permissions.ask`), perubahan di `.devcore/`, `.claude/settings*.json`, `.claude/skills|agents/`, `CLAUDE.local.md`, serta brief ditandai `approved`.
 - **Pengingat**: di akhir tugas, bila kode berubah tetapi `docs/status.md` belum, agent diingatkan satu kali memperbaruinya.
 - Mode gerbang brief: `BRIEF_GATE=block|ask|off` di `.claude/devcore.conf`.
 

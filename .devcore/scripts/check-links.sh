@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Periksa bahwa tautan relatif pada dokumen markdown menunjuk ke berkas/folder yang ada.
-# Tautan http(s), mailto, dan anchor murni dilewati.
+# Tautan http(s), mailto, dan anchor murni dilewati; teks di dalam `kode inline` dan blok ``` tidak dianggap tautan.
 # Pakai: .devcore/scripts/check-links.sh [root]
 set -u
 root=${1:-$(cd "$(dirname "$0")/../.." && pwd)}
@@ -28,12 +28,13 @@ while IFS= read -r f; do
     target=${link%%#*}
     target=${target%% *}
     case "$target" in ""|http://*|https://*|mailto:*|tel:*) continue ;; esac
+    target=${target//%20/ }
     case "$target" in /*) path="$root$target" ;; *) path="$dir/$target" ;; esac
     if [ ! -e "$path" ]; then
       echo "TAUTAN RUSAK: ${f#./} -> $link"
       fail=1
     fi
-  done < <(grep -oE '\]\([^)]+\)' "$f" | sed -e 's/^\](//' -e 's/)$//')
+  done < <(awk '/^```/{c=!c; next} !c' "$f" | sed -e 's/`[^`]*`//g' | grep -oE '\]\([^)]+\)' | sed -e 's/^\](//' -e 's/)$//')
 done < <(list_md)
 
 [ "$fail" -eq 0 ] && echo "Tautan: OK"

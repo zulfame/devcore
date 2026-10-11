@@ -239,7 +239,7 @@ Aturan tambahan:
 - `DC-03` Dokumentasikan asumsi, batasan, risiko, dan pengecualian (siapa, alasan, persetujuan).
 - `DC-04` Tetapkan code ownership dan proses code review di repositori (mis. `CODEOWNERS`) bila proyek memakainya.
 - `DC-05` **Penamaan file dan folder** harus seragam:
-  - Dokumen dengan peran baku memakai `HURUF_BESAR.md` (`README`, `CLAUDE`, `AGENTS`, `CHANGELOG`, `SECURITY` di root; `ARCHITECTURE`, `TESTING`, `DEPLOYMENT` di `docs/`).
+  - Dokumen dengan peran baku memakai `HURUF_BESAR.md` (`README`, `CLAUDE`, `AGENTS`, `CHANGELOG`, `SECURITY`, `CONTRIBUTING`, `LICENSE`, `CODE_OF_CONDUCT` di root; `ARCHITECTURE`, `TESTING`, `DEPLOYMENT` di `docs/`).
   - Dokumen topik lain memakai `kebab-case.md` huruf kecil di `docs/`.
   - ADR di `docs/adr/` dan brief tugas di `docs/briefs/` memakai format `NNNN-judul-singkat.md`; templat di `.devcore/docs/templates/`; skrip pemeriksa di `scripts/` (`kata-kerja-objek.sh`, huruf kecil).
   - Skill: folder `kata-kerja-objek`; hook: `event-tujuan.sh` sejajar dengan nama event di `settings.json`.

@@ -6,7 +6,15 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 - **MINOR**: kemampuan atau aturan baru yang kompatibel.
 - **PATCH**: perbaikan hook/skrip/dokumen.
 
-Selama `0.x`, kerangka belum teruji di proyek nyata.
+Selama `0.x`, kerangka sudah diuji pemasangan dan uji buta kecil, tetapi belum terbukti dalam pemakaian jangka panjang di proyek nyata.
+
+## [0.7.0] - 2026-10-11
+Hasil audit final (lihat `docs/audit-final.md`). **Proyek terpasang perlu menjalankan `sync-devcore.sh` lagi**: perintah hook di `settings.json` kini dikutip.
+- **Perbaikan penting:** hook tidak lagi mati diam-diam pada jalur proyek berspasi (`"$CLAUDE_PROJECT_DIR"/…`); gerbang brief tidak bisa dilewati dengan `..` atau jalur relatif; persetujuan brief lewat edit parsial meminta konfirmasi; `.claude/settings.local.json`, skill, subagent, dan `CLAUDE.local.md` meminta konfirmasi.
+- **Penjaga bash:** menambah `git switch -f`, `worktree remove --force`, `git show REF:.env`, `export` kosong, `curl -o`/`wget -O`/`patch`/`git apply` sebagai penulisan kode, shell-out destruktif lewat interpreter; mengurangi false positive (URL `/credentials`, `.env.*.example`, heredoc dengan apostrof di `$(…)`, `sed -i -e`, diagnosis OS hanya-baca).
+- **Pemeriksa:** `check-naming` di proyek terpasang hanya memeriksa yang dibuat kerangka; `check-links` mengabaikan kode inline/blok dan mendekode `%20`; `check-weakened-tests` memindai `scripts/` proyek; `run-checks.sh` mencatat pemeriksaan yang dilewati.
+- **Sync dan serah terima:** salinan gagal tidak merusak pemasangan lama; pemuat status memberi tanda bila terpotong; `permissions.deny` Read diperluas.
+- **Dokumen:** klaim git di `rules.md` dipersempit sesuai kode; definisi brief (gerbang tidak menilai ukuran) diselaraskan; panduan melepas dan memperbarui (`--ref`) diperbaiki; peta penegakan memuat DC-06/DC-07 dan batas yang diterima.
 
 ## [0.6.7] - 2026-10-11
 - Redaksi README dan `adopting.md` dibuat universal: contoh yang menyebut satu framework (di luar tabel stack) diganti.

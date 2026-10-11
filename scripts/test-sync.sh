@@ -29,7 +29,7 @@ unlisted=""
 for d in "$repo"/.claude/skills/*/; do p=".claude/skills/$(basename "$d")"; grep -qxF "$p" "$repo/.devcore/managed-claude.txt" || unlisted="$unlisted $p"; done
 for f in "$repo"/.claude/agents/*.md; do p=".claude/agents/$(basename "$f")"; grep -qxF "$p" "$repo/.devcore/managed-claude.txt" || unlisted="$unlisted $p"; done
 t "semua skill/subagent di sumber tercatat (belum tercatat:$unlisted)" test -z "$unlisted"
-t "settings sumber hanya memuat hook di .devcore/" jqt '[.hooks[][]?.hooks[]?.command]|all(startswith("$CLAUDE_PROJECT_DIR/.devcore/"))' "$repo/.claude/settings.json"
+t "settings sumber hanya memuat hook di .devcore/" jqt '[.hooks[][]?.hooks[]?.command]|all(test("^\"\\$CLAUDE_PROJECT_DIR\"/\\.devcore/"))' "$repo/.claude/settings.json"
 
 # ---------- dry-run ----------
 P=$(mkrepo)
@@ -174,6 +174,17 @@ G=$(mktmp); mkdir "$G/devcore.git"; tar -C "$repo" --exclude=.git -cf - . | tar 
 git -C "$G/devcore.git" init -q -b main; git -C "$G/devcore.git" add -A; git -C "$G/devcore.git" -c user.email=t@t -c user.name=t commit -q -m src
 P4=$(mkrepo); sy "$P4" --source "$G/devcore.git" --apply >/dev/null
 t "clone: instalasi dari sumber git"               grep -qx "$ver" "$P4/.devcore/VERSION"
+
+# ---------- jalur proyek berspasi: hook harus tetap jalan (temuan audit) ----------
+SPD=$(mktmp); PS="$SPD/proyek dengan spasi"; mkdir "$PS"; git -C "$PS" init -q -b main
+git -C "$PS" -c user.email=t@t -c user.name=t commit -q --allow-empty -m init
+sy "$PS" --apply >/dev/null
+bad=0
+while IFS= read -r cmd; do
+  printf '{}' | CLAUDE_PROJECT_DIR="$PS" /bin/bash -c "$cmd" >/dev/null 2>&1; rc=$?
+  [ "$rc" -eq 127 ] || [ "$rc" -eq 126 ] && bad=$((bad+1))
+done < <(jq -r '.hooks[][]?.hooks[]?.command' "$PS/.claude/settings.json")
+t "jalur berspasi: semua perintah hook dapat dieksekusi" test "$bad" -eq 0
 
 # ---------- .gitignore proyek mengabaikan berkas devcore (temuan starter kit Laravel) ----------
 PG=$(mkrepo)

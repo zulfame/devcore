@@ -9,6 +9,20 @@ input=$(cat)
 path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty')
 [ -z "$path" ] && exit 0
 
+# Normalisasi jalur (buang ./ dan ../, jalur relatif dihitung dari cwd) agar pencocokan tidak bisa dilewati
+norm() { # jalur basis
+  local p=$1 res="" seg old=$IFS
+  case "$p" in /*) ;; *) p="$2/$p" ;; esac
+  IFS=/; set -f
+  for seg in $p; do
+    case "$seg" in ''|.) ;; ..) res=${res%/*} ;; *) res="$res/$seg" ;; esac
+  done
+  set +f; IFS=$old
+  printf '%s' "${res:-/}"
+}
+cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
+path=$(norm "$path" "${cwd:-${CLAUDE_PROJECT_DIR:-$(pwd)}}")
+
 here=$(cd "$(dirname "$0")" && pwd -P)
 patterns="$here/lib/secret-patterns.txt"
 
@@ -38,8 +52,8 @@ esac
 
 # 3. Aturan mesin tidak boleh diubah agent tanpa persetujuan pengguna (minta konfirmasi, bukan blokir total)
 case "$path" in
-  */.claude/settings.json|*/.claude/devcore.conf|*/.devcore/*)
-    ask "Perubahan pada aturan mesin ($path) butuh persetujuan pengguna. Melonggarkan aturan agar pekerjaan lolos adalah pelanggaran AG-09." ;;
+  */.claude/settings.json|*/.claude/settings.local.json|*/.claude/devcore.conf|*/.devcore/*|*/.claude/skills/*|*/.claude/agents/*|*/CLAUDE.local.md)
+    ask "Perubahan pada aturan mesin atau konfigurasi agent ($path) butuh persetujuan pengguna. Melonggarkan aturan atau izin agar pekerjaan lolos adalah pelanggaran AG-09." ;;
 esac
 
 # 4. Pindai konten yang akan ditulis
@@ -49,7 +63,8 @@ content=$(printf '%s' "$input" | jq -r '[.tool_input.content, .tool_input.new_st
 # 4a. Persetujuan brief (AG-15) adalah keputusan pengguna: menulis "Status: approved" meminta konfirmasi
 case "$path" in
   */docs/briefs/*.md)
-    if printf '%s\n' "$content" | grep -iqE '^Status:[[:space:]]*approved[[:space:]]*$'; then
+    # juga edit parsial: new_string hanya berisi kata "approved" (mengganti draft -> approved tanpa menulis "Status:")
+    if printf '%s\n' "$content" | grep -iqE '^Status:[[:space:]]*approved[[:space:]]*$|^[[:space:]]*approved[[:space:]]*$'; then
       ask "Brief diubah menjadi approved. Setujui hanya jika Anda memang menyetujui isi brief ini (AG-15)."
     fi ;;
 esac

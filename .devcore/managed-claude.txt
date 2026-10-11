@@ -1,6 +1,6 @@
 # Berkas di .claude/ yang dimiliki kerangka (wajib berada di .claude/ agar dikenali Claude Code).
-# Sinkronisasi menimpa berkas ini hanya bila tercatat di salinan daftar ini yang SUDAH terpasang;
-# berkas senama yang belum tercatat dianggap milik proyek dan dilaporkan sebagai bentrok.
+# Ini daftar SUMBER (yang ingin dipasang). Kepemilikan di proyek target dicatat terpisah di .devcore/owned-claude.txt
+# (hanya berkas yang benar-benar dipasang); berkas senama milik proyek dilaporkan sebagai bentrok dan tidak ditimpa.
 .claude/skills/change-function
 .claude/skills/check-security
 .claude/skills/profile-project
