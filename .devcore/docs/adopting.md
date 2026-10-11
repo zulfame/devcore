@@ -74,7 +74,7 @@ Hook Stop `stop-status-reminder.sh` mengingatkan satu kali di akhir jawaban bila
 | Gejala | Penyebab | Penanganan |
 |---|---|---|
 | Sync menolak: "bukan repo git" / "working tree tidak bersih" | folder belum `git init`, atau ada perubahan belum di-commit | `git init` lalu commit kondisi awal; atau commit/stash dulu |
-| INFO: ".gitignore proyek mengabaikan berkas devcore" | `.gitignore` memuat `/.claude` atau `/CLAUDE.md` (mis. Laravel Boost) | hapus barisnya; tanpa itu hook/aturan tidak ter-commit dan CI tidak melihatnya |
+| INFO: ".gitignore proyek mengabaikan berkas devcore" | `.gitignore` memuat `/.claude` atau `/CLAUDE.md` (sebagian generator proyek atau alat agent menambahkannya otomatis) | hapus barisnya; tanpa itu hook/aturan tidak ter-commit dan CI tidak melihatnya |
 | `run-checks.sh` gagal di tautan dokumen milik pustaka | versi sebelum 0.6.3 memindai `vendor/` | perbarui devcore (`sync-devcore.sh --source ... --apply`) |
 | `run-checks.sh` gagal "PENAMAAN" untuk dokumen lama proyek | aturan `DC-05` terhadap berkas yang tidak sesuai | catat pengecualian di tabel "Pengecualian devcore" pada `CLAUDE.md`, jangan ganti nama berkas lama (`AG-16`) |
 | Hook tidak terasa aktif | sesi dibuka sebelum pemasangan, atau `.claude/settings.json` terabaikan git | buka ulang Claude Code di folder proyek; periksa `git check-ignore -v .claude/settings.json` |
