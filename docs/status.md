@@ -43,3 +43,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 
 ## Pembaruan 0.6.2 (branch kerja/nama-inggris)
 - Nama berkas buatan agent diseragamkan ke bahasa Inggris (DC-05). Pelanggaran saya sendiri; pemeriksa penamaan hanya cek huruf/format, bukan bahasa. Usulan penegakan: lihat CHANGELOG 0.6.2.
+
+## Pembaruan 0.6.3 (branch kerja/temuan-laravel)
+- Uji pemasangan di starter kit Laravel asli (/Users/Bananay/Claude/laravel-test-devcore) menemukan 2 masalah, keduanya diperbaiki: check-links memindai vendor/, dan .gitignore proyek mengabaikan berkas devcore (kini ada INFO).

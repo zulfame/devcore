@@ -175,5 +175,17 @@ git -C "$G/devcore.git" init -q -b main; git -C "$G/devcore.git" add -A; git -C 
 P4=$(mkrepo); sy "$P4" --source "$G/devcore.git" --apply >/dev/null
 t "clone: instalasi dari sumber git"               grep -qx "$ver" "$P4/.devcore/VERSION"
 
+# ---------- .gitignore proyek mengabaikan berkas devcore (temuan starter kit Laravel) ----------
+PG=$(mkrepo)
+printf '/vendor\n/.claude\n/CLAUDE.md\n' > "$PG/.gitignore"
+mkdir -p "$PG/vendor/pkg"; printf '[x](tidak-ada.md)\n' > "$PG/vendor/pkg/README.md"
+commit_all "$PG" "starter"
+out=$(sy "$PG")
+t "ignore: dry-run memberi INFO berkas diabaikan"   has "$out" "mengabaikan berkas devcore"
+t "ignore: INFO menyebut CLAUDE.md"                 has "$out" "CLAUDE.md"
+sy "$PG" --apply >/dev/null
+t "ignore: .gitignore proyek tidak diubah"          grep -qx '/.claude' "$PG/.gitignore"
+t "ignore: run-checks lulus walau vendor punya tautan rusak" bash -c "cd '$PG' && .devcore/scripts/run-checks.sh"
+
 echo "Lulus: $pass  Gagal: $fail"
 [ "$fail" -eq 0 ]

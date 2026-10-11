@@ -162,6 +162,13 @@ JQ
   [ "$n_conf" -gt 0 ] && echo "INFO: $n_conf berkas .claude/ bentrok dengan milik proyek dan dilewati; ubah namanya bila ingin memakai versi devcore."
   [ "$lines" -gt 150 ] && echo "INFO: CLAUDE.md proyek sudah $lines baris; aturan devcore menambah ±70 baris konteks (anjuran maksimal 200)."
   [ -f "$tgt/AGENTS.md" ] && [ -e "$tgt/CLAUDE.md" ] && ! grep -qE '^@AGENTS\.md' "$tgt/CLAUDE.md" && echo "INFO: AGENTS.md ada tetapi tidak diimpor CLAUDE.md; tidak diubah."
+  if git -C "$tgt" rev-parse --git-dir >/dev/null 2>&1; then
+    local ign=""
+    for p in CLAUDE.md .claude/settings.json .claude/devcore.conf .claude/skills/write-brief/SKILL.md .devcore/VERSION docs/status.md; do
+      git -C "$tgt" check-ignore -q "$p" 2>/dev/null && ign="$ign $p"
+    done
+    [ -n "$ign" ] && echo "INFO: .gitignore proyek mengabaikan berkas devcore:$ign. Berkas itu tidak akan ter-commit sehingga CI dan rekan tim tidak melihatnya; hapus atau kecualikan barisnya di .gitignore (tidak diubah otomatis)."
+  fi
   if [ -d "$tgt/.github/workflows" ]; then
     local nwf; nwf=$(ls "$tgt/.github/workflows" 2>/dev/null | grep -vc '^devcore-checks\.yml$')
     [ "$nwf" -gt 0 ] && echo "INFO: ada $nwf workflow CI lain; devcore-checks.yml berjalan terpisah dan hanya memeriksa kerangka, tambahkan test proyek Anda di workflow yang ada."

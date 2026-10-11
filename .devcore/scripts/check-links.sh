@@ -7,6 +7,21 @@ root=${1:-$(cd "$(dirname "$0")/../.." && pwd)}
 cd "$root" || { echo "root tidak ditemukan: $root"; exit 2; }
 fail=0
 
+# Daftar markdown yang diperiksa. Di repo git: hanya berkas yang dilacak atau tidak diabaikan (vendor/ dan
+# node_modules/ otomatis keluar). Di proyek terpasang (bukan repo devcore) cakupan dibatasi ke CLAUDE.md,
+# docs/, dan .devcore/ agar dokumen lama proyek tidak membuat pemeriksaan gagal (AG-16).
+list_md() {
+  if git rev-parse --git-dir >/dev/null 2>&1; then
+    if [ -f scripts/test-sync.sh ]; then
+      git ls-files -co --exclude-standard -- '*.md'
+    else
+      git ls-files -co --exclude-standard -- 'CLAUDE.md' 'docs/*.md' 'docs/**/*.md' '.devcore/*.md' '.devcore/**/*.md'
+    fi
+  else
+    find . -type f -name '*.md' -not -path './.git/*' -not -path './node_modules/*' -not -path './vendor/*'
+  fi | sed 's#^\./##; s#^#./#' | sort -u
+}
+
 while IFS= read -r f; do
   dir=$(dirname "$f")
   while IFS= read -r link; do
@@ -19,7 +34,7 @@ while IFS= read -r f; do
       fail=1
     fi
   done < <(grep -oE '\]\([^)]+\)' "$f" | sed -e 's/^\](//' -e 's/)$//')
-done < <(find . -type f -name '*.md' -not -path './.git/*' -not -path './node_modules/*' | sort)
+done < <(list_md)
 
 [ "$fail" -eq 0 ] && echo "Tautan: OK"
 exit "$fail"
