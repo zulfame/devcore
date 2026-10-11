@@ -18,4 +18,4 @@ Satu audit terakhir atas seluruh kerangka (tes mekanis, silang dokumen↔kode se
 Tidak ada.
 
 ## Catatan penyelesaian
-Selesai (0.7.0). Tinjauan independen menghasilkan 22 temuan; semua diverifikasi, 17 kelompok diperbaiki dengan tes baru, sisanya diterima dan dicatat (docs/audit-final.md). 341 tes hook, 38 tes skrip, 84 tes sync, run-checks lulus; pembaruan 0.6.7 ke 0.7.0 diuji. Tag final dibuat pengguna setelah merge.
+Selesai (0.7.0). Tinjauan independen menghasilkan 22 temuan; semua diverifikasi, 17 kelompok diperbaiki dengan tes baru, sisanya diterima dan dicatat (docs/audit-final.md). 344 tes hook, 38 tes skrip, 84 tes sync, run-checks lulus; pembaruan 0.6.7 ke 0.7.0 diuji. Tag final dibuat pengguna setelah merge.
