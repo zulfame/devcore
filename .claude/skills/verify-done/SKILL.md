@@ -16,6 +16,7 @@ Cari di `README.md`, `TESTING.md`, `package.json`/`Makefile`/`pyproject.toml`/se
 - Jangan melemahkan pemeriksaan agar lulus (AG-09): tidak ada skip, ignore, `any`, atau menghapus test.
 
 ## 3. Periksa Definition of Done
+- [ ] Setiap **kriteria penerimaan di brief** (`docs/briefs/`) diperiksa satu per satu dengan bukti; kriteria yang tidak terpenuhi dilaporkan, bukan dihapus dari brief.
 - [ ] Perilaku yang diminta terbukti berfungsi.
 - [ ] Test relevan ada (normal, negatif, batas; regression untuk bug).
 - [ ] Semua pemeriksaan proyek lulus.
@@ -30,3 +31,6 @@ Cari di `README.md`, `TESTING.md`, `package.json`/`Makefile`/`pyproject.toml`/se
 3. **Tidak dijalankan / gagal**: apa dan mengapa.
 4. **Asumsi dan risiko tersisa**.
 5. **Tindak lanjut** untuk pengguna atau tim infrastruktur bila ada (OS-03).
+
+## 5. Tutup brief
+Isi *Catatan penyelesaian* pada brief (bukti per kriteria, penyimpangan, tindak lanjut), lalu ubah `Status: done`. Brief yang dibiarkan `approved` membuka gerbang perubahan kode untuk tugas lain.

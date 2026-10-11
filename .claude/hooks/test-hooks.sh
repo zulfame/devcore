@@ -58,5 +58,51 @@ out=$(write_in '/p/.claude/settings.json' '{}' | "$dir/pretool-write-guard.sh")
 if printf '%s' "$out" | jq -e '.hookSpecificOutput.permissionDecision=="ask"' >/dev/null 2>&1; then
   pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: edit settings harus 'ask'"; fi
 
+# ---------- pretool-brief-gate (AG-15) ----------
+tmpl="$dir/../../docs/templates/task-brief.md"
+newproj() { local d; d=$(mktemp -d); mkdir -p "$d/docs/briefs" "$d/.claude"; printf '%s' "$d"; }
+filled_brief() { printf '# Brief: t\n\nStatus: %s\n\n## Tujuan (wajib)\nMemperbaiki X.\n\n## Kriteria penerimaan (wajib)\n- [ ] Y lulus\n\n## Di luar ruang lingkup (wajib)\n- Z\n' "$1"; }
+edit_in() { jq -n --arg p "$1" '{tool_name:"Edit",tool_input:{file_path:$p,new_string:"x=1"}}'; }
+runp() { # name hook expected proj json
+  local name=$1 hook=$2 expected=$3 proj=$4 json=$5 out code
+  out=$(printf '%s' "$json" | CLAUDE_PROJECT_DIR="$proj" "$dir/$hook" 2>&1); code=$?
+  if [ "$code" -eq "$expected" ]; then pass=$((pass+1)); else
+    fail=$((fail+1)); echo "GAGAL: $name (harapan $expected, dapat $code) $out"; fi
+}
+is_ask() { # name hook proj json expect(yes|no)
+  local out; out=$(printf '%s' "$4" | CLAUDE_PROJECT_DIR="$3" "$dir/$2" 2>/dev/null)
+  if printf '%s' "$out" | jq -e '.hookSpecificOutput.permissionDecision=="ask"' >/dev/null 2>&1; then got=yes; else got=no; fi
+  if [ "$got" = "$5" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: $1 (ask harapan $5, dapat $got)"; fi
+}
+
+P=$(newproj); G=pretool-brief-gate.sh
+runp "gerbang: tanpa brief -> blokir"   $G 2 "$P" "$(edit_in "$P/src/app.py")"
+runp "gerbang: dokumen bebas"           $G 0 "$P" "$(edit_in "$P/docs/catatan.md")"
+runp "gerbang: .claude bebas"           $G 0 "$P" "$(edit_in "$P/.claude/x.json")"
+runp "gerbang: README bebas"            $G 0 "$P" "$(edit_in "$P/README.md")"
+runp "gerbang: di luar proyek bebas"    $G 0 "$P" "$(edit_in "/tmp/lain/app.py")"
+filled_brief draft    > "$P/docs/briefs/0001-t.md"
+runp "gerbang: brief draft -> blokir"   $G 2 "$P" "$(edit_in "$P/src/app.py")"
+filled_brief done     > "$P/docs/briefs/0001-t.md"
+runp "gerbang: brief done -> blokir"    $G 2 "$P" "$(edit_in "$P/src/app.py")"
+sed 's/^Status: draft/Status: approved/' "$tmpl" > "$P/docs/briefs/0001-t.md"
+runp "gerbang: template belum diisi -> blokir" $G 2 "$P" "$(edit_in "$P/src/app.py")"
+filled_brief approved > "$P/docs/briefs/0001-t.md"
+runp "gerbang: brief approved terisi -> lolos" $G 0 "$P" "$(edit_in "$P/src/app.py")"
+filled_brief draft    > "$P/docs/briefs/0001-t.md"
+printf 'BRIEF_GATE=off\n' > "$P/.claude/devcore.conf"
+runp "gerbang: mode off -> lolos"       $G 0 "$P" "$(edit_in "$P/src/app.py")"
+printf 'BRIEF_GATE=ask\n' > "$P/.claude/devcore.conf"
+runp "gerbang: mode ask -> exit 0"      $G 0 "$P" "$(edit_in "$P/src/app.py")"
+is_ask "gerbang: mode ask -> keputusan ask" $G "$P" "$(edit_in "$P/src/app.py")" yes
+rm -r "$P"
+
+# ---------- pretool-write-guard: persetujuan brief & konfigurasi ----------
+P=$(newproj); W=pretool-write-guard.sh
+is_ask "tulis Status: approved -> ask"  $W "$P" "$(write_in "$P/docs/briefs/0002-x.md" $'# B\n\nStatus: approved\n')" yes
+is_ask "tulis Status: draft -> tanpa ask" $W "$P" "$(write_in "$P/docs/briefs/0002-x.md" $'# B\n\nStatus: draft\n')" no
+is_ask "ubah devcore.conf -> ask"       $W "$P" "$(write_in "$P/.claude/devcore.conf" 'BRIEF_GATE=off')" yes
+rm -r "$P"
+
 echo "Lulus: $pass  Gagal: $fail"
 [ "$fail" -eq 0 ]

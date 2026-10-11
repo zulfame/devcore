@@ -7,6 +7,9 @@ description: Gunakan SEBELUM menambah, mengubah, mengganti nama, atau menghapus 
 
 Jalankan urutan ini. Jangan lompat ke penulisan kode.
 
+## 0. Brief (AG-15)
+Pastikan ada brief `approved` untuk tugas ini di `docs/briefs/`. Belum ada → jalankan skill `write-brief` dulu. Kriteria penerimaan di brief menjadi dasar tes pada langkah 5.
+
 ## 1. Pahami (AG-01, AG-02)
 - Baca file target dan file yang memanggilnya.
 - Cari penggunaan: nama fungsi/field di seluruh repositori (kode, test, dokumen, konfigurasi, UI, API, migrasi).

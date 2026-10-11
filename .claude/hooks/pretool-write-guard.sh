@@ -30,14 +30,25 @@ esac
 
 # 3. Aturan mesin tidak boleh diubah agent tanpa persetujuan pengguna (minta konfirmasi, bukan blokir total)
 case "$path" in
-  */.claude/settings.json|*/.claude/hooks/*)
+  */.claude/settings.json|*/.claude/devcore.conf|*/.claude/hooks/*)
     jq -n --arg p "$path" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:("Perubahan pada aturan mesin (" + $p + ") butuh persetujuan pengguna. Melonggarkan aturan agar pekerjaan lolos adalah pelanggaran AG-09.")}}'
     exit 0 ;;
 esac
 
-# 4. Pindai konten yang akan ditulis untuk pola secret
+# 4. Pindai konten yang akan ditulis
 content=$(printf '%s' "$input" | jq -r '[.tool_input.content, .tool_input.new_string, (.tool_input.edits[]?.new_string)] | map(select(. != null)) | join("\n")')
 [ -z "$content" ] && exit 0
+
+# 4a. Persetujuan brief (AG-15) adalah keputusan pengguna: menulis "Status: approved" meminta konfirmasi
+case "$path" in
+  */docs/briefs/*.md)
+    if printf '%s\n' "$content" | grep -iqE '^Status:[[:space:]]*approved[[:space:]]*$'; then
+      jq -n '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:"Brief diubah menjadi approved. Setujui hanya jika Anda memang menyetujui isi brief ini (AG-15)."}}'
+      exit 0
+    fi ;;
+esac
+
+# 4b. Pola secret
 
 hit=$(printf '%s\n' "$content" | grep -Eo \
   -e 'AKIA[0-9A-Z]{16}' \
