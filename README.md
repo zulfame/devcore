@@ -55,8 +55,8 @@ Penjaga adalah **pagar pengaman, bukan sandbox**; batasnya dicatat jujur di [.de
 Syarat: `git`, `jq`, Claude Code; `python3` 3.6+ disarankan. Skrip **tidak pernah commit** dan **tidak pernah menimpa** berkas milik proyek Anda.
 
 **Cek dulu sebelum memasang**
-1. Target harus **repo git dengan working tree bersih**. Folder yang belum repo (mis. hasil `laravel new`) perlu `git init`, lalu commit kondisi awal.
-2. Periksa `.gitignore` proyek: bila mengabaikan `/.claude` atau `/CLAUDE.md` (Laravel Boost melakukannya), berkas devcore **tidak akan ter-commit**, sehingga rekan tim dan CI tidak melihat hook dan aturannya. Hapus dua baris itu dari `.gitignore`; sync hanya memberi INFO dan tidak mengubahnya. Untuk memeriksa: `git check-ignore -v CLAUDE.md .claude/settings.json`.
+1. Target harus **repo git dengan working tree bersih**. Folder yang belum repo git (apa pun stack atau generator proyeknya) perlu `git init`, lalu commit kondisi awal.
+2. Periksa `.gitignore` proyek: bila mengabaikan `/.claude` atau `/CLAUDE.md` (sebagian generator proyek atau alat agent menambahkannya otomatis), berkas devcore **tidak akan ter-commit**, sehingga rekan tim dan CI tidak melihat hook dan aturannya. Hapus dua baris itu dari `.gitignore`; sync hanya memberi INFO dan tidak mengubahnya. Untuk memeriksa: `git check-ignore -v CLAUDE.md .claude/settings.json`.
 3. Folder `vendor/` dan `node_modules/` tidak masalah; pemeriksa tidak memindainya.
 
 Mulai dengan klon devcore:

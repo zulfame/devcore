@@ -55,3 +55,6 @@ Rencana 5 batch yang disetujui pengguna ("setujui semua", keputusan diserahkan k
 
 ## Pembaruan 0.6.6 (branch kerja/perkaya-readme)
 - README memuat bagian "Apa yang Anda dapat": isi dan manfaat tiap komponen serta cakupan standar.
+
+## Pembaruan 0.6.7 (branch kerja/kalimat-universal)
+- Redaksi panduan dibuat universal (tidak menyebut satu framework di luar tabel stack).
