@@ -8,6 +8,12 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka sudah diuji pemasangan dan uji buta kecil, tetapi belum terbukti dalam pemakaian jangka panjang di proyek nyata.
 
+## [0.7.2] - 2026-10-11
+Ditemukan saat pengguna memasang di proyek existing: `run-checks.sh` tampak macet 18 menit di "Tes hook penjaga".
+- Tes hook, skrip, dan sync kini kedap terhadap konfigurasi git global/sistem pengguna (penandatanganan commit interaktif, hook global, editor, prompt) yang dapat membuat `git commit` di repo sementara menunggu tanpa batas atau gagal.
+- `run-checks.sh` menampilkan keluaran tiap langkah langsung (regresi 0.7.0 menahannya sampai selesai) dan memberi catatan bahwa tes hook butuh beberapa puluh detik.
+- Cara cepat memastikan penyebabnya: `GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null .devcore/scripts/run-checks.sh`.
+
 ## [0.7.1] - 2026-10-11
 - README: panduan memasang ditulis ulang menjadi 7 langkah linear yang menyebut jelas folder devcore vs folder proyek, menjelaskan `BRIEF_GATE` (block/ask/off) dengan bahasa awam dan cara mengubahnya. Tanpa perubahan kode atau aturan.
 

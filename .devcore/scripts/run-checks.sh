@@ -11,16 +11,17 @@ if [ -z "$base" ] && git rev-parse --verify -q origin/main >/dev/null 2>&1; then
 
 fail=0
 skipped=0
+log=$(mktemp); trap 'rm -f "$log"' EXIT
 step() { # judul perintah...
-  local title=$1 out rc; shift
+  local title=$1 rc; shift
   echo
   echo "== $title"
-  out=$("$@" 2>&1); rc=$?
-  printf '%s\n' "$out"
-  case "$out" in *DILEWATI*) skipped=1 ;; esac
+  "$@" 2>&1 | tee "$log"; rc=${PIPESTATUS[0]}   # tampil langsung; kode keluar perintah aslinya yang dipakai
+  grep -q 'DILEWATI' "$log" && skipped=1
   [ "$rc" -eq 0 ] || { echo "GAGAL: $title"; fail=1; }
 }
 
+echo "(Tes hook penjaga memakai beberapa puluh detik; keluaran muncul di akhir tiap langkah.)"
 step "Tes hook penjaga"          .devcore/hooks/test-hooks.sh
 step "Tes skrip pemeriksa"       .devcore/scripts/test-scripts.sh
 [ -x scripts/test-sync.sh ] && step "Tes sinkronisasi" scripts/test-sync.sh
