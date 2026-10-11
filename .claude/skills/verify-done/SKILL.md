@@ -8,7 +8,7 @@ description: Gunakan SEBELUM menyatakan tugas selesai, lulus, atau siap. Menjala
 Dilarang menulis "selesai", "lulus", atau "sudah berfungsi" tanpa bukti yang **benar-benar dijalankan** (AG-08).
 
 ## 1. Temukan perintah proyek
-Cari di `README.md`, `TESTING.md`, `package.json`/`Makefile`/`pyproject.toml`/sejenisnya. **Jangan mengarang perintah.** Jika tidak ditemukan, katakan demikian di laporan.
+Baca bagian *Perintah proyek* di `docs/project-profile.md` lebih dulu. Bila kosong atau usang, jalankan skill `profile-project`. Sebagai cadangan, cari di `README.md`, `TESTING.md`, `package.json`/`Makefile`/`pyproject.toml`/sejenisnya. **Jangan mengarang perintah.** Jika tidak ditemukan, katakan demikian di laporan.
 
 ## 2. Jalankan dan baca hasilnya
 - Test, lint, type check, build yang tersedia.
@@ -34,3 +34,6 @@ Cari di `README.md`, `TESTING.md`, `package.json`/`Makefile`/`pyproject.toml`/se
 
 ## 5. Tutup brief
 Isi *Catatan penyelesaian* pada brief (bukti per kriteria, penyimpangan, tindak lanjut), lalu ubah `Status: done`. Brief yang dibiarkan `approved` membuka gerbang perubahan kode untuk tugas lain.
+
+## 6. Serah terima sesi (AG-17)
+Perbarui `docs/status.md`: tanggal, fokus saat ini, yang baru selesai, keputusan penting, langkah berikutnya yang konkret, hal yang terblokir, dan jebakan yang baru ditemukan. Sesi berikutnya (yang tidak mengingat apa pun) hanya mengetahui apa yang tertulis di sana. Pertahankan tetap di bawah sekitar 40 baris; hanya 40 baris pertama dimuat otomatis.

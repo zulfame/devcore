@@ -1,6 +1,6 @@
 # Peta Penegakan Aturan
 
-Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi model; yang benar-benar menjamin adalah mekanisme yang dijalankan sistem, bukan ingatan model. Lihat [ADR-0001](adr/0001-layered-enforcement.md).
+Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi model; yang benar-benar menjamin adalah mekanisme yang dijalankan sistem, bukan ingatan model. Lihat [ADR-0001](https://github.com/zulfame/devcore/blob/main/docs/adr/0001-layered-enforcement.md).
 
 ## Tingkat penegakan
 | Tingkat | Arti | Mekanisme |
@@ -22,7 +22,10 @@ Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi 
 | DP-01 lockfile manual | Keras | `pretool-write-guard.sh` | |
 | DP-06 curl \| sh | Keras | `pretool-bash-guard.sh` | |
 | DC-05 penamaan, tautan dokumen | Terverifikasi | CI `scripts/check-naming.sh`, `scripts/check-links.sh` | Penamaan hanya diperiksa pada area kerangka (dokumen, `.claude/`, `scripts/`), bukan folder kode |
-| CI-07 pemeriksaan di luar agent | Terverifikasi | `.github/workflows/ci.yml` | Berlaku untuk semua commit; branch protection (memaksa CI lulus sebelum merge) adalah pengaturan platform, di luar cakupan proyek |
+| AG-16 proyek lama: baseline | Terpandu + Terverifikasi (diff) | `docs/adopting-devcore.md`, skill `profile-project`, `docs/project-profile.md`; CI memeriksa **hanya diff** sehingga kondisi lama tidak menggagalkan build | Kualitas profil dan utang teknis bergantung pada agent dan tinjauan pengguna |
+| AG-17 serah terima sesi | Terpandu (konteks otomatis) | Hook `session-status-loader.sh` memuat `docs/status.md` + brief approved; `verify-done` langkah 6 | Hook hanya **membaca**; tidak ada yang memaksa `status.md` diperbarui di akhir sesi (belum ada hook Stop) |
+| AG-18 versi dan pembaruan kerangka | Terverifikasi | `scripts/sync-devcore.sh`, `.claude/devcore.lock`, `scripts/test-sync.sh` (69 kasus, termasuk uji mutasi) | Berkas managed yang diubah lokal dilewati, bukan ditolak; tidak ada pemeriksaan otomatis atas pengeditan langsung di proyek |
+| CI-07 pemeriksaan di luar agent | Terverifikasi | `.github/workflows/devcore-checks.yml` → `scripts/run-checks.sh` | Berlaku untuk semua commit; branch protection (memaksa CI lulus sebelum merge) adalah pengaturan platform, di luar cakupan proyek |
 | AG-01..05, AG-08, AG-10, AG-11, AG-14 | Terpandu | `CLAUDE.md`, `prompt-rules-reminder.sh`, skill `change-function`, `verify-done` | Tidak bisa diotomatisasi sepenuhnya: perilaku dan penilaian |
 | VL-*, SC-01..04, API-*, DB-* | Terpandu → Terverifikasi | Skill `check-security`; test kontrak **saat kode ada** | Menjadi Terverifikasi setelah proyek punya tes |
 | CD-01, CD-03, TS-*, SC-14, DP-03 | **Belum aktif** | Perlu lint/test/CI/scan | Proyek ini belum punya kode. Aktifkan saat proyek nyata dibuat (lihat daftar tugas) |

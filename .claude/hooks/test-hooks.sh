@@ -104,5 +104,34 @@ is_ask "tulis Status: draft -> tanpa ask" $W "$P" "$(write_in "$P/docs/briefs/00
 is_ask "ubah devcore.conf -> ask"       $W "$P" "$(write_in "$P/.claude/devcore.conf" 'BRIEF_GATE=off')" yes
 rm -r "$P"
 
+# ---------- session-status-loader (AG-17) ----------
+S=session-status-loader.sh
+sess_out() { CLAUDE_PROJECT_DIR="$1" "$dir/$S" 2>&1; }
+expect_out() { # nama teks_harus_ada(yes|no) pola keluaran
+  if printf '%s' "$4" | grep -q "$3"; then got=yes; else got=no; fi
+  if [ "$got" = "$2" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: $1 (pola '$3' harapan $2, dapat $got)"; fi
+}
+P=$(newproj)
+out=$(sess_out "$P"); code=$?
+if [ -z "$out" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: sesi: tanpa status/brief harus diam"; fi
+printf '# Status\n\nDiperbarui: 2026-01-01 oleh agent\n\n## Fokus saat ini\nMengerjakan fitur X\n' > "$P/docs/status.md"
+out=$(sess_out "$P")
+expect_out "sesi: status terisi dimuat" yes "Mengerjakan fitur X" "$out"
+expect_out "sesi: ada penanda AG-17" yes "AG-17" "$out"
+printf '# Status\n\nDiperbarui: <YYYY-MM-DD> oleh <agent>\n' > "$P/docs/status.md"
+out=$(sess_out "$P")
+expect_out "sesi: templat kosong diberi catatan" yes "templat kosong" "$out"
+expect_out "sesi: templat kosong tidak dibuang mentah" no "oleh <agent>" "$out"
+filled_brief approved > "$P/docs/briefs/0001-a.md"; filled_brief done > "$P/docs/briefs/0002-b.md"
+out=$(sess_out "$P")
+expect_out "sesi: brief approved terdaftar" yes "0001-a.md" "$out"
+expect_out "sesi: brief done tidak terdaftar" no "0002-b.md" "$out"
+for i in $(seq 1 200); do echo "baris panjang nomor $i" ; done > "$P/docs/status.md.tmp"
+{ printf '# Status\n\nDiperbarui: 2026-01-01 oleh agent\n'; cat "$P/docs/status.md.tmp"; } > "$P/docs/status.md"
+out=$(sess_out "$P")
+lines=$(printf '%s\n' "$out" | wc -l | tr -d ' ')
+if [ "$lines" -le 60 ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: sesi: keluaran harus dibatasi (dapat $lines baris)"; fi
+rm -r "$P"
+
 echo "Lulus: $pass  Gagal: $fail"
 [ "$fail" -eq 0 ]

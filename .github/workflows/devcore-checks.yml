@@ -1,4 +1,4 @@
-name: ci
+name: devcore-checks
 
 on:
   push:
@@ -17,19 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Tes hook penjaga
-        run: .claude/hooks/test-hooks.sh
-
-      - name: Tes skrip pemeriksa
-        run: scripts/test-scripts.sh
-
-      - name: Periksa penamaan
-        run: scripts/check-naming.sh
-
-      - name: Periksa tautan dokumen
-        run: scripts/check-links.sh
-
-      - name: Deteksi pelemahan pemeriksaan
+      - name: Jalankan semua pemeriksaan devcore
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
@@ -40,4 +28,4 @@ jobs:
           else
             base="$BEFORE_SHA"
           fi
-          scripts/check-weakened-tests.sh "$base"
+          scripts/run-checks.sh "$base"
