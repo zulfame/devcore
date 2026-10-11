@@ -101,6 +101,7 @@ t "existing: hook proyek dipertahankan"            jqt '[.hooks.PreToolUse[].hoo
 t "existing: hook Stop proyek dipertahankan"       jqt '.hooks.Stop[0].hooks[0].command=="./my-stop.sh"' "$PX/.claude/settings.json"
 t "existing: hook devcore bergabung di grup Bash yang sama" jqt '[.hooks.PreToolUse[]|select(.matcher=="Bash")]|length==1' "$PX/.claude/settings.json"
 t "existing: .gitignore lama utuh, baris tanpa newline tidak menempel" bash -c "grep -qxF 'node_modules/' '$PX/.gitignore' && grep -qxF '.env' '$PX/.gitignore'"
+t "existing: pemeriksa penamaan lulus (AGENTS.md sah)" bash -c "cd '$PX' && .devcore/scripts/check-naming.sh"
 commit_all "$PX" "adopsi"
 out=$(sy "$PX" --apply)
 t "existing idempoten: hanya bentrok yang sama"    has "$out" "baru=0 perbarui=0"

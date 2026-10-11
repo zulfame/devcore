@@ -8,6 +8,9 @@ Perubahan penting kerangka devcore. Format mengikuti [Keep a Changelog](https://
 
 Selama `0.x`, kerangka belum teruji di proyek nyata.
 
+## [0.5.3] - 2026-10-11
+- Ditemukan saat uji pemasangan ke proyek existing dari klon GitHub: `AGENTS.md` (milik alat lain) ditandai gagal oleh pemeriksa penamaan. `AGENTS` kini nama peran baku; tes sync ditambah.
+
 ## [0.5.2] - 2026-10-11
 - Pemeriksaan kode one-liner/heredoc interpreter dikembalikan secara sempit (hanya penghapusan berkas dan akses secret): menutup lagi dua celah yang terbuka di 0.5.1. 297 tes hook.
 

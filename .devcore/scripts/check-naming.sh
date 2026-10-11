@@ -13,7 +13,7 @@ bad() { echo "PENAMAAN: $1 -> $2"; fail=1; }
 
 is_kebab() { printf '%s' "$1" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; }
 is_verb_object() { printf '%s' "$1" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)+$'; }
-role_names=" README CLAUDE CHANGELOG SECURITY CONTRIBUTING LICENSE CODE_OF_CONDUCT ARCHITECTURE TESTING DEPLOYMENT "
+role_names=" README CLAUDE AGENTS CHANGELOG SECURITY CONTRIBUTING LICENSE CODE_OF_CONDUCT ARCHITECTURE TESTING DEPLOYMENT "
 is_role() { case "$role_names" in *" $1 "*) return 0 ;; esac; return 1; }
 name_of() { grep -m1 '^name:' "$1" | sed -e 's/^name:[[:space:]]*//' -e 's/[[:space:]]*$//'; }
 
