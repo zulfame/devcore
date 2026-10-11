@@ -37,6 +37,9 @@ Standar lengkap: [engineering-standard.md](docs/engineering-standard.md). Baca b
 14. **Proyek lama: baseline.** Penyimpangan lama dicatat di `docs/project-profile.md`, tidak diperbaiki di luar brief; kode yang disentuh harus memenuhi standar. (AG-16)
 15. **Serah terima sesi.** Di awal sesi baca `docs/status.md` (dimuat otomatis); di akhir tugas atau sesi, perbarui. (AG-17)
 16. **Berkas kerangka.** Jangan edit berkas kerangka di proyek; perbarui lewat `.devcore/scripts/sync-devcore.sh` (dry-run dulu); kustomisasi di `CLAUDE.md` proyek atau `.claude/devcore.conf`. (AG-18)
+17. **Dokumen ikut berubah.** Fungsional baru dianggap selesai hanya bila dokumen terdampak diperbarui di perubahan yang sama. Audit/review/pengujian: cocokkan silang dua arah (klaim dokumen ↔ kode) dan laporkan daftar selisih. (DC-06)
+   - Salah: Menambah endpoint `/laporan` lalu menyatakan selesai; `API.md` tidak disebut.
+   - Benar: Endpoint, tes, dan `API.md` diubah bersama; laporan review: "3 klaim dokumen sesuai, 1 klaim (`/ekspor`) tanpa kode".
 
 ## Kapan memakai skill (wajib, bukan opsional)
 | Situasi | Skill |

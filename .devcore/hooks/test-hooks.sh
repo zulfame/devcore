@@ -105,6 +105,26 @@ is_ask "tulis Status: draft -> tanpa ask" $W "$P" "$(write_in "$P/docs/briefs/00
 is_ask "ubah devcore.conf -> ask"       $W "$P" "$(write_in "$P/.claude/devcore.conf" 'BRIEF_GATE=off')" yes
 rm -r "$P"
 
+# ---------- stop-status-reminder (AG-17) ----------
+stop_run() { printf '%s' "$2" | CLAUDE_PROJECT_DIR="$1" "$dir/stop-status-reminder.sh" 2>&1; }
+stop_expect() { # nama harapan(block|diam) keluaran
+  if printf '%s' "$3" | grep -q '"decision": *"block"'; then got=block; else got=diam; fi
+  if [ "$got" = "$2" ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "GAGAL: $1 (harapan $2, dapat $got)"; fi
+}
+P=$(newproj); mkdir -p "$P/src"
+git -C "$P" init -q -b main; git -C "$P" config user.email t@t.test; git -C "$P" config user.name t
+printf '# Status\n' > "$P/docs/status.md"; echo a > "$P/src/a.py"; git -C "$P" add -A; git -C "$P" commit -q -m awal
+stop_expect "stop: tanpa perubahan -> diam" diam "$(stop_run "$P" '{}')"
+echo b >> "$P/src/a.py"
+stop_expect "stop: kode berubah, status tidak -> block" block "$(stop_run "$P" '{}')"
+stop_expect "stop: percobaan kedua -> diam" diam "$(stop_run "$P" '{"stop_hook_active":true}')"
+echo '# Status baru' > "$P/docs/status.md"
+stop_expect "stop: status ikut berubah -> diam" diam "$(stop_run "$P" '{}')"
+git -C "$P" add -A; git -C "$P" commit -q -m dua
+echo "catatan" >> "$P/docs/briefs/x.md"
+stop_expect "stop: hanya dokumen berubah -> diam" diam "$(stop_run "$P" '{}')"
+rm -r "$P"
+
 # ---------- session-status-loader (AG-17) ----------
 S=session-status-loader.sh
 sess_out() { CLAUDE_PROJECT_DIR="$1" "$dir/$S" 2>&1; }

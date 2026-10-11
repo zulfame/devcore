@@ -26,12 +26,44 @@ Versi: [.devcore/VERSION](.devcore/VERSION) · Perubahan: [CHANGELOG.md](CHANGEL
 Penjaga adalah **pagar pengaman, bukan sandbox**; batasnya dicatat jujur di [.devcore/docs/enforcement-map.md](.devcore/docs/enforcement-map.md).
 
 ## Memasang di proyek lain
-Dari klon repo ini (dry-run dulu, tidak menulis apa pun):
+Syarat: `git`, `jq`, Claude Code; `python3` 3.6+ disarankan. Target harus repo git dengan working tree bersih. Skrip **tidak pernah commit** dan **tidak pernah menimpa** berkas milik proyek Anda. Mulai dengan klon devcore:
 ```bash
-.devcore/scripts/sync-devcore.sh --target /jalur/proyek
-.devcore/scripts/sync-devcore.sh --target /jalur/proyek --apply
+git clone https://github.com/zulfame/devcore.git && cd devcore
 ```
-Syarat: `git`, `jq`, repo target git dengan working tree bersih; `python3` 3.6+ disarankan. Perubahan tidak di-commit otomatis. Proyek baru vs existing, laporan bentrok, dan pembaruan: [.devcore/docs/adopting.md](.devcore/docs/adopting.md).
+
+### Proyek baru
+```bash
+git init /jalur/proyek-baru                                        # bila belum ada
+.devcore/scripts/sync-devcore.sh --target /jalur/proyek-baru --apply
+```
+Lalu di proyek: isi `CLAUDE.md` (konteks dan perintah test), jalankan `.devcore/scripts/run-checks.sh`, commit.
+
+### Proyek yang sudah berjalan
+1. Buat cabang: `git checkout -b chore/adopsi-devcore` (working tree harus bersih).
+2. **Dry-run dulu** (tidak menulis apa pun) dan baca laporannya:
+   ```bash
+   .devcore/scripts/sync-devcore.sh --target /jalur/proyek
+   ```
+3. Bila laporan sudah wajar, terapkan: tambahkan `--apply`, lalu tinjau `git diff`.
+4. Set `BRIEF_GATE=ask` di `.claude/devcore.conf` selama minggu pertama; naikkan ke `block` setelah terbiasa.
+5. Di Claude Code jalankan skill `profile-project`: mencatat perintah proyek dan kondisi awal tanpa mengubah kode.
+6. Commit sebagai satu commit terpisah, lalu merge cabangnya.
+
+### Cara membaca laporan dry-run
+| Label | Arti | Yang perlu Anda lakukan |
+|---|---|---|
+| `BARU` | berkas akan ditambah | tidak ada |
+| `GANTI` | `.devcore/` (milik kerangka) akan diganti utuh | tidak ada |
+| `GABUNG` | `.claude/settings.json` digabung; pengaturan dan hook Anda dipertahankan | periksa `git diff` |
+| `TAMBAH` | `CLAUDE.md` hanya ditambah satu baris impor; `.gitignore` ditambah baris | tidak ada |
+| `BENTROK` | skill/subagent senama milik Anda: **dilewati**, tetap utuh | ubah salah satu nama bila ingin memakai versi devcore |
+| `INFO` | catatan (mis. `AGENTS.md` belum diimpor, workflow CI lain, hook proyek berdampingan) | baca, putuskan sendiri |
+
+### Membatalkan
+Sebelum commit: `git stash -u` menyimpan semua perubahan adopsi (dan bisa dibuang atau dikembalikan nanti); atau cukup tinggalkan cabang adopsi tanpa merge. Sesudah commit: `git revert` commit adopsinya. Melepas devcore sepenuhnya: lihat bagian "Melepas devcore" di [adopting.md](.devcore/docs/adopting.md).
+
+### Bila proyek sudah punya `CLAUDE.md`, `AGENTS.md`, `.claude/`, atau skill lain
+Tidak ditimpa dan tidak dihapus. Aturan, kesesuaian dengan alat lain, dan pembaruan versi: [.devcore/docs/adopting.md](.devcore/docs/adopting.md).
 
 ## Bekerja di repo ini
 - Pemeriksaan sebelum push: `.devcore/scripts/run-checks.sh`.
