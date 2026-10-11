@@ -3,9 +3,9 @@
 Diperbarui: 2026-10-11 oleh agent
 
 ## Fokus saat ini
-Audit final (brief `docs/briefs/0018-final-audit.md`, branch `kerja/audit-final`) selesai dikerjakan; menunggu PR di-merge.
-Setelah merge, pengguna membuat tag versi final. Sesudah itu kerangka dibekukan: perbaikan hanya dari temuan pemakaian nyata.
-Laporan audit: `docs/audit-final.md`.
+Audit final selesai dan ter-merge (v0.7.0 bertag; laporan `docs/audit-final.md`). Kerangka dibekukan: perbaikan hanya dari temuan pemakaian nyata.
+Terakhir: panduan pemasangan di README ditulis ulang linear (brief 0019, 0.7.1) karena pengguna bingung dengan urutan dan istilah `BRIEF_GATE`.
+Berikutnya: pengguna menguji pemasangan di proyek nyata (folder Laravel uji) dengan prompt 1 dan 2 di README.
 
 ## Keadaan kerangka
 - Versi terpasang: lihat `.devcore/VERSION`; riwayat perubahan di `CHANGELOG.md`; latar belakang di `docs/history.md`.
