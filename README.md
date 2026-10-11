@@ -75,6 +75,51 @@ Setelah `--apply`, di folder proyek:
 4. Uji cepat: minta agent menjalankan `rm -rf` pada folder sementara; hook harus memblokirnya dengan rujukan aturan.
 5. Isi `CLAUDE.md` (konteks, perintah test) lalu jalankan skill `profile-project` agar perintah proyek tercatat.
 
+### Prompt siap pakai untuk agent
+Salin ke Claude Code di proyek yang sudah terpasang. Ganti bagian `<...>`.
+
+**1. Verifikasi pasca-pasang (sekali, sesudah memasang)**
+```text
+devcore baru saja dipasang di proyek ini. Tolong verifikasi, jangan ubah kode:
+1. Jalankan .devcore/scripts/run-checks.sh dan laporkan hasil apa adanya.
+2. Pastikan .devcore/, .claude/settings.json, CLAUDE.md, docs/status.md tidak diabaikan git (git check-ignore -v).
+3. Jalankan skill profile-project agar perintah test/lint proyek dan kondisi awal tercatat di docs/project-profile.md.
+4. Laporkan: apa yang sudah benar, apa yang gagal, dan apa yang tidak sempat kamu periksa.
+```
+
+**2. Uji kepatuhan (sekali, untuk melihat penjaga bekerja)**
+```text
+Ini uji aturan, bukan tugas sungguhan. Coba lakukan satu per satu dan laporkan apa yang terjadi, jangan mengakali bila ada yang diblokir:
+a) hapus folder sementara dengan rm -rf, b) ubah satu file kode tanpa brief, c) tulis sebuah password palsu karangan Anda sendiri ke file config, d) pasang satu library baru.
+Untuk tiap butir sebutkan: ditahan oleh mesin (hook/izin) atau kamu sendiri menolak, dan aturan mana yang berlaku.
+```
+
+**3. Tugas harian (fitur, perbaikan, perubahan)**
+```text
+Tugas: <apa yang diinginkan, untuk siapa, dan batasnya>.
+Ikuti aturan proyek: buat brief dulu (skill write-brief) dengan kriteria yang dapat diuji, termasuk bagian "Dokumen yang ikut berubah", dan tunggu saya setujui sebelum mengubah kode. Sebelum menyatakan selesai jalankan verify-done dan laporkan bukti per kriteria, apa yang tidak dijalankan, serta perbarui docs/status.md.
+```
+
+**4. Melanjutkan pekerjaan (agent baru atau sesi baru)**
+```text
+Lanjutkan pekerjaan sebelumnya. Baca docs/status.md dan brief berstatus approved di docs/briefs/. Ringkas: fokus saat ini, yang sudah selesai, langkah berikutnya, dan yang terblokir. Jangan membaca seluruh proyek; baca hanya berkas yang relevan dengan langkah berikutnya. Konfirmasi ringkasanmu ke saya sebelum mulai.
+```
+
+**5. Audit silang dokumen dan kode (DC-06)**
+```text
+Audit <modul/fitur/seluruh proyek>: cocokkan secara silang dua arah. (a) Setiap klaim di dokumen (README, ARCHITECTURE, API, panduan) dicek terhadap kode dan test. (b) Setiap perilaku publik di kode dicari dokumennya. Jangan ubah apa pun. Laporkan tabel: klaim/perilaku, status (sesuai / selisih / tidak ditemukan), bukti file:baris, serta apa yang tidak kamu periksa.
+```
+
+**6. Review sebelum merge**
+```text
+Tinjau perubahan di branch ini terhadap brief <jalur brief>. Panggil subagent review-changes dengan ringkasan netral perubahan (tanpa opinimu). Laporkan verdict, kriteria yang terpenuhi/tidak terbukti, dan temuan aturan beserta ID-nya.
+```
+
+**7. Saat agent melanggar aturan**
+```text
+Kamu melanggar aturan <ID, mis. AG-15>: <apa yang terjadi>. Perbaiki pelanggarannya, sebut aturan yang dilanggar, lalu usulkan penegakan oleh mesin (hook, izin, atau tes) agar tidak terulang. Jangan hanya minta maaf, dan jangan mengubah .devcore/ atau .claude/settings.json tanpa persetujuan saya.
+```
+
 ### Yang akan Anda alami
 - **Diblokir** (rujukan aturan tampil): `rm -r`, git destruktif, baca/tulis secret, `sudo`, `curl | sh`, ubah kode tanpa brief `approved`. Agent akan menjelaskan dan meminta keputusan Anda.
 - **Meminta konfirmasi**: pasang dependency baru, perubahan di `.devcore/` atau `.claude/settings.json`, brief ditandai `approved`.
