@@ -51,7 +51,7 @@ t "baru: CLAUDE.md starter memuat tabel pengecualian" grep -q "Pengecualian devc
 t "baru: .gitignore memuat CLAUDE.local.md" grep -qxF "CLAUDE.local.md" "$P/.gitignore"
 t "baru: seed conf, workflow, status, profil" test -f "$P/.claude/devcore.conf" -a -f "$P/.github/workflows/devcore-checks.yml" -a -f "$P/docs/status.md" -a -f "$P/docs/project-profile.md"
 t "baru: workflow memanggil run-checks di .devcore" grep -q "\.devcore/scripts/run-checks.sh" "$P/.github/workflows/devcore-checks.yml"
-for x in CLAUDE.local.md README.md CHANGELOG.md docs/briefs docs/riwayat.md docs/adr scripts evals; do
+for x in CLAUDE.local.md README.md CHANGELOG.md docs/briefs docs/history.md docs/adr scripts evals; do
   t "baru: tidak menyalin milik sumber ($x)" test ! -e "$P/$x"
 done
 t "baru: tidak ada berkas sementara tertinggal" test -z "$(find "$P" -name '*.baru' -not -path '*/.git/*')"

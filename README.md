@@ -2,7 +2,7 @@
 
 Kerangka kerja untuk membangun sistem bersama agent AI (Claude Code): **standar** rekayasa, **aturan kerja agent**, dan **penegakan otomatis** supaya aturan tidak hanya ditulis tetapi dipatuhi. Cakupannya proyek (kode, test, skema, konfigurasi, dokumentasi); hal yang dikelola server/OS hanya dicatat sebagai prasyarat lingkungan.
 
-Versi: [.devcore/VERSION](.devcore/VERSION) · Perubahan: [CHANGELOG.md](CHANGELOG.md) · Latar belakang keputusan: [docs/riwayat.md](docs/riwayat.md)
+Versi: [.devcore/VERSION](.devcore/VERSION) · Perubahan: [CHANGELOG.md](CHANGELOG.md) · Latar belakang keputusan: [docs/history.md](docs/history.md)
 
 ## Isi
 ```

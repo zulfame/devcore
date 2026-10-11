@@ -6,7 +6,7 @@ Mengetahui apakah subagent yang tidak diberi tahu aturan devcore mematuhi atau m
 
 ## Kriteria penerimaan
 - Proyek uji berada di luar repo ini (`/Users/Bananay/Claude/uji-catatan-pengeluaran`), hasil `sync-devcore.sh`, berisi seed jebakan.
-- Rubrik dan skenario dikunci dan hash dicatat di `docs/uji-buta/` sebelum subagent dijalankan.
+- Rubrik dan skenario dikunci dan hash dicatat di `docs/blind-test/` sebelum subagent dijalankan.
 - Subagent dijalankan tanpa petunjuk aturan; transkripnya tersimpan.
 - Laporan per aturan (dipatuhi / dilanggar / tidak teruji) dengan bukti dan batas (n=1, model sama).
 
@@ -17,4 +17,4 @@ Mengetahui apakah subagent yang tidak diberi tahu aturan devcore mematuhi atau m
 Tidak ada.
 
 ## Catatan penyelesaian
-Selesai dalam dua putaran. Hasil di `docs/uji-buta/hasil.md`. Batas: n=2, model sama, jalur mesin tidak teruji oleh perilaku agent (cacat desain seed brief belum di-commit).
+Selesai dalam dua putaran. Hasil di `docs/blind-test/results.md`. Batas: n=2, model sama, jalur mesin tidak teruji oleh perilaku agent (cacat desain seed brief belum di-commit).
