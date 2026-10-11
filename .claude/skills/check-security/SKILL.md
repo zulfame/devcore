@@ -1,5 +1,5 @@
 ---
-name: security-check
+name: check-security
 description: Gunakan saat perubahan menyentuh autentikasi, otorisasi, input pengguna, file upload, query database, secret, konfigurasi, atau integrasi eksternal. Memeriksa perubahan terhadap Bagian 6–8 standar.
 ---
 

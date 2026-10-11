@@ -19,7 +19,7 @@
 
 Setiap aturan punya ID (mis. `AG-03`) supaya bisa dirujuk saat laporan, review, atau pengecualian.
 
-**Penegakan.** Aturan teks hanyalah saran bagi model. Aturan yang paling berisiko ditegakkan oleh mesin (hook, izin, tes, CI) dan tidak bergantung pada ingatan agent. Pemetaan tiap aturan ke mekanismenya ada di [enforcement-map.md](../enforcement-map.md). Jika sebuah tindakan diblokir mesin, agent **DILARANG** mengakalinya (`AG-09`).
+**Penegakan.** Aturan teks hanyalah saran bagi model. Aturan yang paling berisiko ditegakkan oleh mesin (hook, izin, tes, CI) dan tidak bergantung pada ingatan agent. Pemetaan tiap aturan ke mekanismenya ada di [enforcement-map.md](enforcement-map.md). Jika sebuah tindakan diblokir mesin, agent **DILARANG** mengakalinya (`AG-09`).
 
 **Prinsip dasar:** security by design, least privilege, fail safely, explicit contracts, single source of truth, automated verification, measure before optimizing, traceability.
 
@@ -225,6 +225,13 @@ Aturan tambahan:
 - `DC-02` **DILARANG** menyimpan secret atau data sensitif di dokumentasi.
 - `DC-03` Dokumentasikan asumsi, batasan, risiko, dan pengecualian (siapa, alasan, persetujuan).
 - `DC-04` Tetapkan code ownership dan proses code review di repositori (mis. `CODEOWNERS`) bila proyek memakainya.
+- `DC-05` **Penamaan file dan folder** harus seragam:
+  - Dokumen dengan peran baku memakai `HURUF_BESAR.md` (`README`, `CLAUDE`, `CHANGELOG`, `SECURITY` di root; `ARCHITECTURE`, `TESTING`, `DEPLOYMENT` di `docs/`).
+  - Dokumen topik lain memakai `kebab-case.md` huruf kecil di `docs/`.
+  - ADR berada di `docs/adr/` dengan format `NNNN-judul-singkat.md`.
+  - Skill: folder `kata-kerja-objek`; hook: `event-tujuan.sh` sejajar dengan nama event di `settings.json`.
+  - Nama file dan folder berbahasa Inggris; isi dokumen mengikuti bahasa tim. Nama tetap dari alat (`SKILL.md`, `settings.json`) diikuti apa adanya.
+  - Sebelum membuat file baru, periksa konvensi di atas dan file yang sudah ada; **DILARANG** menciptakan pola penamaan baru tanpa alasan (`AG-02`).
 
 ## 18. Di Luar Cakupan Agent (Dikelola Server / OS / Platform)
 

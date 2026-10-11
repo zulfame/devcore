@@ -1,6 +1,6 @@
 # CLAUDE.md — Aturan Kerja Agent di Proyek Ini
 
-Proyek ini berisi **standar rekayasa dan aturan kerja agent**. Standar lengkap: [docs/standards/production-ready-software-engineering-standard.md](docs/standards/production-ready-software-engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana.
+Proyek ini berisi **standar rekayasa dan aturan kerja agent**. Standar lengkap: [docs/engineering-standard.md](docs/engineering-standard.md). Baca bagian yang relevan sebelum bekerja; ID aturan (mis. `AG-06`) dirujuk dari sana.
 
 Berkomunikasi dalam **Bahasa Indonesia**.
 
@@ -22,7 +22,7 @@ Berkomunikasi dalam **Bahasa Indonesia**.
 |---|---|
 | Tambah / ubah / ganti nama / hapus fungsi, endpoint, field, skema, kontrak | `change-function` — **sebelum** menulis kode |
 | Akan menyatakan tugas selesai | `verify-done` |
-| Menyentuh auth, input pengguna, query, upload, secret, integrasi | `security-check` |
+| Menyentuh auth, input pengguna, query, upload, secret, integrasi | `check-security` |
 
 ## Git (bawaan kerangka: hanya atas permintaan)
 - **Dilarang** commit, push, merge, atau publikasi tanpa permintaan eksplisit pengguna di chat (AG-13). Persetujuan satu kali tidak berlaku untuk berikutnya.
@@ -41,5 +41,5 @@ Jangan hanya minta maaf. (1) Perbaiki pelanggarannya. (2) Katakan aturan mana ya
 
 ## Peta berkas
 - `CLAUDE.md` — dokumen ini (dimuat otomatis tiap sesi; jaga tetap ringkas).
-- `docs/standards/` — standar lengkap. `docs/enforcement-map.md` — aturan mana ditegakkan oleh apa. `docs/decisions/` — ADR.
+- `docs/engineering-standard.md` — standar lengkap. `docs/enforcement-map.md` — aturan mana ditegakkan oleh apa. `docs/adr/` — ADR.
 - `.claude/settings.json` — izin dan pendaftaran hook. `.claude/hooks/` — skrip penjaga + tes. `.claude/skills/` — prosedur kerja.

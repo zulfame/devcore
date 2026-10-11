@@ -1,6 +1,6 @@
 # Peta Penegakan Aturan
 
-Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi model; yang benar-benar menjamin adalah mekanisme yang dijalankan sistem, bukan ingatan model. Lihat [ADR-0001](decisions/0001-layered-enforcement.md).
+Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi model; yang benar-benar menjamin adalah mekanisme yang dijalankan sistem, bukan ingatan model. Lihat [ADR-0001](adr/0001-layered-enforcement.md).
 
 ## Tingkat penegakan
 | Tingkat | Arti | Mekanisme |
@@ -13,15 +13,15 @@ Menjawab: *aturan ini dijaga oleh apa?* Aturan di markdown hanya **saran** bagi 
 ## Status per aturan
 | Aturan | Tingkat | Mekanisme | Catatan |
 |---|---|---|---|
-| AG-06 tindakan destruktif | Keras | `guard-bash.sh`, `permissions.deny` | Mencakup rm -r, reset --hard, force push, clean -f, branch -D, drop/truncate. Pola teks: bisa dikelabui varian perintah |
-| AG-07 / SC-07 secret | Keras | `guard-write.sh`, `guard-bash.sh`, `deny Read` | Pola kredensial umum + penugasan literal. Tidak menangkap semua format secret |
-| AG-09 melemahkan pemeriksaan | Keras sebagian | `guard-write.sh` (tamper `.claude/`) | Skip test / matikan lint di kode **belum** terdeteksi mesin → perlu CI (lihat di bawah) |
+| AG-06 tindakan destruktif | Keras | `pretool-bash-guard.sh`, `permissions.deny` | Mencakup rm -r, reset --hard, force push, clean -f, branch -D, drop/truncate. Pola teks: bisa dikelabui varian perintah |
+| AG-07 / SC-07 secret | Keras | `pretool-write-guard.sh`, `pretool-bash-guard.sh`, `deny Read` | Pola kredensial umum + penugasan literal. Tidak menangkap semua format secret |
+| AG-09 melemahkan pemeriksaan | Keras sebagian | `pretool-write-guard.sh` (tamper `.claude/`) | Skip test / matikan lint di kode **belum** terdeteksi mesin → perlu CI (lihat di bawah) |
 | AG-12 dependency baru | Keras | `permissions.ask` (npm/yarn/pnpm/pip/composer) | Hanya package manager yang terdaftar |
 | AG-13 commit/push | Terpandu + prompt izin | Bawaan: hanya atas permintaan; izin berkelanjutan hanya di `CLAUDE.local.md` (gitignored, tidak disalin) | Force push/reset tetap Keras (diblokir hook) |
-| DP-01 lockfile manual | Keras | `guard-write.sh` | |
-| DP-06 curl \| sh | Keras | `guard-bash.sh` | |
-| AG-01..05, AG-08, AG-10, AG-11, AG-14 | Terpandu | `CLAUDE.md`, `inject-rules.sh`, skill `change-function`, `verify-done` | Tidak bisa diotomatisasi sepenuhnya: perilaku dan penilaian |
-| VL-*, SC-01..04, API-*, DB-* | Terpandu → Terverifikasi | Skill `security-check`; test kontrak **saat kode ada** | Menjadi Terverifikasi setelah proyek punya tes |
+| DP-01 lockfile manual | Keras | `pretool-write-guard.sh` | |
+| DP-06 curl \| sh | Keras | `pretool-bash-guard.sh` | |
+| AG-01..05, AG-08, AG-10, AG-11, AG-14 | Terpandu | `CLAUDE.md`, `prompt-rules-reminder.sh`, skill `change-function`, `verify-done` | Tidak bisa diotomatisasi sepenuhnya: perilaku dan penilaian |
+| VL-*, SC-01..04, API-*, DB-* | Terpandu → Terverifikasi | Skill `check-security`; test kontrak **saat kode ada** | Menjadi Terverifikasi setelah proyek punya tes |
 | CD-01, CD-03, TS-*, SC-14, DP-03 | **Belum aktif** | Perlu lint/test/CI/scan | Proyek ini belum punya kode. Aktifkan saat proyek nyata dibuat (lihat daftar tugas) |
 | AR-03 (hindari overengineering), CD-09 | Review manusia | — | Subjektif, tidak bisa diblokir mesin |
 | Bagian 18 (OS/server) | Di luar cakupan | — | Dicatat sebagai prasyarat lingkungan |

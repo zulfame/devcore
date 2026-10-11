@@ -15,7 +15,7 @@ Gunakan penegakan **berlapis**, makin ke atas makin pasti:
 1. **Mesin (deterministik):** hook dan `permissions` di `.claude/settings.json` menolak/menahan tindakan; lint, test, dan CI memeriksa hasil. Tidak bergantung pada ingatan model.
 2. **Prosedur:** skill di `.claude/skills/` memuat langkah kerja untuk situasi tertentu (ubah fungsi, verifikasi, keamanan), dimuat saat dibutuhkan.
 3. **Konteks inti:** `CLAUDE.md` ringkas (dimuat tiap sesi) + hook `UserPromptSubmit` yang menyisipkan pengingat singkat setiap pesan.
-4. **Referensi:** standar lengkap di `docs/standards/`, dibaca sesuai kebutuhan, bukan dimuat seluruhnya.
+4. **Referensi:** standar lengkap di `docs/engineering-standard.md`, dibaca sesuai kebutuhan, bukan dimuat seluruhnya.
 5. **Manusia:** review untuk aturan yang bersifat penilaian.
 
 Setiap aturan dipetakan ke tingkat penegakannya di [enforcement-map.md](../enforcement-map.md). Saat agent dikoreksi karena melanggar aturan, tindak lanjutnya adalah menaikkan penegakan aturan itu ke tingkat mesin bila memungkinkan.
